@@ -1,4 +1,4 @@
-package com.marketcollection.domain.user;
+package com.marketcollection.domain.member;
 
 import lombok.Getter;
 

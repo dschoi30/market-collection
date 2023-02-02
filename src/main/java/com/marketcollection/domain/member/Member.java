@@ -1,26 +1,27 @@
-package com.marketcollection.domain.user;
+package com.marketcollection.domain.member;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.common.entity.Address;
-import com.marketcollection.domain.order.Order;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Getter
 @Entity
-public class User {
+public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    private String socialId;
     private String email;
-    private String userName;
+    private String memberName;
     private int phoneNumber;
 
     @Embedded
@@ -30,5 +31,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
     @Enumerated(EnumType.STRING)
-    private UserStatus userStatus;
+    private MemberStatus memberStatus;
+
+    public Member update(String memberName) {
+        this.memberName = memberName;
+        return this;
+    }
 }
