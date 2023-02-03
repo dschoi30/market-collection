@@ -4,17 +4,69 @@
       layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="css">
+    <style>
+        .login-wrapper {
+            background: #f1f3f5;
+            float: none;
+            margin: 0 auto;
+            justify-content: center;
+            width: 500px;
+            height: 600px;
+            padding-top: 150px;
+        }
+        .login-content {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .kakao {
+            color: black;
+            background-color: #FEE500;
+            font-weight: 700;
+        }
+        .kakao:hover {
+            color: black;
+            background-color: #FEE500;
+            font-weight: 700;
+        }
+
+        .naver {
+            color: black;
+            background-color: #03C75A;
+            font-weight: 700;
+        }
+        .naver:hover {
+            color: black;
+            background-color: #03C75A;
+            font-weight: 700;
+        }
+
+        .google {
+            color: white;
+            background-color: black;
+            font-weight: 700;
+        }
+        .google:hover {
+            color: white;
+            background-color: black;
+            font-weight: 700;
+        }
+    </style>
 </th:block>
 
 <div layout:fragment="content" class="content">
-    <div class="d-grid gap-2 row mb-1 col-4 mx-auto">
-        <button class="btn btn-warning" th:onclick="|location.href='/oauth2/authorization/kakao'|">카카오 로그인</button>
-    </div>
-    <div class="d-grid gap-2 row mb-1 col-4 mx-auto">
-        <button class="btn btn-success" th:onclick="|location.href='/oauth2/authorization/naver'|">네이버 로그인</button>
-    </div>
-    <div class="d-grid gap-2 row mb-1 col-4 mx-auto">
-        <button class="btn btn-light" th:onclick="|location.href='/oauth2/authorization/google'|">구글 로그인</button>
+    <div class="login-wrapper">
+        <div class="login-content">
+            <h2>소셜 로그인</h2>
+        </div>
+        <div class="gap-2 row mb-1 col-9 mx-auto">
+            <button class="btn kakao" th:onclick="|location.href='/oauth2/authorization/kakao'|">카카오 로그인</button>
+        </div>
+        <div class="gap-2 row mb-1 col-9 mx-auto">
+            <button class="btn naver" th:onclick="|location.href='/oauth2/authorization/naver'|">네이버 로그인</button>
+        </div>
+        <div class="gap-2 row mb-1 col-9 mx-auto">
+            <button class="btn google" th:onclick="|location.href='/oauth2/authorization/google'|">구글 로그인</button>
+        </div>
     </div>
 </div>
 
