@@ -42,14 +42,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         httpSession.setAttribute("user", new SessionUser(member)); // 세션에 user 등록
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(member.getRole().getKey())), // 회원 등급 설정
+                Collections.singleton(new SimpleGrantedAuthority(member.getRole().getKey())),
                         attributes.getAttributes(),
-                        attributes.getNameAttributeKey());
+                        attributes.getNameAttributeKey());  // 회원 권한 부여
     }
 
     private Member saveOrUpdate(OAuthAttributes attributes) {
         Member member = memberRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getName()))
+                .map(entity -> entity.update(attributes.getName())) // 가입 회원의 소셜 정보가 변경된 경우 로그인 시 DB에 업데이트
                 .orElse(attributes.toEntity());
 
         return memberRepository.save(member);
