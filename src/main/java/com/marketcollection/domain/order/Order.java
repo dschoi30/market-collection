@@ -2,7 +2,7 @@ package com.marketcollection.domain.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.common.entity.Address;
-import com.marketcollection.domain.user.User;
+import com.marketcollection.domain.member.Member;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -16,8 +16,8 @@ public class Order {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @JsonIgnore
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)

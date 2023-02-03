@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<header th:fragment="header">
+    <div class="row">
+        <div class="col">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+                <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+                <span class="fs-4">마켓컬렉션</span>
+            </a>
+        </div>
+        <div class="col">
+            <form class="form-inline my-2 my-lg-0" th:action="@{/}" method="get">
+                <input name="searchQuery" class="form-control mr-sm-2" type="search" placeholder="검색어를 입력해주세요" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">검색</button>
+            </form>
+        </div>
+        <div class="col">
+            <div class="grid text-center">
+                <span sec:authorize="isAnonymous()">
+                    <a href="/member/login" class="nav-link">로그인</a>
+                </span>
+                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
+                    [[${userName}]]님
+                </span>
+                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
+                    <a href="/logout">장바구니</a>
+                </span>
+                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
+                    <a href="/logout">주문내역</a>
+                </span>
+                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
+                    <a href="/logout">로그아웃</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</header>
+</html>

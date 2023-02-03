@@ -1,6 +1,6 @@
 package com.marketcollection.domain.cart;
 
-import com.marketcollection.domain.user.User;
+import com.marketcollection.domain.member.Member;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -12,6 +12,6 @@ public class Cart {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
