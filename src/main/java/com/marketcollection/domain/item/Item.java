@@ -5,8 +5,8 @@ import com.marketcollection.common.entity.Category;
 import lombok.Getter;
 
 import javax.persistence.*;
-import java.util.List;
 
+@NoArgsConstructor
 @Getter
 @Entity
 public class Item {
@@ -26,4 +26,19 @@ public class Item {
 
     private int salesCount;
     private int hit;
+    private ItemSaleStatus itemSaleStatus;
+
+    @Builder
+    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, String thumbnailImageFile, Category category, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
+        this.itemName = itemName;
+        this.originalPrice = originalPrice;
+        this.salePrice = salePrice;
+        this.stockQuantity = stockQuantity;
+        this.description = description;
+        this.thumbnailImageFile = thumbnailImageFile;
+        this.category = category;
+        this.salesCount = salesCount;
+        this.hit = hit;
+        this.itemSaleStatus = itemSaleStatus;
+    }
 }
