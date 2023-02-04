@@ -39,6 +39,7 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	implementation 'org.modelmapper:modelmapper:3.1.1'
+	implementation 'net.coobird:thumbnailator:0.4.8'
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'mysql:mysql-connector-java'

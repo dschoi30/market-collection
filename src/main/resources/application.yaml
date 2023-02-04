@@ -31,3 +31,4 @@ logging.level:
 
 uploadPath: 'file:///D:/develop/resources/market-collection/'
 itemImageLocation: 'D:/develop/resources/market-collection/items'
+thumbnailImageLocation: 'D:/develop/resources/market-collection/items/thumbnails'

@@ -4,9 +4,11 @@ import com.marketcollection.api.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
+@ToString
 @NoArgsConstructor
 @Getter
 @Entity
