@@ -1,5 +1,6 @@
 package com.marketcollection.domain.member;
 
+import com.marketcollection.api.common.BaseEntity;
 import com.marketcollection.common.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Entity
-public class Member {
+public class Member extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

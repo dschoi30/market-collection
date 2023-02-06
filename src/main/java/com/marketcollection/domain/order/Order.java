@@ -1,6 +1,7 @@
 package com.marketcollection.domain.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.marketcollection.api.common.BaseEntity;
 import com.marketcollection.common.entity.Address;
 import com.marketcollection.domain.member.Member;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.util.List;
 @Getter
 @Table(name = "orders")
 @Entity
-public class Order {
+public class Order extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

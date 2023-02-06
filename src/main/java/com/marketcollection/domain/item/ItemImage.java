@@ -1,9 +1,13 @@
 package com.marketcollection.domain.item;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
-
+@ToString
+@NoArgsConstructor
 @Getter
 @Entity
 public class ItemImage {
@@ -16,4 +20,12 @@ public class ItemImage {
     private String originalFileName;
     private String renamedFileName;
     private String itemImageUrl;
+
+    @Builder
+    public ItemImage(Item item, String originalFileName, String renamedFileName, String itemImageUrl) {
+        this.item = item;
+        this.originalFileName = originalFileName;
+        this.renamedFileName = renamedFileName;
+        this.itemImageUrl = itemImageUrl;
+    }
 }
