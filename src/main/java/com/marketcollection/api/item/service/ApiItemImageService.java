@@ -22,8 +22,6 @@ public class ApiItemImageService {
 
     @Value("${itemImageLocation}")
     private String itemImageLocation;
-    @Value("${thumbnailImageLocation}")
-    private String thumbnailImageLocation;
     private final FileService fileService;
     public final ItemImageRepository itemImageRepository;
 
@@ -39,23 +37,23 @@ public class ApiItemImageService {
         }
 
         itemImageDto.createItemImage(originalFilename, renamedFileName, itemImageUrl);
+        System.out.println("getUrl = " + itemImageDto.getItemImageUrl());
         ItemImage itemImage = itemImageDto.toEntity();
+        System.out.println("itemImage = " + itemImage.toString());
         itemImageRepository.save(itemImage);
     }
 
-    public ItemFormDto createThumbnailImage(ItemFormDto itemFormDto, MultipartFile itemImageFile) throws Exception {
+    public String createThumbnailImage(MultipartFile itemImageFile) throws Exception {
 
         String originalFilename = itemImageFile.getOriginalFilename();
-        String renamedFileName = "";
+        String thumbnailFileName = "";
         String thumbnailImageUrl = "";
 
         if(!StringUtils.isEmpty(originalFilename)) {
-            renamedFileName = fileService.createThumbnailImage(thumbnailImageLocation, originalFilename, itemImageFile);
-            thumbnailImageUrl = "/images/items/thumbnails" + renamedFileName;
+            thumbnailFileName = fileService.createThumbnailImage(itemImageLocation, originalFilename, itemImageFile);
+            thumbnailImageUrl = "/images/items/" + thumbnailFileName;
         }
 
-        itemFormDto.setThumbnailImageFile(thumbnailImageUrl);
-
-        return itemFormDto;
+        return thumbnailImageUrl;
     }
 }

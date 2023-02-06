@@ -6,25 +6,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/items")
+@RequestMapping("/api/v1")
 @RestController
 public class ApiItemController {
 
     private final ApiItemService apiItemService;
 
-    @PostMapping("/new")
-    public ResponseEntity<Long> saveItem(Model model, @Valid ItemFormDto itemFormDto,
-                                         @RequestParam("itemImageFile") List<MultipartFile> itemImageFiles) {
+    @PostMapping("/admin/item/new")
+    public ResponseEntity<Long> saveItem(Model model,
+                                         @RequestPart(value = "key") ItemFormDto itemFormDto,
+                                         @RequestPart(value = "file", required = false) List<MultipartFile> itemImageFiles) {
         Long itemId = null;
 
         try {

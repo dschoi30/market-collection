@@ -53,7 +53,7 @@ class ApiItemServiceTest {
         itemFormDto.setSalePrice(90);
         itemFormDto.setStockQuantity(100);
         itemFormDto.setDescription("description");
-        itemFormDto.setCategory(Category.SALAD);
+        itemFormDto.setCategoryId(1L);
         itemFormDto.setItemSaleStatus(ItemSaleStatus.ON_SALE);
 
         List<MultipartFile> multipartFiles = createItemImageFiles();

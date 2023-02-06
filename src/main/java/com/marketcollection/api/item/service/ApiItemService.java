@@ -22,14 +22,19 @@ public class ApiItemService {
 
     public Long save(ItemFormDto itemFormDto, List<MultipartFile> itemImageFiles) throws Exception {
 
-        ItemFormDto updatedItemFormDto = apiItemImageService.createThumbnailImage(itemFormDto, itemImageFiles.get(0));
-        Item item = updatedItemFormDto.toEntity();
+        Item item = itemFormDto.toEntity();
         itemRepository.save(item);
+
         ItemImageDto itemImageDto = new ItemImageDto();
         itemImageDto.setItem(item);
 
         for(int i = 0; i < itemImageFiles.size(); i++) {
+            if(i == 0) {
+                String thumbnailImage = apiItemImageService.createThumbnailImage(itemImageFiles.get(i));
+                item.setThumbnailImageFile(thumbnailImage);
+            } else {
             apiItemImageService.save(itemImageDto, itemImageFiles.get(i));
+            }
         }
 
         return item.getId();

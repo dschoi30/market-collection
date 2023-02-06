@@ -17,8 +17,7 @@ public class FileService {
         UUID uuid = UUID.randomUUID();
         String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
         String renamedFileName = uuid.toString() + extension;
-        String fileUploadFullUrl = uploadPath + "/" + renamedFileName;
-        multipartFile.transferTo(new File(fileUploadFullUrl));
+        multipartFile.transferTo(new File(uploadPath, renamedFileName));
         return renamedFileName;
     }
 
@@ -26,13 +25,12 @@ public class FileService {
 
         UUID uuid = UUID.randomUUID();
         String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-        String renamedFileName = "t-" + uuid.toString() + extension;
-        String fileUploadFullUrl = uploadPath + "/" + renamedFileName;
-        File file = new File(uploadPath, renamedFileName);
-//        Thumbnails.of(new File(uploadPath, originalFileName))
-//                .forceSize(120, 120)
-//                .toFile(new File(uploadPath, renamedFileName));
-        return fileUploadFullUrl;
+        String thumbnailFileName = "t-" + uuid.toString() + extension;
+        multipartFile.transferTo(new File(uploadPath, originalFileName));
+        Thumbnails.of(new File(uploadPath, originalFileName))
+                .forceSize(120, 120)
+                .toFile(new File(uploadPath, thumbnailFileName));
+        return thumbnailFileName;
     }
 
     public void deleteFile(String filePath) throws Exception {
