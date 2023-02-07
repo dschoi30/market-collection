@@ -37,9 +37,7 @@ public class ApiItemImageService {
         }
 
         itemImageDto.createItemImage(originalFilename, renamedFileName, itemImageUrl);
-        System.out.println("getUrl = " + itemImageDto.getItemImageUrl());
         ItemImage itemImage = itemImageDto.toEntity();
-        System.out.println("itemImage = " + itemImage.toString());
         itemImageRepository.save(itemImage);
     }
 

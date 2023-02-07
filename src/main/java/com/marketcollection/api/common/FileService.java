@@ -28,7 +28,7 @@ public class FileService {
         String thumbnailFileName = "t-" + uuid.toString() + extension;
         multipartFile.transferTo(new File(uploadPath, originalFileName));
         Thumbnails.of(new File(uploadPath, originalFileName))
-                .forceSize(120, 120)
+                .forceSize(500, 500)
                 .toFile(new File(uploadPath, thumbnailFileName));
         return thumbnailFileName;
     }
