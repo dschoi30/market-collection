@@ -1,11 +1,15 @@
 package com.marketcollection.api.item.service;
 
 import com.marketcollection.api.item.dto.ItemImageDto;
+import com.marketcollection.api.item.dto.ItemListDto;
+import com.marketcollection.api.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.api.item.dto.ItemFormDto;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,5 +42,11 @@ public class ApiItemService {
         }
 
         return item.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ItemListDto> getItemListPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+
+        return itemRepository.getItemListPage(itemSearchDto, pageable);
     }
 }
