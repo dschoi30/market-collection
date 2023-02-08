@@ -1,6 +1,7 @@
-package com.marketcollection.api.item.service;
+package com.marketcollection.common.main;
 
 import com.marketcollection.domain.item.Item;
+import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,9 +18,7 @@ public class InitDB {
 
     @PostConstruct
     public void init() {
-//        for(int i = 0; i < 100; i++) {
             initService.dbInit1();
-//        }
     }
 
     @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class InitDB {
 
         public void dbInit1() {
 
-            for(int i = 0; i < 100; i++) {
+            for(int i = 0; i < 20; i++) {
                 Item item = Item.builder()
                         .itemName("강아지 장난감_" + i)
                         .originalPrice(10000)
@@ -42,6 +41,10 @@ public class InitDB {
                         .itemSaleStatus(ItemSaleStatus.ON_SALE)
                         .build();
                 em.persist(item);
+                for(int j = 0; j < 3; j++) {
+                    ItemImage itemImage = new ItemImage(item, "dogtoy3", "dogtoy3", "/images/items/dogtoy3.png");
+                    em.persist(itemImage);
+                }
             }
         }
     }

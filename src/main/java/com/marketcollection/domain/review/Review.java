@@ -1,7 +1,6 @@
 package com.marketcollection.domain.review;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.marketcollection.api.common.BaseEntity;
+import com.marketcollection.domain.common.BaseEntity;
 import lombok.Getter;
 
 import javax.persistence.*;

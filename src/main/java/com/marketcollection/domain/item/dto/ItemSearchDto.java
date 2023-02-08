@@ -1,4 +1,4 @@
-package com.marketcollection.api.item.dto;
+package com.marketcollection.domain.item.dto;
 
 import com.marketcollection.domain.item.ItemSaleStatus;
 import lombok.Getter;

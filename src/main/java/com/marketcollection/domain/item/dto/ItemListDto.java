@@ -1,4 +1,4 @@
-package com.marketcollection.api.item.dto;
+package com.marketcollection.domain.item.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

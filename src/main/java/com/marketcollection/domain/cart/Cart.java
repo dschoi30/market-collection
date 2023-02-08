@@ -1,6 +1,6 @@
 package com.marketcollection.domain.cart;
 
-import com.marketcollection.api.common.BaseEntity;
+import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.member.Member;
 import lombok.Getter;
 

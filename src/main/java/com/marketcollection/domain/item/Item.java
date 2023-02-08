@@ -1,6 +1,6 @@
 package com.marketcollection.domain.item;
 
-import com.marketcollection.api.common.BaseEntity;
+import com.marketcollection.domain.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

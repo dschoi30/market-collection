@@ -1,4 +1,4 @@
-package com.marketcollection.api.common;
+package com.marketcollection.domain.common;
 
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;

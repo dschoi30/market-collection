@@ -1,7 +1,7 @@
 package com.marketcollection.domain.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.marketcollection.api.common.BaseEntity;
+import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.common.entity.Address;
 import com.marketcollection.domain.member.Member;
 import lombok.Getter;
