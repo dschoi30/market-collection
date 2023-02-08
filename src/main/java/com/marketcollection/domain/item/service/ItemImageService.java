@@ -1,11 +1,9 @@
-package com.marketcollection.api.item.service;
+package com.marketcollection.domain.item.service;
 
-import com.marketcollection.api.common.FileService;
-import com.marketcollection.api.item.dto.ItemFormDto;
-import com.marketcollection.api.item.dto.ItemImageDto;
+import com.marketcollection.domain.common.FileService;
+import com.marketcollection.domain.item.dto.ItemImageDto;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.repository.ItemImageRepository;
-import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,12 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
-import java.io.IOException;
-
 @RequiredArgsConstructor
 @Transactional
 @Service
-public class ApiItemImageService {
+public class ItemImageService {
 
     @Value("${itemImageLocation}")
     private String itemImageLocation;

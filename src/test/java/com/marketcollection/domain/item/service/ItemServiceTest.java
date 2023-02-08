@@ -1,10 +1,9 @@
-package com.marketcollection.api.item.service;
+package com.marketcollection.domain.item.service;
 
-import com.marketcollection.api.item.dto.ItemFormDto;
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.ItemSaleStatus;
+import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.item.repository.ItemImageRepository;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import org.junit.jupiter.api.Test;
@@ -20,14 +19,14 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @Transactional
 @SpringBootTest
-class ApiItemServiceTest {
+class ItemServiceTest {
 
-    @Autowired ApiItemService apiItemService;
+    @Autowired ItemService itemService;
     @Autowired ItemImageRepository itemImageRepository;
     @Autowired ItemRepository itemRepository;
 
@@ -57,7 +56,7 @@ class ApiItemServiceTest {
         itemFormDto.setItemSaleStatus(ItemSaleStatus.ON_SALE);
 
         List<MultipartFile> multipartFiles = createItemImageFiles();
-        Long savedItemId = apiItemService.save(itemFormDto, multipartFiles);
+        Long savedItemId = itemService.save(itemFormDto, multipartFiles);
         List<ItemImage> itemImages = itemImageRepository.findByItemIdOrderByIdAsc(savedItemId);
 
         Item item = itemRepository.findById(savedItemId).orElseThrow(EntityNotFoundException::new);

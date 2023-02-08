@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="css">
+    <style>
+        .mg15 {
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+        .mgt-30 {
+            margin-top: 30px;
+        }
+        .mgb-30 {
+            margin-bottom: 30px;
+        }
+        .wd50 {
+            width: 50%;
+            height: auto;
+        }
+        .wd100 {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            const errorMessage = [[${errorMessage}]];
+            if(errorMessage != null) {
+                alert(errorMessage);
+            }
+
+            calculateTotalPrice();
+            $("#count").change(function() {
+                calculateTotalPrice();
+            });
+        });
+
+        function calculateTotalPrice() {
+            let count = $("#count").val();
+            let price = $("#price").val();
+            let totalPrice = (price * count).toLocaleString('en-US');
+            $("#totalPrice").html(totalPrice);
+        }
+    </script>
+</th:block>
+
+<div layout:fragment="content" class="mg15 mgt-30">
+
+    <input type="hidden" id="itemId" th:value="${item.id}">
+
+    <div class="d-flex row justify-content-center">
+        <div class="wd50 mgb-30">
+            <img class="wd100" th:src="${item.thumbnailImageFile}" th:alt="${item.itemName}">
+        </div>
+        <div class="wd50 p-4">
+            <span th:if="${item.itemSaleStatus == T(com.marketcollection.domain.item.ItemSaleStatus).ON_SALE}" class="badge text-bg-success">
+                판매 중
+            </span>
+            <span th:unless="${item.itemSaleStatus == T(com.marketcollection.domain.item.ItemSaleStatus).ON_SALE}" class="badge text-bg-light">
+                품절
+            </span>
+            <div class="fs-3 fw-bold" th:text="${item.itemName}"></div>
+            <div class="text-end">
+                <div class="fs-4 text-start">
+                    <span class="fw-bold text-danger" th:text="${#numbers.formatPercent((item.originalPrice - item.salePrice) * 1.0 / item.originalPrice, 1, 0)}"></span>
+                    <span th:text="${#numbers.formatInteger(item.salePrice, 3, 'COMMA')}"></span>원
+                    <input type="hidden" th:value="${item.salePrice}" id="price" name="price">
+                </div>
+                <div class="fs-6 text-start">
+                    <span class="text-decoration-line-through" th:text="${#numbers.formatInteger(item.originalPrice, 3, 'COMMA')} + '원'"></span>
+                </div>
+                <div class="input-group w-50">
+                    <span class="input-group-text">수량 선택</span>
+                    <input type="number" class="form-control" name="count" id="count" value="1" size="10">
+                </div>
+            </div>
+            <hr class="my-4">
+
+            <div class="text-end mgt-50 mgb-30">
+                <span class="fs-6">총 상품 금액: </span>
+                <span class="fs-2 fw-bold" name="totalPrice" id="totalPrice"></span>
+                <span class="fs-5">원</span>
+            </div>
+            <div th:if="${item.itemSaleStatus == T(com.marketcollection.domain.item.ItemSaleStatus).ON_SALE}" class="text-center">
+                <button type="button" class="btn btn-light border border-primary btn-lg col-5" onclick="addCart()">장바구니 담기</button>
+                <button type="button" class="btn btn-primary btn-lg col-5" onclick="order()">주문하기</button>
+            </div>
+            <div th:unless="${item.itemSaleStatus == T(com.marketcollection.domain.item.ItemSaleStatus).ON_SALE}" class="text-center">
+                <button type="button" class="btn btn-danger btn-lg w-80">품절</button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <hr>
+            <h4>상품 상세 설명</h4>
+            <hr class="my-4">
+            <h6 th:text="${item.description}"></h6>
+            <div th:each="itemImage : ${item.itemImageDtos}" class="text-center">
+                <img th:if="${not #strings.isEmpty(itemImage.itemImageUrl)}" th:src="${itemImage.itemImageUrl}" class="wd100 mgb-30">
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

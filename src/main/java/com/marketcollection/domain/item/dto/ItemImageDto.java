@@ -1,10 +1,15 @@
-package com.marketcollection.api.item.dto;
+package com.marketcollection.domain.item.dto;
 
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.modelmapper.ModelMapper;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter @Setter
 public class ItemImageDto {
 
@@ -28,5 +33,11 @@ public class ItemImageDto {
                 .itemImageUrl(itemImageUrl)
                 .build();
 
+    }
+
+    private static ModelMapper modelMapper = new ModelMapper();
+
+    public static ItemImageDto of(ItemImage itemImage) {
+        return modelMapper.map(itemImage, ItemImageDto.class);
     }
 }

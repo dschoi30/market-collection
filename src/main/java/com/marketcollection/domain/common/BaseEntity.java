@@ -1,4 +1,4 @@
-package com.marketcollection.api.common;
+package com.marketcollection.domain.common;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
