@@ -59,14 +59,13 @@ public class ItemController {
 
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
     public String getAdminItemPage(Model model, ItemSearchDto itemSearchDto,
-                                   @PathVariable("page") Optional<Integer> page/*,
-                                   @RequestParam(defaultValue = "id", value = "orderBy") String orderBy*/) {
+                                   @PathVariable("page") Optional<Integer> page) {
         SessionUser user = (SessionUser) httpSession.getAttribute("user");
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
         }
 
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 20/*, Sort.by(Sort.Direction.DESC, orderBy)*/);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 20);
         Page<Item> items = itemService.getAdminItemPage(itemSearchDto, pageable);
 
         model.addAttribute("items", items);
