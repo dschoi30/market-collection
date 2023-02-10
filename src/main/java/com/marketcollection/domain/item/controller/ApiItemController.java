@@ -5,6 +5,7 @@ import com.marketcollection.domain.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,11 +20,19 @@ public class ApiItemController {
 
     @PostMapping("/admin/item/new")
     public ResponseEntity<Long> saveItem(@RequestPart(value = "key") ItemFormDto itemFormDto,
-                                         @RequestPart(value = "file", required = false) List<MultipartFile> itemImageFiles) throws Exception {
+                                         @RequestPart(value = "file") List<MultipartFile> itemImageFiles) throws Exception {
 
         Long itemId = itemService.save(itemFormDto, itemImageFiles);
 
         return new ResponseEntity<>(itemId, HttpStatus.OK);
     }
 
+    @PostMapping("/admin/item/{itemId}")
+    public ResponseEntity<Long> updateItem(@RequestPart(value = "key") ItemFormDto itemFormDto,
+                                           @RequestPart(value = "file") List<MultipartFile> itemImageFiles) throws Exception {
+
+        Long itemId = itemService.updateItem(itemFormDto, itemImageFiles);
+
+        return new ResponseEntity<>(itemId, HttpStatus.OK);
+    }
 }

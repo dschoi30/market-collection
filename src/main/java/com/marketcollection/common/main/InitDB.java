@@ -32,13 +32,15 @@ public class InitDB {
             for(int i = 0; i < 100; i++) {
                 Item item = Item.builder()
                         .itemName("향기가득 샤인머스캣_" + i)
-                        .originalPrice(10000)
-                        .salePrice(10000 - i * 100)
-                        .stockQuantity(1000)
+                        .originalPrice(100000)
+                        .salePrice((int)(Math.random() * 10000) * 10)
+                        .stockQuantity((int)(Math.random() * 10000))
                         .description("너무 맛있어요")
                         .thumbnailImageFile("/images/items/grape1.jpg")
                         .categoryId(1L)
                         .itemSaleStatus(ItemSaleStatus.ON_SALE)
+                        .salesCount((int)(Math.random() * 10000))
+                        .hit((int)(Math.random() * 10000))
                         .build();
                 em.persist(item);
                 for(int j = 0; j < 3; j++) {

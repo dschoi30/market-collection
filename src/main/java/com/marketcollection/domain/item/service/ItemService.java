@@ -70,4 +70,37 @@ public class ItemService {
     public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getAdminItemPage(itemSearchDto, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public ItemFormDto findById(Long itemId) {
+        List<ItemImage> itemImages = itemImageRepository.findByItemIdOrderByIdAsc(itemId);
+        List<ItemImageDto> itemImageDtos = new ArrayList<>();
+        for(ItemImage itemImage : itemImages) {
+            ItemImageDto itemImageDto = ItemImageDto.of(itemImage);
+            itemImageDtos.add(itemImageDto);
+        }
+        Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
+        ItemFormDto itemFormDto = ItemFormDto.of(item);
+        itemFormDto.setItemImageDtos(itemImageDtos);
+
+        return itemFormDto;
+    }
+
+
+    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImageFiles) throws Exception {
+        Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
+        item.updateItem(itemFormDto);
+
+        List<Long> itemImageIds = itemFormDto.getItemImageIds();
+        String thumbnailImageFile = itemFormDto.getThumbnailImageFile();
+        for(int i = 0; i < itemImageFiles.size(); i++) {
+            if(i == 0) {
+                String thumbnailImage = itemImageService.updateThumbnailImage(itemImageFiles.get(i), thumbnailImageFile);
+                item.setThumbnailImageFile(thumbnailImage);
+            } else {
+                itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i));
+            }
+        }
+        return item.getId();
+    }
 }

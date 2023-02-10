@@ -41,7 +41,6 @@
 </th:block>
 
 <div layout:fragment="content">
-<!--  <form th:action="@{'/admin/items/' + ${items.number}}" method="get" th:object="${items}">-->
   <form th:action="@{'/admin/items/'}" method="get" th:object="${itemSearchDto}">
     <div class="form-inline">
       <select th:field="*{orderBy}" class="form-select search-bar">
@@ -76,7 +75,7 @@
     </div>
     <hr>
     <table class="table mgb-30">
-      <thead th:object="${itemSearchDto}" >
+      <thead>
         <tr>
           <td>상품번호</td>
           <td>카테고리</td>
@@ -92,9 +91,9 @@
       <tr th:each="item, status: ${items.getContent()}" th:object="${items}">
         <td th:text="${item.id}"></td>
         <td th:text="${item.categoryId}"></td>
-        <td><a th:href="'/admin/item/' + ${item.id}" th:text="${item.itemName}"></a></td>
-        <td th:text="${item.hit}"></td>
-        <td th:text="${item.salesCount}"></td>
+        <td><a th:href="'/admin/item/' + ${item.id}" th:text="${item.itemName}" class="text-dark" style="text-decoration-line: none;"></a></td>
+        <td th:text="${#numbers.formatInteger(item.hit, 1, 'COMMA')}"></td>
+        <td th:text="${#numbers.formatInteger(item.salesCount, 1, 'COMMA')}"></td>
         <td th:text="${item.itemSaleStatus}"></td>
         <td th:text="${item.createdBy}"></td>
         <td th:text="${item.createdDate}"></td>

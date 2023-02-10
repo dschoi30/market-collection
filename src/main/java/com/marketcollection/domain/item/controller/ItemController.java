@@ -13,12 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -74,4 +75,22 @@ public class ItemController {
 
         return "item/adminItem";
     }
+
+    @GetMapping("/admin/item/{itemId}")
+    public String findById(Model model, @PathVariable Long itemId) {
+        SessionUser user = (SessionUser) httpSession.getAttribute("user");
+        if(user != null) {
+            model.addAttribute("userName", user.getUserName());
+        }
+
+        try {
+            ItemFormDto itemFormDto = itemService.findById(itemId);
+            model.addAttribute("itemFormDto", itemFormDto);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("상품이 존재하지 않습니다.");
+        }
+        return "item/itemForm";
+    }
+
+
 }

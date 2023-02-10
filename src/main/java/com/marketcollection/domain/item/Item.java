@@ -1,6 +1,7 @@
 package com.marketcollection.domain.item;
 
 import com.marketcollection.domain.common.BaseEntity;
+import com.marketcollection.domain.item.dto.ItemFormDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,5 +45,15 @@ public class Item extends BaseEntity {
 
     public void setThumbnailImageFile(String thumbnailImageFile) {
         this.thumbnailImageFile = thumbnailImageFile;
+    }
+
+    public void updateItem(ItemFormDto itemFormDto) {
+        this.itemName = itemFormDto.getItemName();
+        this.originalPrice = itemFormDto.getOriginalPrice();
+        this.salePrice = itemFormDto.getSalePrice();
+        this.stockQuantity = itemFormDto.getStockQuantity();
+        this.description = itemFormDto.getDescription();
+        this.categoryId = itemFormDto.getCategoryId();
+        this.itemSaleStatus = itemFormDto.getItemSaleStatus();
     }
 }

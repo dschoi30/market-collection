@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
+
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -49,5 +51,35 @@ public class ItemImageService {
         }
 
         return thumbnailImageUrl;
+    }
+
+
+    public void updateItemImage(Long itemImageId, MultipartFile multipartFile) throws Exception {
+        if(!multipartFile.isEmpty()) {
+            ItemImage itemImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
+
+            if(StringUtils.isEmpty(itemImage.getRenamedFileName())) {
+                fileService.deleteFile(itemImageLocation + "/" + itemImage.getRenamedFileName());
+            }
+
+            String originalFileName = itemImage.getOriginalFileName();
+            String renamedFileName = fileService.uploadFile(itemImageLocation, originalFileName, multipartFile);
+        }
+
+    }
+
+    public String updateThumbnailImage(MultipartFile itemImageFile, String thumbnailImageFile) throws Exception {
+        String originalFilename = itemImageFile.getOriginalFilename();
+        String thumbnailFileName = "";
+        String thumbnailImageUrl = "";
+
+        if(!StringUtils.isEmpty(originalFilename)) {
+            fileService.deleteFile(itemImageLocation + "/" + thumbnailImageFile);
+            thumbnailFileName = fileService.createThumbnailImage(itemImageLocation, originalFilename, itemImageFile);
+            thumbnailImageUrl = "/images/items/" + thumbnailFileName;
+        }
+
+        return thumbnailImageUrl;
+
     }
 }
