@@ -8,7 +8,6 @@ import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,9 +33,10 @@ public class ItemService {
         itemImageDto.setItem(item);
 
         for(int i = 0; i < itemImageFiles.size(); i++) {
+
             if(i == 0) {
-                String thumbnailImage = itemImageService.createThumbnailImage(itemImageFiles.get(i));
-                item.setThumbnailImageFile(thumbnailImage);
+                ItemImage itemImage = itemImageService.saveThumbnail(itemImageDto, itemImageFiles.get(i));
+                itemImage.setRepImage();
             } else {
                 itemImageService.save(itemImageDto, itemImageFiles.get(i));
             }
@@ -86,17 +86,15 @@ public class ItemService {
         return itemFormDto;
     }
 
-
     public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImageFiles) throws Exception {
         Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
         item.updateItem(itemFormDto);
 
         List<Long> itemImageIds = itemFormDto.getItemImageIds();
-        String thumbnailImageFile = itemFormDto.getThumbnailImageFile();
-        for(int i = 0; i < itemImageFiles.size(); i++) {
+
+        for(int i = 0; i < itemImageIds.size(); i++) {
             if(i == 0) {
-                String thumbnailImage = itemImageService.updateThumbnailImage(itemImageFiles.get(i), thumbnailImageFile);
-                item.setThumbnailImageFile(thumbnailImage);
+               itemImageService.updateThumbnailImage(itemImageIds.get(i), itemImageFiles.get(i));
             } else {
                 itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i));
             }

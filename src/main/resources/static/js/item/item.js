@@ -54,6 +54,13 @@ var item = {
     },
     update: function() {
         const formData = new FormData();
+
+        let itemImageIds = new Array();
+        $('.item-image-ids').each(function(index, item) {
+            const itemImageId = $(item).val();
+            itemImageIds.push(itemImageId);
+        });
+
         const data = {
             id: $('#id').val(),
             itemSaleStatus: $('#itemSaleStatus').val(),
@@ -62,15 +69,15 @@ var item = {
             originalPrice: $('#originalPrice').val(),
             salePrice: $('#salePrice').val(),
             stockQuantity: $('#stockQuantity').val(),
-            description: $('#description').val()
+            description: $('#description').val(),
+            itemImageIds: itemImageIds
         };
+
         const fileInput = $('.custom-file-input');
 
         for (let i = 0; i < fileInput.length; i++) {
             if (fileInput[i].files.length > 0) {
-                for (let j = 0; j < fileInput[i].files.length; j++) {
-                    console.log("fileInput[i].files[j] = " + fileInput[i].files[j]);
-
+                for (let j = 0; j < fileInput[i].length; j++) {
                     formData.append('file', $('.custom-file-input')[i].files[j]);
                 }
             }

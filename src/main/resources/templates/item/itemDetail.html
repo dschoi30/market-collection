@@ -55,7 +55,7 @@
 
     <div class="d-flex row justify-content-center">
         <div class="wd50 mgb-30">
-            <img class="wd100" th:src="${item.thumbnailImageFile}" th:alt="${item.itemName}">
+            <img class="wd100" th:src="${item.itemImageDtos[0].itemImageUrl}" th:alt="${item.itemName}">
         </div>
         <div class="wd50 p-4">
             <span th:if="${item.itemSaleStatus == T(com.marketcollection.domain.item.ItemSaleStatus).ON_SALE}" class="badge text-bg-success">

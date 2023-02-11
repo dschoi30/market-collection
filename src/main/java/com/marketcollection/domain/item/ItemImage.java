@@ -20,10 +20,22 @@ public class ItemImage {
     private String originalFileName;
     private String renamedFileName;
     private String itemImageUrl;
+    private boolean isRepImage;
 
     @Builder
-    public ItemImage(Item item, String originalFileName, String renamedFileName, String itemImageUrl) {
+    public ItemImage(Item item, String originalFileName, String renamedFileName, String itemImageUrl, boolean isRepImage) {
         this.item = item;
+        this.originalFileName = originalFileName;
+        this.renamedFileName = renamedFileName;
+        this.itemImageUrl = itemImageUrl;
+        this.isRepImage = isRepImage;
+    }
+
+    public void setRepImage() {
+        isRepImage = true;
+    }
+
+    public void updateItemIamge(String originalFileName, String renamedFileName, String itemImageUrl) {
         this.originalFileName = originalFileName;
         this.renamedFileName = renamedFileName;
         this.itemImageUrl = itemImageUrl;

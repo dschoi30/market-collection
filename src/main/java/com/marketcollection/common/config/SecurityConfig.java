@@ -20,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().frameOptions().disable()
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/", "/member/login", "/items/**", "/css/**", "/images/**", "/js/**", "/h2-console/**").permitAll()
+                    .antMatchers("/", "/member/login", "/items/**", "/css/**", "/image/**", "/js/**", "/h2-console/**").permitAll()
                     .antMatchers("/api/v1/**").hasRole("USER")
                     .antMatchers("/admin/**").hasRole("USER")
                     .anyRequest().authenticated()
@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web
                 .ignoring().antMatchers("/favicon.ico");
     }

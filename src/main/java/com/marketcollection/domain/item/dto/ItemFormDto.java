@@ -4,7 +4,6 @@ import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ public class ItemFormDto {
     private int salePrice;
     private int stockQuantity;
     private String description;
-    private String thumbnailImageFile;
     private Long categoryId;
     private ItemSaleStatus itemSaleStatus;
     private List<ItemImageDto> itemImageDtos = new ArrayList<>();
@@ -31,7 +29,6 @@ public class ItemFormDto {
                 .salePrice(salePrice)
                 .stockQuantity(stockQuantity)
                 .description(description)
-                .thumbnailImageFile(thumbnailImageFile)
                 .categoryId(categoryId)
                 .itemSaleStatus(itemSaleStatus)
                 .build();

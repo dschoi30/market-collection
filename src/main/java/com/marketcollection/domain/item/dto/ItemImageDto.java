@@ -21,11 +21,13 @@ public class ItemImageDto {
     private String originalFileName;
     private String renamedFileName;
     private String itemImageUrl;
+    private boolean isRepImage;
 
-    public void createItemImage(String originalFilename, String renamedFileName, String itemImageUrl) {
+    public void createItemImage(String originalFilename, String renamedFileName, String itemImageUrl, boolean isRepImage) {
         this.originalFileName = originalFilename;
         this.renamedFileName = renamedFileName;
         this.itemImageUrl = itemImageUrl;
+        this.isRepImage = isRepImage;
     }
 
     public ItemImage toEntity() {
@@ -34,8 +36,8 @@ public class ItemImageDto {
                 .originalFileName(originalFileName)
                 .renamedFileName(renamedFileName)
                 .itemImageUrl(itemImageUrl)
+                .isRepImage(isRepImage)
                 .build();
-
     }
 
     private static ModelMapper modelMapper = new ModelMapper();

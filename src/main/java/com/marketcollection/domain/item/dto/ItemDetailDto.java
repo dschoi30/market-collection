@@ -19,7 +19,6 @@ public class ItemDetailDto {
     private int salePrice;
     private int stockQuantity;
     private String description;
-    private String thumbnailImageFile;
     private Long categoryId;
     private ItemSaleStatus itemSaleStatus;
     private List<ItemImageDto> itemImageDtos = new ArrayList<>();

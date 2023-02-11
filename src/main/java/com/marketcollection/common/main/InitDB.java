@@ -36,15 +36,18 @@ public class InitDB {
                         .salePrice((int)(Math.random() * 10000) * 10)
                         .stockQuantity((int)(Math.random() * 10000))
                         .description("너무 맛있어요")
-                        .thumbnailImageFile("/images/items/grape1.jpg")
                         .categoryId(1L)
                         .itemSaleStatus(ItemSaleStatus.ON_SALE)
                         .salesCount((int)(Math.random() * 10000))
                         .hit((int)(Math.random() * 10000))
                         .build();
                 em.persist(item);
+
+                ItemImage repImage = new ItemImage(item, "grape1", "grape1", "/image/item/grape1.jpg", true);
+                em.persist(repImage);
+
                 for(int j = 0; j < 3; j++) {
-                    ItemImage itemImage = new ItemImage(item, "grape2", "grape2", "/images/items/grape2.jpg");
+                    ItemImage itemImage = new ItemImage(item, "grape2", "grape2", "/image/item/grape2.jpg", false);
                     em.persist(itemImage);
                 }
             }

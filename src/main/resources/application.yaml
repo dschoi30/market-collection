@@ -30,4 +30,4 @@ logging.level:
   org.hibernate.SQL: debug
 
 uploadPath: 'file:///D:/develop/resources/market-collection/'
-itemImageLocation: 'D:/develop/resources/market-collection/items'
+itemImageLocation: 'D:/develop/resources/market-collection/item'
