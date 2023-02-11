@@ -33,9 +33,10 @@ public class ItemService {
         itemImageDto.setItem(item);
 
         for(int i = 0; i < itemImageFiles.size(); i++) {
+
             if(i == 0) {
-                String thumbnailImage = itemImageService.createThumbnailImage(itemImageFiles.get(i));
-                item.setThumbnailImageFile(thumbnailImage);
+                ItemImage itemImage = itemImageService.saveThumbnail(itemImageDto, itemImageFiles.get(i));
+                itemImage.setRepImage();
             } else {
                 itemImageService.save(itemImageDto, itemImageFiles.get(i));
             }
@@ -63,5 +64,41 @@ public class ItemService {
         itemDetailDto.setItemImageDtos(itemImageDtos);
 
         return itemDetailDto;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        return itemRepository.getAdminItemPage(itemSearchDto, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public ItemFormDto findById(Long itemId) {
+        List<ItemImage> itemImages = itemImageRepository.findByItemIdOrderByIdAsc(itemId);
+        List<ItemImageDto> itemImageDtos = new ArrayList<>();
+        for(ItemImage itemImage : itemImages) {
+            ItemImageDto itemImageDto = ItemImageDto.of(itemImage);
+            itemImageDtos.add(itemImageDto);
+        }
+        Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
+        ItemFormDto itemFormDto = ItemFormDto.of(item);
+        itemFormDto.setItemImageDtos(itemImageDtos);
+
+        return itemFormDto;
+    }
+
+    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImageFiles) throws Exception {
+        Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
+        item.updateItem(itemFormDto);
+
+        List<Long> itemImageIds = itemFormDto.getItemImageIds();
+
+        for(int i = 0; i < itemImageIds.size(); i++) {
+            if(i == 0) {
+               itemImageService.updateThumbnailImage(itemImageIds.get(i), itemImageFiles.get(i));
+            } else {
+                itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i));
+            }
+        }
+        return item.getId();
     }
 }
