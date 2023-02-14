@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="css">
+  <style>
+    .mg20 {
+      margin-left: 20%;
+      margin-right: 20%;
+    }
+    .mgt-30 {
+      margin-top: 30px;
+    }
+    .mgb-30 {
+      margin-bottom: 30px;
+    }
+  </style>
+</th:block>
+<th:block layout:fragment="script">
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script th:inline="javascript">
+
+    function execDaumPostcode() {
+      new daum.Postcode({
+        oncomplete: function(data) {
+          // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+          // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+          // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+          var addr = ''; // 주소 변수
+          var extraAddr = ''; // 참고항목 변수
+
+          //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+          if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+            addr = data.roadAddress;
+          } else { // 사용자가 지번 주소를 선택했을 경우(J)
+            addr = data.jibunAddress;
+          }
+
+          // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+          if(data.userSelectedType === 'R'){
+            // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+            // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+            if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+              extraAddr += data.bname;
+            }
+            // 건물명이 있고, 공동주택일 경우 추가한다.
+            if(data.buildingName !== '' && data.apartment === 'Y'){
+              extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+            }
+          }
+
+          // 우편번호와 주소 정보를 해당 필드에 넣는다.
+          document.getElementById("zipCode").value = data.zonecode;
+          document.getElementById("address").value = addr;
+          // 커서를 상세주소 필드로 이동한다.
+          document.getElementById("addressDetail").focus();
+        }
+      }).open();
+    }
+
+    $(function() {
+      // 주문 요청 폼생성 ====================
+      // 선택된 input dom을 만들어 반환
+      function checkout() {
+        const orderItems = $(".order-items");
+        let orderInfo = "";
+
+        // 테이블의 형태에 따라서 시작 인덱스(i)의 값이 유동적
+        for (let i = 0; i < orderItems.length; i++) {
+          const itemId = $(orderItems[i]).find("#itemId").val();
+          const count = $(orderItems[i]).find("#count").val();
+          orderInfo += "<input type='number' name='orderItemDtos[" + i + "].itemId' value='" + itemId +"'>";
+          orderInfo += "<input type='number' name='orderItemDtos[" + i + "].count' value='" + count + "'>";
+        }
+        const zipCode = $("#zipCode").val();
+        const phoneNumber = $("#phoneNumber").val();
+        const address = $("#address").val();
+        const detailAddress = $("#detailAddress").val();
+        orderInfo += "<input type='number' name='phoneNumber' value='" + phoneNumber + "'>";
+        orderInfo += "<input type='number' name='zipCode' value='" + zipCode + "'>";
+        orderInfo += "<input type='text' name='address' value='" + address + "'>";
+        orderInfo += "<input type='text' name='detailAddress' value='" + detailAddress + "'>";
+        console.log(orderInfo);
+        return orderInfo;
+      }
+
+      // form 생성
+      $("#btn-checkout").on("click", function () {
+        const form = $("<form action='/order/checkout' method='post'>" +
+                checkout() +
+                "</form> ");
+        $("body").append(form);
+        form.submit();
+      });
+    });
+  </script>
+</th:block>
+
+<div layout:fragment="content" class="mg20 mgt-30">
+
+  <th:block th:object="${orderDto}">
+
+    <p class="h2 mgb-30 text-center">
+      주문서
+    </p>
+    <div class="d-flex row justify-content-center">
+      <div>
+        <p class="h4 mgb-30">주문 상품</p>
+        <table class="table">
+          <thead>
+            <tr class="text-center">
+              <td colspan="2">상품정보</td>
+              <td>상품금액</td>
+            </tr>
+          </thead>
+          <tbody>
+          <tr th:each="orderItem, status: ${orderDto.orderItemDtos}" class="order-items">
+            <input type="hidden" th:hidden="${orderItem.itemId}" th:value="${orderItem.itemId}" id="itemId">
+            <input type="hidden" th:hidden="${orderItem.count}" th:value="${orderItem.count}" id="count">
+            <td th:text="${orderItem.itemName}"></td>
+            <td th:text="${orderItem.count} + '개'" ></td>
+            <td th:text="${orderItem.orderPrice}" class="text-end"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mgt-30">
+        <p class="h4 mgb-30">주문자 정보</p>
+        <table class="table">
+          <tbody>
+          <tr>
+            <td style="width: 13%">보내는 분</td>
+            <td th:text="*{memberName}"></td>
+          </tr>
+          <tr>
+            <td>연락처</td>
+            <td><input type="number" th:field="*{phoneNumber}" id="phoneNumber"></td>
+          </tr>
+          <tr>
+            <td>배송 요청사항</td>
+            <td><input type="text" class="order-comment" size="50"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mgt-30">
+        <p class="h4 mgb-30">배송 정보</p>
+        <table class="table">
+          <tbody>
+          <tr>
+            <td style="width: 13%">배송지</td>
+            <td>
+              <input type="text" id="zipCode" placeholder="우편번호" size="10" th:value="*{zipCode}">
+              <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기">&nbsp;
+              <input type="text" id="address"  placeholder="주소" size="50" style="margin-bottom: 5px;" th:value="*{address}"><br>
+              <input type="text" id="detailAddress"  placeholder="상세주소" size="50" th:value="*{detailAddress}">
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mgt-30">
+        <p class="h4 mgb-30">결제 수단</p>
+      </div>
+    </div>
+
+      <button class="btn btn-primary text-center" id="btn-checkout">저장</button>
+
+  </th:block>
+
+</div>
+
+</html>

@@ -4,11 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.common.entity.Address;
 import com.marketcollection.domain.member.Member;
-import lombok.Getter;
+import com.marketcollection.domain.order.dto.OrderDto;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
 @Table(name = "orders")
 @Entity
@@ -24,10 +29,23 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
-    private int count;
+    private int phoneNumber;
 
     @Embedded
     private Address address;
 
     private OrderStatus orderStatus;
+
+    public static Order createOrder(Member member, List<OrderItem> orderItems) {
+        return Order.builder()
+                .member(member)
+                .phoneNumber(member.getPhoneNumber())
+                .address(new Address(member.getAddress().getZipCode(),
+                        member.getAddress().getAddress(),
+                        member.getAddress().getDetailAddress()))
+                .orderItems(orderItems)
+                .orderStatus(OrderStatus.READY)
+                .build();
+    }
+
 }

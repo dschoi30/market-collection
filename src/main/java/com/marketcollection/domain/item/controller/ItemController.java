@@ -1,40 +1,40 @@
 package com.marketcollection.domain.item.controller;
 
+import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.ItemDetailDto;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.common.auth.dto.SessionUser;
 import com.marketcollection.domain.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.service.ItemService;
+import com.marketcollection.domain.order.dto.OrderRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
 public class ItemController {
 
-    private final HttpSession httpSession;
     private final ItemService itemService;
 
-    @GetMapping("/admin/item/new")
-    public String saveItem(Model model) {
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
+    @ModelAttribute
+    public void setMemberInfo(Model model, @LoginUser SessionUser user) {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
         }
+    }
+
+    @GetMapping("/admin/item/new")
+    public String saveItem(Model model) {
         model.addAttribute("itemFormDto", new ItemFormDto());
 
         return "item/itemForm";
@@ -42,14 +42,10 @@ public class ItemController {
 
     @GetMapping("/items/{itemId}")
     public String getItemDetail(Model model, @PathVariable("itemId") Long itemId) {
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
-        if(user != null) {
-            model.addAttribute("userName", user.getUserName());
-        }
-
         try {
             ItemDetailDto itemDetailDto = itemService.getItemDetail(itemId);
             model.addAttribute("item", itemDetailDto);
+            model.addAttribute("orderRequestDto", new OrderRequestDto());
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "상품이 존재하지 않습니다.");
             return "redirect:/";
@@ -61,11 +57,6 @@ public class ItemController {
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
     public String getAdminItemPage(Model model, ItemSearchDto itemSearchDto,
                                    @PathVariable("page") Optional<Integer> page) {
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
-        if(user != null) {
-            model.addAttribute("userName", user.getUserName());
-        }
-
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 20);
         Page<Item> items = itemService.getAdminItemPage(itemSearchDto, pageable);
 
@@ -78,11 +69,6 @@ public class ItemController {
 
     @GetMapping("/admin/item/{itemId}")
     public String findById(Model model, @PathVariable Long itemId) {
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
-        if(user != null) {
-            model.addAttribute("userName", user.getUserName());
-        }
-
         try {
             ItemFormDto itemFormDto = itemService.findById(itemId);
             model.addAttribute("itemFormDto", itemFormDto);

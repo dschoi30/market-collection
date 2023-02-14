@@ -2,13 +2,10 @@ package com.marketcollection.domain.member;
 
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.common.entity.Address;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -37,5 +34,10 @@ public class Member extends BaseEntity {
     public Member update(String memberName) {
         this.memberName = memberName;
         return this;
+    }
+
+    public void updateOrderInfo(int phoneNumber, int zipCode, String address, String detailAddess) {
+        this.phoneNumber = phoneNumber;
+        this.address = new Address(zipCode, address, detailAddess);
     }
 }
