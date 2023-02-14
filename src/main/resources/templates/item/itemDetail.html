@@ -5,7 +5,7 @@
 
 <th:block layout:fragment="css">
     <style>
-        .mg15 {
+        .mg20 {
             margin-left: 20%;
             margin-right: 20%;
         }
@@ -38,18 +38,41 @@
             $("#count").change(function() {
                 calculateTotalPrice();
             });
+
+            $(function () {
+                // 바로 구매 ====================
+                function order() {
+                    let orderInfo = "";
+                    let itemId = $("#itemId").val();
+                    let count = $("#count").val();
+                    orderInfo += "<input type='number' name='orderItemRequestDtos[0].itemId' value='" + itemId + "'>";
+                    orderInfo += "<input type='number' name='orderItemRequestDtos[0].count' value='"+ count + "'>";
+                    console.log(orderInfo);
+                    return orderInfo;
+                }
+
+                $("#btn-order").on("click", function() {
+                    let form = $("<form action='/order/direct' method='post'>" +
+                        order() +
+                        "</form> ");
+                    $("body").append(form);
+                    form.submit();
+                });
+
+            });
         });
 
         function calculateTotalPrice() {
-            let count = $("#count").val();
-            let price = $("#price").val();
-            let totalPrice = (price * count).toLocaleString('en-US');
+            const count = $("#count").val();
+            const price = $("#price").val();
+            const totalPrice = (price * count).toLocaleString('en-US');
             $("#totalPrice").html(totalPrice);
         }
+
     </script>
 </th:block>
 
-<div layout:fragment="content" class="mg15 mgt-30">
+<div layout:fragment="content" class="mg20 mgt-30">
 
     <input type="hidden" id="itemId" th:value="${item.id}">
 
@@ -88,7 +111,7 @@
             </div>
             <div th:if="${item.itemSaleStatus == T(com.marketcollection.domain.item.ItemSaleStatus).ON_SALE}" class="text-center">
                 <button type="button" class="btn btn-light border border-primary btn-lg col-5" onclick="addCart()">장바구니 담기</button>
-                <button type="button" class="btn btn-primary btn-lg col-5" onclick="order()">주문하기</button>
+                <button class="btn btn-primary btn-lg col-5" id="btn-order">주문하기</button>
             </div>
             <div th:unless="${item.itemSaleStatus == T(com.marketcollection.domain.item.ItemSaleStatus).ON_SALE}" class="text-center">
                 <button type="button" class="btn btn-danger btn-lg w-80">품절</button>

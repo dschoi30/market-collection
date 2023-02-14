@@ -1,10 +1,13 @@
 package com.marketcollection.domain.order;
 
 import com.marketcollection.domain.item.Item;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
 @Entity
 public class OrderItem {
@@ -21,4 +24,16 @@ public class OrderItem {
 
     private int orderPrice;
     private int count;
+
+    public static OrderItem createOrderItem(Item item, int count) {
+        return OrderItem.builder()
+                .item(item)
+                .orderPrice(item.getSalePrice())
+                .count(count)
+                .build();
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }
