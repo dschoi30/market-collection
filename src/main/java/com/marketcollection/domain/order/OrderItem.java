@@ -1,5 +1,6 @@
 package com.marketcollection.domain.order;
 
+import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.item.Item;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Entity
-public class OrderItem {
+public class OrderItem extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

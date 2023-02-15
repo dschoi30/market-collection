@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="css">
+    <style>
+        .mg20 {
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+        .mgt-30 {
+            margin-top: 30px;
+        }
+        .mgb-30 {
+            margin-bottom: 30px;
+        }
+    </style>
+</th:block>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+   </script>
+</th:block>
+
+<div layout:fragment="content" class="mg20 mgt-30">
+
+    <p class="h2 mgb-30 text-center">
+        장바구니
+    </p>
+    <div class="d-flex row justify-content-center">
+        <table class="table">
+            <colgroup>
+                <col width="15%"/>
+                <col width="70%"/>
+                <col width="15%"/>
+            </colgroup>
+            <thead>
+            <tr class="text-center">
+                <td>
+                    <input type="checkbox" id="checkAll" onclick="allChecked()"> 전체선택
+                </td>
+                <td>상품정보</td>
+                <td>상품금액</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cartItem : ${cartItems}">
+                <td class="text-center align-middle">
+                    <input type="checkbox" name="cartCheckBox" th:value="${cartItem.cartItemId}">
+                </td>
+                <td class="d-flex">
+                    <div class="repImgDiv align-self-center">
+                        <img th:src="${cartItem.imageUrl}" class = "rounded repImg" th:alt="${cartItem.itemName}">
+                    </div>
+                    <div class="align-self-center">
+                        <span th:text="${cartItem.itemName}" class="fs24 font-weight-bold"></span>
+                        <div class="fs18 font-weight-light">
+            <span class="input-group mt-2">
+              <span th:id="'price_' + ${cartItem.cartItemId}"
+                    th:data-price="${cartItem.price}"
+                    th:text="${{cartItem.price}} + '원'" class="align-self-center mr-2">
+              </span>
+              <input type="number" name="count" th:id="'count_' + ${cartItem.cartItemId}"
+                     th:value="${cartItem.count}" min="1"
+                     onchange="changeCount(this)" class="form-control mr-2" >
+              <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true" th:data-id="${cartItem.cartItemId}" onclick="deleteCartItem(this)">&times;</span>
+              </button>
+            </span>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center align-middle">
+        <span th:id="'totalPrice_' + ${cartItem.cartItemId}"
+              name="totalPrice" th:text="${{cartItem.price * cartItem.count}} + '원'">
+        </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="text-center">
+        총 주문 금액 : <span id="totalOrderPrice" class="text-danger">0원</span>
+    </h2>
+
+    <div class="text-center mt-3">
+        <button type="button" class="btn btn-primary btn-lg" onclick="orders()">주문하기</button>
+    </div>
+
+</div>
+
+</html>

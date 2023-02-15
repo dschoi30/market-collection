@@ -43,8 +43,8 @@
                 // 바로 구매 ====================
                 function order() {
                     let orderInfo = "";
-                    let itemId = $("#itemId").val();
-                    let count = $("#count").val();
+                    const itemId = $("#itemId").val();
+                    const count = $("#count").val();
                     orderInfo += "<input type='number' name='orderItemRequestDtos[0].itemId' value='" + itemId + "'>";
                     orderInfo += "<input type='number' name='orderItemRequestDtos[0].count' value='"+ count + "'>";
                     console.log(orderInfo);
@@ -67,6 +67,31 @@
             const price = $("#price").val();
             const totalPrice = (price * count).toLocaleString('en-US');
             $("#totalPrice").html(totalPrice);
+        }
+
+        function addCart() {
+            const url = "/cart";
+            const paramData = {
+                itemId: $("#itemId").val(),
+                count: $("#count").val()
+            }
+
+            const param = JSON.stringify(paramData);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                dataType: "json",
+                cache: false,
+                success: function() {
+                    alert("상품을 장바구니에 담았습니다.");
+                },
+                error: function(error) {
+                    alert(error);
+                }
+            });
         }
 
     </script>

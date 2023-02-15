@@ -2,10 +2,13 @@ package com.marketcollection.domain.cart;
 
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.member.Member;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
 @Entity
 public class Cart extends BaseEntity {
@@ -15,4 +18,10 @@ public class Cart extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static Cart createCart(Member member) {
+        return Cart.builder()
+                .member(member)
+                .build();
+    }
 }
