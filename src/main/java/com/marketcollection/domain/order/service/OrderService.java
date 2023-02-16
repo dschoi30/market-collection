@@ -1,5 +1,7 @@
 package com.marketcollection.domain.order.service;
 
+import com.marketcollection.domain.cart.repository.CartItemRepository;
+import com.marketcollection.domain.cart.service.CartService;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import com.marketcollection.domain.member.Member;
@@ -28,18 +30,34 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
+    private final CartService cartService;
 
     public OrderDto setOrderInfo(String memberId, OrderRequestDto orderRequestDto) {
+        System.out.println("orderRequestDto[0].itemid=" + orderRequestDto.getOrderItemRequestDtos().get(0).getItemId());
+        System.out.println("orderRequestDto[1].itemid=" + orderRequestDto.getOrderItemRequestDtos().get(1).getItemId());
         OrderDto orderDto = new OrderDto();
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         orderDto.setMemberInfo(member);
 
+        List<OrderItemDto> orderItemDtos = new ArrayList<>();
+        List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
+        for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
+            Item item = itemRepository.findById(orderItemRequestDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+
+            OrderItemDto orderItemDto = new OrderItemDto(item.getId(), item.getItemName(), item.getSalePrice(),
+                    orderItemRequestDto.getCount());
+//            orderDto.setOrderItemDtos(Arrays.asList(orderItemDto));
+            orderItemDtos.add(orderItemDto);
+        }
+            orderDto.setOrderItemDtos(orderItemDtos);
+/*
         OrderItemRequestDto orderItemRequestDto = orderRequestDto.getOrderItemRequestDtos().get(0);
         Item item = itemRepository.findById(orderItemRequestDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
         OrderItemDto orderItemDto = new OrderItemDto(item.getId(), item.getItemName(), item.getSalePrice(),
                 orderItemRequestDto.getCount());
         orderDto.setOrderItemDtos(Arrays.asList(orderItemDto));
+*/
 
         return orderDto;
     }
@@ -64,6 +82,7 @@ public class OrderService {
         }
         orderRepository.save(order);
 
+        cartService.removeCartItems(member.getId(), orderItems);
         return order.getId();
     }
 }

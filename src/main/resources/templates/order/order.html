@@ -121,7 +121,7 @@
             <input type="hidden" th:hidden="${orderItem.count}" th:value="${orderItem.count}" id="count">
             <td th:text="${orderItem.itemName}"></td>
             <td th:text="${orderItem.count} + '개'" ></td>
-            <td th:text="${orderItem.orderPrice}" class="text-end"></td>
+            <td th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} + '원'" class="text-end"></td>
           </tr>
           </tbody>
         </table>

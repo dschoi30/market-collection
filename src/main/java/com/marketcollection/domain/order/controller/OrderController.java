@@ -25,11 +25,10 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/order/direct")
+    @PostMapping("/order")
     public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
 
         OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto);
-
         model.addAttribute("orderDto", orderDto);
 
         return "order/order";
@@ -37,8 +36,7 @@ public class OrderController {
 
     @PostMapping("/order/checkout")
     public String order(@LoginUser SessionUser user, @ModelAttribute OrderDto orderDto) {
-        System.out.println("itemName = " + orderDto.getOrderItemDtos().get(0).getItemName());
-        System.out.println("orderDto = " + orderDto.toString());
+
         Long orderId = orderService.order(user.getEmail(), orderDto);
 
         return "redirect:/";
