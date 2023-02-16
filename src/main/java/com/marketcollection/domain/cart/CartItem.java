@@ -1,10 +1,13 @@
 package com.marketcollection.domain.cart;
 
 import com.marketcollection.domain.item.Item;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 @Entity
 public class CartItem {
@@ -20,4 +23,16 @@ public class CartItem {
     private Item item;
 
     private int count;
+
+    public static CartItem createCartItem(Cart cart, Item item, int count) {
+        return CartItem.builder()
+                .cart(cart)
+                .item(item)
+                .count(count)
+                .build();
+    }
+
+    public void addCount(int count) {
+        this.count += count;
+    }
 }

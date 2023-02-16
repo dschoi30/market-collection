@@ -34,7 +34,7 @@ public class InitDB {
                         .itemName("향기가득 샤인머스캣_" + i)
                         .originalPrice(100000)
                         .salePrice((int)(Math.random() * 10000) * 10)
-                        .stockQuantity((int)(Math.random() * 10000))
+                        .stockQuantity(10000)
                         .description("너무 맛있어요")
                         .categoryId(1L)
                         .itemSaleStatus(ItemSaleStatus.ON_SALE)
