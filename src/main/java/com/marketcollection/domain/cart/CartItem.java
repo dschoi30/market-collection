@@ -25,11 +25,13 @@ public class CartItem {
     private int count;
 
     public static CartItem createCartItem(Cart cart, Item item, int count) {
-        return CartItem.builder()
+        CartItem cartItem = CartItem.builder()
                 .cart(cart)
                 .item(item)
                 .count(count)
                 .build();
+        item.checkStock(count);
+        return cartItem;
     }
 
     public void addCount(int count) {

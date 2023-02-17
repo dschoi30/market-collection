@@ -2,6 +2,7 @@ package com.marketcollection.domain.item;
 
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.item.dto.ItemFormDto;
+import com.marketcollection.domain.order.exception.OutOfStockException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,5 +50,20 @@ public class Item extends BaseEntity {
         this.description = itemFormDto.getDescription();
         this.categoryId = itemFormDto.getCategoryId();
         this.itemSaleStatus = itemFormDto.getItemSaleStatus();
+    }
+
+    public void deductStock(int count) {
+        int restStock = this.stockQuantity - count;
+        if(restStock < 0) {
+            throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
+        }
+        this.stockQuantity = restStock;
+    }
+
+    public void checkStock(int count) {
+        int restStock = this.stockQuantity - count;
+        if(restStock < 0) {
+            throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
+        }
     }
 }
