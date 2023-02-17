@@ -27,11 +27,13 @@ public class OrderItem extends BaseEntity {
     private int count;
 
     public static OrderItem createOrderItem(Item item, int count) {
-        return OrderItem.builder()
+        OrderItem orderItem = OrderItem.builder()
                 .item(item)
                 .orderPrice(item.getSalePrice())
                 .count(count)
                 .build();
+        item.deductStock(count);
+        return orderItem;
     }
 
     public void setOrder(Order order) {

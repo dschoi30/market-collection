@@ -82,6 +82,7 @@
           <td>상품명</td>
           <td>조회수</td>
           <td>판매수</td>
+          <td>재고수</td>
           <td>판매상태</td>
           <td>등록자</td>
           <td>등록일</td>
@@ -94,6 +95,7 @@
         <td><a th:href="'/admin/item/' + ${item.id}" th:text="${item.itemName}" class="text-dark" style="text-decoration-line: none;"></a></td>
         <td th:text="${#numbers.formatInteger(item.hit, 1, 'COMMA')}"></td>
         <td th:text="${#numbers.formatInteger(item.salesCount, 1, 'COMMA')}"></td>
+        <td th:text="${#numbers.formatInteger(item.stockQuantity, 1, 'COMMA')}"></td>
         <td th:text="${item.itemSaleStatus}"></td>
         <td th:text="${item.createdBy}"></td>
         <td th:text="${item.createdDate}"></td>

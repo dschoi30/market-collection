@@ -22,4 +22,12 @@ public class OrderItemDto {
         this.orderPrice = salePrice;
         this.count = count;
     }
+
+    public OrderItemDto(OrderItem orderItem, String itemImageUrl) {
+        this.itemId = orderItem.getItem().getId();
+        this.itemName = orderItem.getItem().getItemName();
+        this.count = orderItem.getCount();
+        this.orderPrice = orderItem.getOrderPrice();
+        this.imageUrl = itemImageUrl;
+    }
 }
