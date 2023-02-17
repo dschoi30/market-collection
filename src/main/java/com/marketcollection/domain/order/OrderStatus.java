@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum OrderStatus {
-    READY("배송 준비 중"), COMPLETED("배송 완료");
+    ORDERED("주문 완료"), CANCELED("주문 취소");
 
     private final String status;
 }

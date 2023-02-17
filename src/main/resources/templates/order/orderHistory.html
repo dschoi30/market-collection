@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="css">
+  <style>
+    .mgb-30 {
+      margin-bottom: 30px;
+    }
+    .search-bar {
+      display: inline-block;
+      width: auto;
+    }
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+    }
+  </style>
+</th:block>
+
+<th:block layout:fragment="script">
+  <script th:inline="javascript">
+    $(document).ready(function() {
+      $("#searchBtn").on("click", function(e) {
+        e.preventDefault();
+        page(0);
+      });
+    });
+
+    function page(page) {
+      let searchDateType = $("#searchDateType").val();
+
+      location.href="/orders/" + page + "?searchDateType=" + searchDateType;
+    }
+  </script>
+</th:block>
+
+<div layout:fragment="content">
+  <form th:action="@{'/orders/'}" method="get" th:object="${orderSearchDto}">
+    <div class="form-inline">
+      <span class="fs-4 mgb-30">주문 내역</span>
+      <select th:field="*{searchDateType}" class="form-select search-bar">
+        <option value="3m">3개월</option>
+        <option value="6m">6개월</option>
+        <option value="1y">1년</option>
+        <option value="3y">3년</option>
+      </select>
+      <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
+    </div>
+    <hr>
+    <div th:each="order : ${orders.getContent()}">
+
+      <div class="d-flex mb-3 align-self-center">
+        <span class="fs-5" th:text="${order.orderDate} + ' 주문'"></span>
+      </div>
+      <div class="card d-flex mb-3">
+        <div th:each="orderItem : ${order.orderItemDtos}" class="d-flex mb-3">
+          <div class="repImgDiv ms-3 mt-3">
+            <img th:src="${orderItem.imageUrl}" class = "rounded thumbnail" th:alt="${orderItem.itemName}">
+          </div>
+          <div class="align-self-center ms-3 mt-3 w-75">
+            <span th:text="${orderItem.itemName}" class="fs24 font-weight-bold"></span>
+            <div class="fs18 font-weight-light">
+              <span th:text="${{orderItem.orderPrice}} +'원'"></span>
+              <span th:text="${orderItem.count} +'개'"></span>
+              <a th:href="@{/review/{itemId}/new(itemId=${orderItem.itemId})}">리뷰 작성</a>
+              <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
+                <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문취소</button>
+              </th:block>
+              <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
+                <h4>(취소 완료)</h4>
+              </th:block>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:with="start=${(orders.number / maxPage) * maxPage + 1},
+    end=(${(orders.totalPages == 0) ? 1 : (start + (maxPage - 1) < orders.totalPages ? start + (maxPage - 1) : orders.totalPages)})">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${orders.number eq 0} ? 'disabled' : ''">
+          <a th:href="@{'/orders/' + ${orders.number - 1}}" aria-label='Previous' class="page-link">
+            <span aria-hidden='true'>&lt</span>
+          </a>
+        </li>
+        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${orders.number eq page - 1} ? 'active' : ''">
+          <a th:href="@{'/orders/' + ${page - 1}}" th:inline="text" class="page-link">[[${page}]]</a>
+        </li>
+        <li class="page-item" th:classappend="${orders.number + 1 ge orders.totalPages} ? 'disabled' : ''">
+          <a th:href="@{'/orders/' + ${orders.number + 1}}" aria-label='Next' class="page-link">
+            <span aria-hidden='true'>&gt</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </form>
+</div>
+
+</html>

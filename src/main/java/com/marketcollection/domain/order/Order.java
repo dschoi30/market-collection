@@ -44,7 +44,7 @@ public class Order extends BaseEntity {
                         member.getAddress().getAddress(),
                         member.getAddress().getDetailAddress()))
                 .orderItems(orderItems)
-                .orderStatus(OrderStatus.READY)
+                .orderStatus(OrderStatus.ORDERED)
                 .build();
     }
 
