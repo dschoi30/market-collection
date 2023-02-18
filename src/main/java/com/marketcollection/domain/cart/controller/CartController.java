@@ -4,7 +4,6 @@ import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
 import com.marketcollection.domain.cart.dto.CartItemDto;
 import com.marketcollection.domain.cart.dto.CartRequestDto;
-import com.marketcollection.domain.cart.repository.CartItemRepository;
 import com.marketcollection.domain.cart.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,10 +43,23 @@ public class CartController {
         return "cart/cart";
     }
 
+    @PatchMapping("/cart/{cartItemId}")
+    public @ResponseBody ResponseEntity updateCartItem(@LoginUser SessionUser user, @PathVariable("cartItemId") Long cartItemId, int count) {
+        if(count <= 0) {
+            return new ResponseEntity<String>("상품을 최소 1개 이상 담아야 합니다.", HttpStatus.FORBIDDEN);
+        } else if(!cartService.validateCartItem(user.getEmail(), cartItemId)) {
+            return new ResponseEntity<String>("수정 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        cartService.updateCartItem(cartItemId, count);
+
+        return new ResponseEntity<Long>(cartItemId, HttpStatus.OK);
+    }
+
     @DeleteMapping("/cart/{cartItemId}")
     public @ResponseBody ResponseEntity deleteCartItem(@LoginUser SessionUser user, @PathVariable("cartItemId") Long cartItemId) {
         if(!cartService.validateCartItem(user.getEmail(), cartItemId)) {
-            return new ResponseEntity<String>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("삭제 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
         };
         cartService.deleteCartItem(cartItemId);
 

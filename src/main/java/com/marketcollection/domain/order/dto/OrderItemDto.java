@@ -19,7 +19,7 @@ public class OrderItemDto {
     public OrderItemDto(Long itemId, String itemName, int salePrice, int count) {
         this.itemId = itemId;
         this.itemName = itemName;
-        this.orderPrice = salePrice;
+        this.orderPrice = salePrice * count;
         this.count = count;
     }
 

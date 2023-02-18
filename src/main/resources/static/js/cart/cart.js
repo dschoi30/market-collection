@@ -6,18 +6,19 @@ $(document).ready(function() {
 
 // 장바구니 상품 수량 변경
 function changeCount(obj) {
-    const count = obj.value;
     const cartItemId = obj.dataset.id;
-    const price = $("#price_" + cartItemId).data("price");
+    const price = obj.dataset.price;
+    const count = obj.value;
     const totalPrice = count * price;
-    $("#totalPrice_" + cartItemId).html(totalPrice + "원");
+    $("#count").val(count);
+    $("#totalPrice").html(totalPrice.toLocaleString('en-US') + "원");
     getTotalOrderPrice();
     updateCartItemCount(cartItemId, count);
 }
 
 function updateCartItemCount(cartItemId, count) {
 
-    const url = "/cartItem/" + cartItemId + "?count=" + count;
+    const url = "/cart/" + cartItemId + "?count=" + count;
 
     $.ajax({
         url: url,
@@ -35,22 +36,18 @@ function updateCartItemCount(cartItemId, count) {
 
 function getTotalOrderPrice() {
     let totalOrderPrice = 0;
-    $("input[name=cartCheckBox]:checked").each(function () {
-        const cartItemId = $(this).val();
-        const price = $("#price_" + cartItemId).attr("data-price");
-        const count = $("#count_" + cartItemId).val();
-        totalOrderPrice += price * count;
-    });
 
-    $("#totalOrderPrice").html(totalOrderPrice + '원');
+    $(".cart-items").each(function(index, data) {
+        if ($(data).find("#checkBox").is(":checked") === true) {
+            let price = $(data).find("#price").val();
+            let count = $(data).find("#count").val();
+            totalOrderPrice += price * count;
+        }
+    });
+    $("#totalOrderPrice").html(totalOrderPrice.toLocaleString('en-US') + '원');
 }
 
 function allChecked() {
-    /*
-                $("#checkAll").click(function(){
-                    $('input:checkbox').not(this).prop('checked', this.checked);
-                });
-    */
     if($("#checkAll").prop("checked")) {
         $("input[name=cartCheckBox]").prop("checked", true);
     } else {
@@ -59,25 +56,24 @@ function allChecked() {
     getTotalOrderPrice();
 }
 
-function orderInfo() {
+function setOrderInfo() {
     let orderInfo = "";
-    let cartItems = $(".cart-items");
-    for(let i = 0; i < cartItems.length; i++) {
-        let isSelected = $(cartItems[i]).find("#checkBox").is(":checked");
-        if(isSelected) {
-            let itemId = $(cartItems[i]).find("#itemId").val();
-            let count = $(cartItems[i]).find("#count").val();
-            orderInfo += "<input type='number' name='orderItemRequestDtos[" + i + "].itemId' value='" + itemId + "'>";
-            orderInfo += "<input type='number' name='orderItemRequestDtos[" + i + "].count' value='"+ count + "'>";
-            console.log(orderInfo);
+    let no = 0;
+    $(".cart-items").each(function(index, data) {
+        if($(data).find("#checkBox").is(":checked") === true) {
+            let itemId = $(data).find("#itemId").val();
+            let count = $(data).find("#count").val();
+            orderInfo += "<input type='number' name='orderItemRequestDtos[" + no + "].itemId' value='" + itemId + "'>";
+            orderInfo += "<input type='number' name='orderItemRequestDtos[" + no + "].count' value='"+ count + "'>";
+            no += 1;
         }
-    }
+    })
     return orderInfo;
 }
 
 function order() {
     let form = $("<form action='/order' method='post'>" +
-        orderInfo() +
+        setOrderInfo() +
         "</form> ");
     $("body").append(form);
     form.submit();

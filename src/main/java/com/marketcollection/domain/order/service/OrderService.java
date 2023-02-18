@@ -75,7 +75,7 @@ public class OrderService {
         }
         orderRepository.save(order);
 
-        cartService.removeCartItems(member.getId(), orderItems);
+        cartService.deleteCartItemsAfterOrder(member.getId(), orderItems);
         return order.getId();
     }
 
