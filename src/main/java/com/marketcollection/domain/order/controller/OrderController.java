@@ -29,10 +29,18 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/order")
+    @PostMapping("/order/direct")
     public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
 
-        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, true);
+        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "Y");
+        model.addAttribute("orderDto", orderDto);
+
+        return "order/order";
+    }
+    @PostMapping("/order")
+    public String setOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
+
+        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "N");
         model.addAttribute("orderDto", orderDto);
 
         return "order/order";
@@ -40,7 +48,7 @@ public class OrderController {
 
     @PostMapping("/order/checkout")
     public String order(@LoginUser SessionUser user, @ModelAttribute OrderDto orderDto) {
-
+        System.out.println("direct===" + orderDto.getDirectOrderYn());
         Long orderId = orderService.order(user.getEmail(), orderDto);
 
         return "redirect:/";
@@ -50,13 +58,12 @@ public class OrderController {
     public String getOrderHistory(Model model, @LoginUser SessionUser user,
                                   OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
 
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 3);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
         Page<OrderHistoryDto> orders = orderService.getOrderHistory(user.getEmail(), orderSearchDto, pageable);
 
-        model.addAttribute("page", pageable.getPageNumber());
-        model.addAttribute("maxPage", 5);
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearchDto", orderSearchDto);
+        model.addAttribute("maxPage", 5);
 
         return "order/orderHistory";
     }
@@ -65,13 +72,12 @@ public class OrderController {
     public String getAdminOrderList(Model model,
                                     OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
 
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 3);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
         Page<AdminOrderDto> orders = orderService.getAdminOrderList(orderSearchDto, pageable);
 
-        model.addAttribute("page", pageable.getPageNumber());
-        model.addAttribute("maxPage", 5);
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearchDto", orderSearchDto);
+        model.addAttribute("maxPage", 5);
 
         return "order/adminOrderList";
     }

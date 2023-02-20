@@ -49,7 +49,7 @@
                 }
 
                 $("#btn-order").on("click", function() {
-                    let form = $("<form action='/order' method='post'>" +
+                    let form = $("<form action='/order/direct' method='post'>" +
                         order() +
                         "</form> ");
                     $("body").append(form);

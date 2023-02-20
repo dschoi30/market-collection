@@ -36,13 +36,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public List<Order> findOrders(Long memberId, OrderSearchDto orderSearchDto) {
+    public List<Order> findOrders(Long memberId, OrderSearchDto orderSearchDto, Pageable pageable) {
         return queryFactory
                 .selectFrom(order)
                 .where(
                         order.member.id.eq(memberId),
                         regDatesAfter(orderSearchDto.getSearchDateType()))
                 .orderBy(order.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
     }
 
@@ -58,12 +60,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public List<Order> findAllOrders(OrderSearchDto orderSearchDto) {
+    public List<Order> findAllOrders(OrderSearchDto orderSearchDto, Pageable pageable) {
         return queryFactory
                 .selectFrom(order)
                 .where(
                         regDatesAfter(orderSearchDto.getSearchDateType()))
                 .orderBy(order.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
     }
 

@@ -75,12 +75,12 @@
       const phoneNumber = $("#phoneNumber").val();
       const address = $("#address").val();
       const detailAddress = $("#detailAddress").val();
-      const isDirectOrder = $("#isDirectOrder").val();
+      const directOrderYn = $("#directOrderYn").val();
       orderInfo += "<input type='number' name='phoneNumber' value='" + phoneNumber + "'>";
       orderInfo += "<input type='number' name='zipCode' value='" + zipCode + "'>";
       orderInfo += "<input type='text' name='address' value='" + address + "'>";
       orderInfo += "<input type='text' name='detailAddress' value='" + detailAddress + "'>";
-      orderInfo += "<input type='text' name='isDirectOrder' value='" + isDirectOrder + "'>";
+      orderInfo += "<input type='text' name='directOrderYn' value='" + directOrderYn + "'>";
       console.log(orderInfo);
       return orderInfo;
     }
@@ -98,7 +98,7 @@
 <div layout:fragment="content" class="mg20 mgt-30">
 
   <th:block th:object="${orderDto}">
-    <input type="hidden" id="isDirectOrder" th:value="${orderDto.isDirectOrder}">
+    <input type="hidden" id="directOrderYn" th:value="${orderDto.directOrderYn}">
     <p class="h2 mgb-30 text-center">
       주문서
     </p>
