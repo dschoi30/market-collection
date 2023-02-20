@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/adminLayout}">
 
 <th:block layout:fragment="css">
   <style>
@@ -16,8 +16,8 @@
       width: auto;
     }
     .thumbnail {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
     }
   </style>
 </th:block>
@@ -67,7 +67,7 @@
 <div layout:fragment="content">
   <form th:action="@{'/orders/'}" method="get" th:object="${orderSearchDto}">
     <div class="form-inline">
-      <span class="fs-4 mgb-30">주문 내역</span>
+      <span class="fs-4 mgb-30">주문 관리</span>
       <select th:field="*{searchDateType}" class="form-select search-bar">
         <option value="3m">3개월</option>
         <option value="6m">6개월</option>

@@ -60,7 +60,6 @@ public class OrderService {
     public Long order(String memberId, OrderDto orderDto) {
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         member.updateOrderInfo(orderDto.getPhoneNumber(), orderDto.getZipCode(), orderDto.getAddress(), orderDto.getDetailAddress());
-
         List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -77,7 +76,7 @@ public class OrderService {
         }
         orderRepository.save(order);
 
-        if(orderDto.isDirectOrder()) {
+        if(!orderDto.isDirectOrder()) {
             cartService.deleteCartItemsAfterOrder(member.getId(), orderItems);
         }
         return order.getId();
@@ -115,6 +114,7 @@ public class OrderService {
         order.cancelOrder();
     }
 
+    @Transactional(readOnly = true)
     public Page<AdminOrderDto> getAdminOrderList(OrderSearchDto orderSearchDto, Pageable pageable) {
         List<Order> allOrders = orderRepository.findAllOrders(orderSearchDto);
         Long total = orderRepository.countAllOrders(orderSearchDto);

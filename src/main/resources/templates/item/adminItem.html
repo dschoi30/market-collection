@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/adminLayout}">
 
 <th:block layout:fragment="css">
   <style>
@@ -43,6 +43,7 @@
 <div layout:fragment="content">
   <form th:action="@{'/admin/items/'}" method="get" th:object="${itemSearchDto}">
     <div class="form-inline">
+      <span class="fs-4 mgb-30">상품 관리</span>
       <select th:field="*{orderBy}" class="form-select search-bar">
         <option value="">정렬기준</option>
         <option value="id">상품번호</option>
@@ -96,7 +97,7 @@
         <td th:text="${#numbers.formatInteger(item.hit, 1, 'COMMA')}"></td>
         <td th:text="${#numbers.formatInteger(item.salesCount, 1, 'COMMA')}"></td>
         <td th:text="${#numbers.formatInteger(item.stockQuantity, 1, 'COMMA')}"></td>
-        <td th:text="${item.itemSaleStatus}"></td>
+        <td th:text="${item.itemSaleStatus.status}"></td>
         <td th:text="${item.createdBy}"></td>
         <td th:text="${item.createdDate}"></td>
       </tr>
