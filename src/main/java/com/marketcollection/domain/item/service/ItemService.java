@@ -37,6 +37,7 @@ public class ItemService {
             if(i == 0) {
                 ItemImage itemImage = itemImageService.saveThumbnail(itemImageDto, itemImageFiles.get(i));
                 itemImage.setRepImage();
+                item.addRepImageUrl(itemImage.getItemImageUrl());
             } else {
                 itemImageService.save(itemImageDto, itemImageFiles.get(i));
             }

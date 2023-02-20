@@ -32,7 +32,7 @@ public class OrderController {
     @PostMapping("/order")
     public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
 
-        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto);
+        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, true);
         model.addAttribute("orderDto", orderDto);
 
         return "order/order";

@@ -37,10 +37,11 @@ public class OrderService {
     private final CartService cartService;
     private final ItemImageRepository itemImageRepository;
 
-    public OrderDto setOrderInfo(String memberId, OrderRequestDto orderRequestDto) {
+    public OrderDto setOrderInfo(String memberId, OrderRequestDto orderRequestDto, boolean isDirectOrder) {
         OrderDto orderDto = new OrderDto();
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         orderDto.setMemberInfo(member);
+        orderDto.setDirectOrder(isDirectOrder);
 
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
         List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
@@ -76,7 +77,9 @@ public class OrderService {
         }
         orderRepository.save(order);
 
-        cartService.deleteCartItemsAfterOrder(member.getId(), orderItems);
+        if(orderDto.isDirectOrder()) {
+            cartService.deleteCartItemsAfterOrder(member.getId(), orderItems);
+        }
         return order.getId();
     }
 
@@ -91,8 +94,7 @@ public class OrderService {
             OrderHistoryDto orderHistoryDto = new OrderHistoryDto(order);
             List<OrderItem> orderItems = order.getOrderItems();
             for (OrderItem orderItem : orderItems) {
-                String itemImageUrl = itemImageRepository.findByItemIdAndRepImageIsTrue(orderItem.getItem().getId(), true);
-                OrderItemDto orderItemDto = new OrderItemDto(orderItem, itemImageUrl);
+                OrderItemDto orderItemDto = new OrderItemDto(orderItem);
                 orderHistoryDto.setOrderItemDtos(List.of(orderItemDto));
             }
             orderHistoryDtos.add(orderHistoryDto);
@@ -124,9 +126,8 @@ public class OrderService {
             Member member = memberRepository.findById(order.getMember().getId()).orElseThrow(EntityNotFoundException::new);
             adminOrderDto.addMemberInfo(member.getEmail());
             List<OrderItem> orderItems = order.getOrderItems();
-            adminOrderDto.addItemInfo(orderItems.get(0).getItem().getItemName(), orderItems.size(), order.getTotalOrderPrice());
-            String imageUrl = itemImageRepository.findByItemIdAndRepImageIsTrue(orderItems.get(0).getItem().getId(), true);
-            adminOrderDto.setImageUrl(imageUrl);
+            adminOrderDto.addItemInfo(orderItems.get(0).getItem().getRepImageUrl(),
+                    orderItems.get(0).getItem().getItemName(), orderItems.size(), order.getTotalOrderPrice());
             adminOrderDtos.add(adminOrderDto);
         }
 

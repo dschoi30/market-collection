@@ -114,6 +114,7 @@
           <tr th:each="orderItem, status: ${orderDto.orderItemDtos}" class="order-items">
             <input type="hidden" th:hidden="${orderItem.itemId}" th:value="${orderItem.itemId}" id="itemId">
             <input type="hidden" th:hidden="${orderItem.count}" th:value="${orderItem.count}" id="count">
+            <td th:text="${orderItem.imageUrl}"></td>
             <td th:text="${orderItem.itemName}"></td>
             <td th:text="${orderItem.count} + '개'" ></td>
             <td th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} + '원'" class="text-end"></td>

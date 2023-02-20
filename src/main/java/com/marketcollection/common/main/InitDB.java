@@ -50,6 +50,7 @@ public class InitDB {
                         .stockQuantity(10000)
                         .description("너무 맛있어요")
                         .categoryId(1L)
+                        .repImageUrl("/image/item/grape1.jpg")
                         .itemSaleStatus(ItemSaleStatus.ON_SALE)
                         .salesCount((int)(Math.random() * 10000))
                         .hit((int)(Math.random() * 10000))

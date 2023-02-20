@@ -23,11 +23,11 @@ public class OrderItemDto {
         this.count = count;
     }
 
-    public OrderItemDto(OrderItem orderItem, String itemImageUrl) {
+    public OrderItemDto(OrderItem orderItem) {
         this.itemId = orderItem.getItem().getId();
         this.itemName = orderItem.getItem().getItemName();
         this.count = orderItem.getCount();
         this.orderPrice = orderItem.getOrderPrice();
-        this.imageUrl = itemImageUrl;
+        this.imageUrl = orderItem.getRepImageUrl();
     }
 }

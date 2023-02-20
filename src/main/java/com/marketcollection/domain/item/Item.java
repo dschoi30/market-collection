@@ -27,7 +27,7 @@ public class Item extends BaseEntity {
     private int stockQuantity;
     private String description;
     private Long categoryId;
-
+    private String repImageUrl;
     private int salesCount;
     private int hit;
     private ItemSaleStatus itemSaleStatus;
@@ -37,13 +37,14 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
     @Builder
-    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Long categoryId, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
+    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Long categoryId, String repImageUrl, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
         this.stockQuantity = stockQuantity;
         this.description = description;
         this.categoryId = categoryId;
+        this.repImageUrl = repImageUrl;
         this.salesCount = salesCount;
         this.hit = hit;
         this.itemSaleStatus = itemSaleStatus;
@@ -76,5 +77,9 @@ public class Item extends BaseEntity {
 
     public void restoreStock(int count) {
         this.stockQuantity += count;
+    }
+
+    public void addRepImageUrl(String imageUrl) {
+        this.repImageUrl = imageUrl;
     }
 }

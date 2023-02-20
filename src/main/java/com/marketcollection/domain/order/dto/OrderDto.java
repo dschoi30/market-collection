@@ -18,6 +18,7 @@ public class OrderDto {
     private String address;
     private String detailAddress;
     private List<OrderItemDto> orderItemDtos;
+    private boolean isDirectOrder;
 
     public void setMemberInfo(Member member) {
         this.memberName = member.getMemberName();

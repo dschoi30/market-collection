@@ -5,6 +5,9 @@
 
 <th:block layout:fragment="css">
   <style>
+    td {
+      vertical-align: middle;
+    }
     .mgb-30 {
       margin-bottom: 30px;
     }
@@ -86,7 +89,7 @@
       <tr th:each="order : ${orders.getContent()}">
           <td th:text="${order.orderId}"></td>
           <td th:text="${order.orderDate}"></td>
-          <td><img th:src="${order.imageUrl}" class="rounded thumbnail"></td>
+          <td><img th:src="${order.repImageUrl}" class="rounded thumbnail"></td>
           <td th:text="${order.repItemName}"></td>
           <td th:text="${#numbers.formatInteger(order.orderPrice, 1, 'COMMA')} +'원'"></td>
           <td th:text="${order.orderStatus.status}"></td>
