@@ -13,8 +13,8 @@
       width: auto;
     }
     .thumbnail {
-      width: 80px;
-      height: 80px;
+      width: 50px;
+      height: 50px;
     }
   </style>
 </th:block>
@@ -74,47 +74,39 @@
       <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
     </div>
     <hr>
-    <div th:each="order : ${orders.getContent()}">
-
-      <div class="d-flex mb-3 align-self-center">
-        <span class="fs-5" th:text="${order.orderDate} + ' 주문'"></span>
-      </div>
-      <div class="card d-flex mb-3">
-        <div th:each="orderItem : ${order.orderItemDtos}" class="d-flex mb-3">
-          <div class="repImgDiv ms-3 mt-3">
-            <img th:src="${orderItem.imageUrl}" class = "rounded thumbnail" th:alt="${orderItem.itemName}">
-          </div>
-          <div class="align-self-center ms-3 mt-3 w-75">
-            <span th:text="${orderItem.itemName}" class="fs24 font-weight-bold"></span>
-            <div class="fs18 font-weight-light">
-              <span th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} +'원'"></span>
-              <span th:text="${orderItem.count} +'개'"></span>
-              <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
-                <a th:href="@{/review/{itemId}/new(itemId=${orderItem.itemId})}">리뷰 작성</a>
-                <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문취소</button>
-              </th:block>
-              <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
-                <span>(취소 완료)</span>
-              </th:block>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <table class="table">
+      <tr>
+        <td>주문번호</td>
+        <td>주문일</td>
+        <td colspan="2" class="text-center">주문품목</td>
+        <td>주문금액</td>
+        <td>주문상태</td>
+        <td>주문자</td>
+      </tr>
+      <tr th:each="order : ${orders.getContent()}">
+          <td th:text="${order.orderId}"></td>
+          <td th:text="${order.orderDate}"></td>
+          <td><img th:src="${order.imageUrl}" class="rounded thumbnail"></td>
+          <td th:text="${order.repItemName}"></td>
+          <td th:text="${#numbers.formatInteger(order.orderPrice, 1, 'COMMA')} +'원'"></td>
+          <td th:text="${order.orderStatus.status}"></td>
+          <td th:text="${order.memberId}"></td>
+      </tr>
+    </table>
 
     <div th:with="start=${(orders.number / maxPage) * maxPage + 1},
     end=(${(orders.totalPages == 0) ? 1 : (start + (maxPage - 1) < orders.totalPages ? start + (maxPage - 1) : orders.totalPages)})">
       <ul class="pagination justify-content-center">
         <li class="page-item" th:classappend="${orders.number eq 0} ? 'disabled' : ''">
-          <a th:href="@{'/orders/' + ${orders.number - 1}}" aria-label='Previous' class="page-link">
+          <a th:href="@{'/admin/orders/' + ${orders.number - 1}}" aria-label='Previous' class="page-link">
             <span aria-hidden='true'>&lt</span>
           </a>
         </li>
         <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${orders.number eq page - 1} ? 'active' : ''">
-          <a th:href="@{'/orders/' + ${page - 1}}" th:inline="text" class="page-link">[[${page}]]</a>
+          <a th:href="@{'/admin/orders/' + ${page - 1}}" th:inline="text" class="page-link">[[${page}]]</a>
         </li>
         <li class="page-item" th:classappend="${orders.number + 1 ge orders.totalPages} ? 'disabled' : ''">
-          <a th:href="@{'/orders/' + ${orders.number + 1}}" aria-label='Next' class="page-link">
+          <a th:href="@{'/admin/orders/' + ${orders.number + 1}}" aria-label='Next' class="page-link">
             <span aria-hidden='true'>&gt</span>
           </a>
         </li>

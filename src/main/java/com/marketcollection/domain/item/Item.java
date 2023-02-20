@@ -1,5 +1,6 @@
 package com.marketcollection.domain.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.order.exception.OutOfStockException;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 @NoArgsConstructor
@@ -28,6 +31,10 @@ public class Item extends BaseEntity {
     private int salesCount;
     private int hit;
     private ItemSaleStatus itemSaleStatus;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "item")
+    private List<ItemImage> itemImages = new ArrayList<>();
 
     @Builder
     public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Long categoryId, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
@@ -65,5 +72,9 @@ public class Item extends BaseEntity {
         if(restStock < 0) {
             throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
         }
+    }
+
+    public void restoreStock(int count) {
+        this.stockQuantity += count;
     }
 }

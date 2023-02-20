@@ -67,11 +67,11 @@ public class CartService {
 
     public void deleteCartItemsAfterOrder(Long memberId, List<OrderItem> orderItems) {
 
-        for (OrderItem orderItem : orderItems) {
-            Item item = orderItem.getItem();
-            CartItem cartItem = cartItemRepository.findByMemberIdAndItemId(memberId, item.getId());
-            cartItemRepository.delete(cartItem);
-        }
+//        for (OrderItem orderItem : orderItems) {
+//            Item item = orderItem.getItem();
+//            CartItem cartItem = cartItemRepository.findByMemberIdAndItemId(memberId, item.getId());
+//            cartItemRepository.delete(cartItem);
+//        }
     }
 
     public boolean validateCartItem(String email, Long cartItemId) {

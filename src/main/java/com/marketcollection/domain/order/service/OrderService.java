@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
@@ -79,6 +80,7 @@ public class OrderService {
         return order.getId();
     }
 
+    @Transactional(readOnly = true)
     public Page<OrderHistoryDto> getOrderHistory(String memberId, OrderSearchDto orderSearchDto, Pageable pageable) {
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         List<Order> orders = orderRepository.findOrders(member.getId(), orderSearchDto);
@@ -89,12 +91,45 @@ public class OrderService {
             OrderHistoryDto orderHistoryDto = new OrderHistoryDto(order);
             List<OrderItem> orderItems = order.getOrderItems();
             for (OrderItem orderItem : orderItems) {
-                ItemImage itemImage = itemImageRepository.findByItemIdAndRepImageIsTrue(orderItem.getItem().getId(), true);
-                OrderItemDto orderItemDto = new OrderItemDto(orderItem, itemImage.getItemImageUrl());
+                String itemImageUrl = itemImageRepository.findByItemIdAndRepImageIsTrue(orderItem.getItem().getId(), true);
+                OrderItemDto orderItemDto = new OrderItemDto(orderItem, itemImageUrl);
                 orderHistoryDto.setOrderItemDtos(List.of(orderItemDto));
             }
             orderHistoryDtos.add(orderHistoryDto);
         }
         return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, total);
+    }
+
+    public boolean validateOrder(Long orderId, String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        Member savedMember = order.getMember();
+
+        return StringUtils.equals(member, savedMember);
+    }
+
+    public void cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        order.cancelOrder();
+    }
+
+    public Page<AdminOrderDto> getAdminOrderList(OrderSearchDto orderSearchDto, Pageable pageable) {
+        List<Order> allOrders = orderRepository.findAllOrders(orderSearchDto);
+        Long total = orderRepository.countAllOrders(orderSearchDto);
+
+        List<AdminOrderDto> adminOrderDtos = new ArrayList<>();
+        for (Order order : allOrders) {
+            AdminOrderDto adminOrderDto = new AdminOrderDto();
+            adminOrderDto.addOrderInfo(order);
+            Member member = memberRepository.findById(order.getMember().getId()).orElseThrow(EntityNotFoundException::new);
+            adminOrderDto.addMemberInfo(member.getEmail());
+            List<OrderItem> orderItems = order.getOrderItems();
+            adminOrderDto.addItemInfo(orderItems.get(0).getItem().getItemName(), orderItems.size(), order.getTotalOrderPrice());
+            String imageUrl = itemImageRepository.findByItemIdAndRepImageIsTrue(orderItems.get(0).getItem().getId(), true);
+            adminOrderDto.setImageUrl(imageUrl);
+            adminOrderDtos.add(adminOrderDto);
+        }
+
+        return new PageImpl<AdminOrderDto>(adminOrderDtos, pageable, total);
     }
 }

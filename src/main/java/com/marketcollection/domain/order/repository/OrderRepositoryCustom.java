@@ -12,4 +12,8 @@ public interface OrderRepositoryCustom {
     List<Order> findOrders(@Param("memberId") Long memberId, @Param("orderSearchDto") OrderSearchDto orderSearchDto);
 
     Long countOrders(@Param("memberId") Long memberId, @Param("orderSearchDto") OrderSearchDto orderSearchDto);
+
+    List<Order> findAllOrders(@Param("orderSearchDto") OrderSearchDto orderSearchDto);
+
+    Long countAllOrders(@Param("orderSearchDto") OrderSearchDto orderSearchDto);
 }

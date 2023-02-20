@@ -31,13 +31,13 @@ public class OAuthAttributes {
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
 
         if("naver".equals(registrationId)) {
-            return ofNaver("id", attributes);
+            return ofNaver("email", attributes);
         }
         else if("kakao".equals(registrationId)) {
-            return ofKakao("id", attributes);
+            return ofKakao("email", attributes);
         }
 
-        return ofGoogle(userNameAttributeName, attributes);
+        return ofGoogle("email", attributes);
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
