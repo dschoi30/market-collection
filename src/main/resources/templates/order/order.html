@@ -60,48 +60,45 @@
       }).open();
     }
 
-    $(function() {
-      // 주문 요청 폼생성 ====================
-      // 선택된 input dom을 만들어 반환
-      function checkout() {
-        const orderItems = $(".order-items");
-        let orderInfo = "";
+    function setOrderInfo() {
+      const orderItems = $(".order-items");
+      let orderInfo = "";
 
-        // 테이블의 형태에 따라서 시작 인덱스(i)의 값이 유동적
-        for (let i = 0; i < orderItems.length; i++) {
-          const itemId = $(orderItems[i]).find("#itemId").val();
-          const count = $(orderItems[i]).find("#count").val();
-          orderInfo += "<input type='number' name='orderItemDtos[" + i + "].itemId' value='" + itemId +"'>";
-          orderInfo += "<input type='number' name='orderItemDtos[" + i + "].count' value='" + count + "'>";
-        }
-        const zipCode = $("#zipCode").val();
-        const phoneNumber = $("#phoneNumber").val();
-        const address = $("#address").val();
-        const detailAddress = $("#detailAddress").val();
-        orderInfo += "<input type='number' name='phoneNumber' value='" + phoneNumber + "'>";
-        orderInfo += "<input type='number' name='zipCode' value='" + zipCode + "'>";
-        orderInfo += "<input type='text' name='address' value='" + address + "'>";
-        orderInfo += "<input type='text' name='detailAddress' value='" + detailAddress + "'>";
-        console.log(orderInfo);
-        return orderInfo;
+      // 테이블의 형태에 따라서 시작 인덱스(i)의 값이 유동적
+      for (let i = 0; i < orderItems.length; i++) {
+        const itemId = $(orderItems[i]).find("#itemId").val();
+        const count = $(orderItems[i]).find("#count").val();
+        orderInfo += "<input type='number' name='orderItemDtos[" + i + "].itemId' value='" + itemId +"'>";
+        orderInfo += "<input type='number' name='orderItemDtos[" + i + "].count' value='" + count + "'>";
       }
+      const zipCode = $("#zipCode").val();
+      const phoneNumber = $("#phoneNumber").val();
+      const address = $("#address").val();
+      const detailAddress = $("#detailAddress").val();
+      const directOrderYn = $("#directOrderYn").val();
+      orderInfo += "<input type='number' name='phoneNumber' value='" + phoneNumber + "'>";
+      orderInfo += "<input type='number' name='zipCode' value='" + zipCode + "'>";
+      orderInfo += "<input type='text' name='address' value='" + address + "'>";
+      orderInfo += "<input type='text' name='detailAddress' value='" + detailAddress + "'>";
+      orderInfo += "<input type='text' name='directOrderYn' value='" + directOrderYn + "'>";
+      console.log(orderInfo);
+      return orderInfo;
+    }
 
-      // form 생성
-      $("#btn-checkout").on("click", function () {
-        const form = $("<form action='/order/checkout' method='post'>" +
-                checkout() +
-                "</form> ");
-        $("body").append(form);
-        form.submit();
-      });
-    });
+    function order() {
+      const form = $("<form action='/order/checkout' method='post'>" +
+              setOrderInfo() +
+              "</form> ");
+      $("body").append(form);
+      form.submit();
+    }
   </script>
 </th:block>
 
 <div layout:fragment="content" class="mg20 mgt-30">
 
   <th:block th:object="${orderDto}">
-
+    <input type="hidden" id="directOrderYn" th:value="${orderDto.directOrderYn}">
     <p class="h2 mgb-30 text-center">
       주문서
     </p>
@@ -119,6 +116,7 @@
           <tr th:each="orderItem, status: ${orderDto.orderItemDtos}" class="order-items">
             <input type="hidden" th:hidden="${orderItem.itemId}" th:value="${orderItem.itemId}" id="itemId">
             <input type="hidden" th:hidden="${orderItem.count}" th:value="${orderItem.count}" id="count">
+            <td th:text="${orderItem.imageUrl}"></td>
             <td th:text="${orderItem.itemName}"></td>
             <td th:text="${orderItem.count} + '개'" ></td>
             <td th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} + '원'" class="text-end"></td>
@@ -166,7 +164,7 @@
       </div>
     </div>
 
-      <button class="btn btn-primary text-center" id="btn-checkout">저장</button>
+      <button class="btn btn-primary text-center" onclick="order()">저장</button>
 
   </th:block>
 

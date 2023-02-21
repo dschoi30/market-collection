@@ -49,7 +49,7 @@
                 }
 
                 $("#btn-order").on("click", function() {
-                    let form = $("<form action='/order' method='post'>" +
+                    let form = $("<form action='/order/direct' method='post'>" +
                         order() +
                         "</form> ");
                     $("body").append(form);
@@ -89,8 +89,8 @@
                 success: function() {
                     alert("상품을 장바구니에 담았습니다.");
                 },
-                error: function(error) {
-                    alert(error);
+                error: function(jqXHR, status, error) {
+                    alert(jqXHR.responseText);
                 }
             });
         }

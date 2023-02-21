@@ -17,7 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -41,9 +42,10 @@ public class ItemController {
     }
 
     @GetMapping("/items/{itemId}")
-    public String getItemDetail(Model model, @PathVariable("itemId") Long itemId) {
+    public String getItemDetail(Model model, @PathVariable("itemId") Long itemId,
+                                HttpServletRequest request, HttpServletResponse response) {
         try {
-            ItemDetailDto itemDetailDto = itemService.getItemDetail(itemId);
+            ItemDetailDto itemDetailDto = itemService.getItemDetail(itemId, request, response);
             model.addAttribute("item", itemDetailDto);
             model.addAttribute("orderRequestDto", new OrderRequestDto());
         } catch (EntityNotFoundException e) {

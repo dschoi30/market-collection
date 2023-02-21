@@ -22,13 +22,14 @@ public class OrderItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-
+    private String repImageUrl;
     private int orderPrice;
     private int count;
 
     public static OrderItem createOrderItem(Item item, int count) {
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
+                .repImageUrl(item.getRepImageUrl())
                 .orderPrice(item.getSalePrice())
                 .count(count)
                 .build();
@@ -38,5 +39,9 @@ public class OrderItem extends BaseEntity {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public void cancel() {
+        this.getItem().restoreStock(count);
     }
 }

@@ -65,7 +65,7 @@ public class CartService {
         return cartItemDtos;
     }
 
-    public void removeCartItems(Long memberId, List<OrderItem> orderItems) {
+    public void deleteCartItemsAfterOrder(Long memberId, List<OrderItem> orderItems) {
 
         for (OrderItem orderItem : orderItems) {
             Item item = orderItem.getItem();
@@ -74,14 +74,19 @@ public class CartService {
         }
     }
 
-    public void deleteCartItem(Long cartItemId) {
-        cartItemRepository.deleteById(cartItemId);
-    }
-
     public boolean validateCartItem(String email, Long cartItemId) {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);
         Member savedMember = cartItem.getCart().getMember();
         return StringUtils.equals(member.getEmail(), savedMember.getEmail());
+    }
+
+    public void updateCartItem(Long cartItemId, int count) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);
+        cartItem.updateCount(count);
+    }
+
+    public void deleteCartItem(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
     }
 }

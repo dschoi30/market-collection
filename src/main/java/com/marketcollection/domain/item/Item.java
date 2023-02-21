@@ -1,5 +1,6 @@
 package com.marketcollection.domain.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.order.exception.OutOfStockException;
@@ -9,6 +10,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 @NoArgsConstructor
@@ -24,19 +29,24 @@ public class Item extends BaseEntity {
     private int stockQuantity;
     private String description;
     private Long categoryId;
-
+    private String repImageUrl;
     private int salesCount;
     private int hit;
     private ItemSaleStatus itemSaleStatus;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "item")
+    private List<ItemImage> itemImages = new ArrayList<>();
+
     @Builder
-    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Long categoryId, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
+    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Long categoryId, String repImageUrl, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
         this.stockQuantity = stockQuantity;
         this.description = description;
         this.categoryId = categoryId;
+        this.repImageUrl = repImageUrl;
         this.salesCount = salesCount;
         this.hit = hit;
         this.itemSaleStatus = itemSaleStatus;
@@ -50,6 +60,10 @@ public class Item extends BaseEntity {
         this.description = itemFormDto.getDescription();
         this.categoryId = itemFormDto.getCategoryId();
         this.itemSaleStatus = itemFormDto.getItemSaleStatus();
+    }
+
+    public void addHit() {
+        this.hit++;
     }
 
     public void deductStock(int count) {
@@ -66,4 +80,17 @@ public class Item extends BaseEntity {
             throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
         }
     }
+
+    public void addSalesCount(int count) {
+        this.salesCount += count;
+    }
+
+    public void restoreStock(int count) {
+        this.stockQuantity += count;
+    }
+
+    public void addRepImageUrl(String imageUrl) {
+        this.repImageUrl = imageUrl;
+    }
+
 }
