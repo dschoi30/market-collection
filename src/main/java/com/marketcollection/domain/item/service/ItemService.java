@@ -81,20 +81,16 @@ public class ItemService {
 
     public List<ItemListDto> getRecentViewList(HttpServletRequest request) {
 
-        List<ItemListDto> itemListDtos = new ArrayList<>();
         Cookie cookie = findCookie(request.getCookies(), "hit");
         String hit = cookie.getValue();
         String[] cookieItemIds = hit.split("-");
 
-        for (int i = cookieItemIds.length - 1; i > 0; i--) {
+        List<Long> itemIds = new ArrayList<>();
+        for(int i = cookieItemIds.length - 1; i > 0; i--) {
             Long itemId = Long.parseLong(cookieItemIds[i]);
-            Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
-            ItemListDto itemListDto = new ItemListDto(item.getId(), item.getItemName(), item.getOriginalPrice(), item.getSalePrice(), item.getRepImageUrl());
-            itemListDtos.add(itemListDto);
-            if(itemListDtos.size() >= 5) { break; };
+            itemIds.add(itemId);
         }
-
-        return itemListDtos;
+        return itemRepository.findByIds(itemIds);
     }
 
     public boolean cookieExists(Long itemId, HttpServletRequest request, HttpServletResponse response) {

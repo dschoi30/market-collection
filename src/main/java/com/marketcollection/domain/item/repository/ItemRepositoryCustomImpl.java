@@ -148,4 +148,21 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
+
+    @Override
+    public List<ItemListDto> findByIds(List<Long> itemIds) {
+        QItem item = QItem.item;
+
+        return queryFactory
+                .select(new QItemListDto(
+                        item.id,
+                        item.itemName,
+                        item.originalPrice,
+                        item.salePrice,
+                        item.repImageUrl
+                ))
+                .from(item)
+                .where(item.id.in(itemIds))
+                .fetch();
+    }
 }
