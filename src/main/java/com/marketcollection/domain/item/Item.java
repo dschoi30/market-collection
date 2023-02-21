@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +62,10 @@ public class Item extends BaseEntity {
         this.itemSaleStatus = itemFormDto.getItemSaleStatus();
     }
 
+    public void addHit() {
+        this.hit++;
+    }
+
     public void deductStock(int count) {
         int restStock = this.stockQuantity - count;
         if(restStock < 0) {
@@ -75,6 +81,10 @@ public class Item extends BaseEntity {
         }
     }
 
+    public void addSalesCount(int count) {
+        this.salesCount += count;
+    }
+
     public void restoreStock(int count) {
         this.stockQuantity += count;
     }
@@ -82,4 +92,5 @@ public class Item extends BaseEntity {
     public void addRepImageUrl(String imageUrl) {
         this.repImageUrl = imageUrl;
     }
+
 }

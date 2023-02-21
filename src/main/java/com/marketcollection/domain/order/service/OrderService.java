@@ -67,7 +67,7 @@ public class OrderService {
         for (OrderItemDto orderItemDto : orderItemDtos) {
             Item item = itemRepository.findById(orderItemDto.getItemId()).orElseThrow(EntityNotFoundException::new);
             OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount());
-
+            item.addSalesCount(orderItemDto.getCount());
             orderItems.add(orderItem);
         }
 

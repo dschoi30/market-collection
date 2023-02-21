@@ -6,6 +6,7 @@ import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.repository.ItemImageRepository;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -52,7 +57,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public ItemDetailDto getItemDetail(Long itemId) {
+    public ItemDetailDto getItemDetail(Long itemId, HttpServletRequest request, HttpServletResponse response) {
         List<ItemImage> itemImages = itemImageRepository.findByItemIdOrderByIdAsc(itemId);
         List<ItemImageDto> itemImageDtos = new ArrayList<>();
         for(ItemImage itemImage : itemImages) {
@@ -61,10 +66,58 @@ public class ItemService {
         }
 
         Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
+
+        boolean cookieExists = cookieExists(itemId, request, response);
+        if(!cookieExists) {
+            item.addHit();
+        }
+
         ItemDetailDto itemDetailDto = ItemDetailDto.of(item);
         itemDetailDto.setItemImageDtos(itemImageDtos);
 
         return itemDetailDto;
+    }
+
+    public boolean cookieExists(Long itemId, HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie cookie = findCookie(request.getCookies(), "hit");
+        String hit = cookie.getValue();
+        boolean exist = false;
+
+        log.info("[[cookieName]]=" + cookie.getName());
+        log.info("[[cookieValue]]=" + cookie.getValue());
+        if(hit != null && hit.indexOf(itemId + "-") >= 0) {
+            exist = true;
+        }
+
+        if(!exist) {
+            hit += itemId + "-";
+            cookie.setValue(hit);
+            cookie.setMaxAge(60 * 60 * 24);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        }
+        return exist;
+    }
+
+    private Cookie findCookie(Cookie[] cookies, String cookieName) {
+        Cookie targetCookie = null;
+
+        if(cookies != null && cookies.length > 0) {
+            for (Cookie cookie : cookies) {
+                if(cookie.getName().equals(cookieName)) {
+                    targetCookie = cookie;
+                    break;
+                }
+            }
+        }
+
+        if(targetCookie == null) {
+            targetCookie = new Cookie(cookieName,"");
+            targetCookie.setPath("/");
+            targetCookie.setMaxAge(60 * 60 * 24);
+        }
+        return targetCookie;
     }
 
     @Transactional(readOnly = true)
