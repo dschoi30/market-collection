@@ -18,6 +18,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -76,6 +77,20 @@ public class ItemService {
         itemDetailDto.setItemImageDtos(itemImageDtos);
 
         return itemDetailDto;
+    }
+
+    public List<ItemListDto> getRecentViewList(HttpServletRequest request) {
+
+        Cookie cookie = findCookie(request.getCookies(), "hit");
+        String hit = cookie.getValue();
+        String[] cookieItemIds = hit.split("-");
+
+        List<Long> itemIds = new ArrayList<>();
+        for(int i = cookieItemIds.length - 1; i > 0; i--) {
+            Long itemId = Long.parseLong(cookieItemIds[i]);
+            itemIds.add(itemId);
+        }
+        return itemRepository.findByIds(itemIds);
     }
 
     public boolean cookieExists(Long itemId, HttpServletRequest request, HttpServletResponse response) {

@@ -5,8 +5,24 @@
 
 <th:block layout:fragment="css">
     <style>
+        .mgt-5 {
+            margin-top: 5px;
+        }
         .mgb-30 {
             margin-bottom: 30px;
+        }
+        .thumbnail {
+            width: 50px;
+            height: 50px;
+        }
+        .recent-view {
+            overflow: hidden;
+            width: 120px;
+            height: 100px;
+            position: fixed;
+            top: 20%;
+            right: 3%;
+            border: 1px solid #c1c3c5;
         }
     </style>
 </th:block>
@@ -31,6 +47,35 @@
                 </div>
             </div>
         </th:block>
+        <div th:if="${recentItems.size() > 0}" class="recent-view">
+            <div>최근 본 상품</div>
+            <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">
+                <div class="carousel-inner" th:each="recentItem, status: ${recentItems}">
+                    <div th:if="${status.index eq 0}">
+                        <div class="carousel-item active text-center">
+                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                            </a>
+                        </div>
+                    </div>
+                    <div th:unless="${status.index eq 0}">
+                        <div class="carousel-item text-center">
+                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div th:with="start=${(items.number / maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
