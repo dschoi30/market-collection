@@ -2,16 +2,15 @@ package com.marketcollection.domain.item.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.domain.item.Item;
-import com.marketcollection.domain.item.dto.ItemDetailDto;
-import com.marketcollection.domain.item.dto.ItemFormDto;
+import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.common.auth.dto.SessionUser;
-import com.marketcollection.domain.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.service.ItemService;
 import com.marketcollection.domain.order.dto.OrderRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -80,5 +79,11 @@ public class ItemController {
         return "item/itemForm";
     }
 
-
+    @GetMapping({"/main", "/main/{cursorItemId}"})
+    public String getItemList(Model model, @PathVariable(required = false) Long cursorItemId, Integer size) {
+        if(size == null) size = 100;
+        PageCursor<Item> itemCursorList = itemService.getItemCursorList(cursorItemId, PageRequest.of(0, size));
+        model.addAttribute("items", itemCursorList);
+        return "item/items";
+    }
 }

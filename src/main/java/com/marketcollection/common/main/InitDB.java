@@ -41,7 +41,7 @@ public class InitDB {
 
         public void dbInit1() {
 
-            for(int i = 0; i < 100; i++) {
+            for(int i = 1; i <= 10000; i++) {
 
                 Item item = Item.builder()
                         .itemName("향기가득 샤인머스캣_" + i)
