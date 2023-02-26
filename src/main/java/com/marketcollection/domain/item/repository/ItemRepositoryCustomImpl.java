@@ -69,7 +69,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         if (Objects.equals(itemSearchDto.getOrderBy(), "id"))
             return item.id.desc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "categoryId"))
-            return item.categoryId.asc();
+            return item.category.asc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "itemName"))
             return item.itemName.asc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "hit"))

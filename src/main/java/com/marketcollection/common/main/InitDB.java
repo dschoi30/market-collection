@@ -1,16 +1,9 @@
 package com.marketcollection.common.main;
 
-import com.marketcollection.common.entity.Address;
+import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.ItemSaleStatus;
-import com.marketcollection.domain.member.Member;
-import com.marketcollection.domain.member.MemberStatus;
-import com.marketcollection.domain.member.Role;
-import com.marketcollection.domain.member.SocialType;
-import com.marketcollection.domain.order.Order;
-import com.marketcollection.domain.order.OrderItem;
-import com.marketcollection.domain.order.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -18,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import java.util.Arrays;
-import java.util.List;
 
 @Profile("local")
 @RequiredArgsConstructor
@@ -49,11 +40,11 @@ public class InitDB {
                         .salePrice((int)(Math.random() * 10000) * 10)
                         .stockQuantity(10000)
                         .description("너무 맛있어요")
-                        .categoryId(1L)
+                        .category(Category.FRUIT_RICE)
                         .repImageUrl("/image/item/grape1.jpg")
-                        .itemSaleStatus(ItemSaleStatus.ON_SALE)
                         .salesCount((int)(Math.random() * 10000))
                         .hit((int)(Math.random() * 10000))
+                        .itemSaleStatus(ItemSaleStatus.ON_SALE)
                         .build();
                 em.persist(item);
 

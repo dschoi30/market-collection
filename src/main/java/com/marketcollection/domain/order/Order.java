@@ -34,6 +34,7 @@ public class Order extends BaseEntity {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     public static Order createOrder(Member member, List<OrderItem> orderItems) {

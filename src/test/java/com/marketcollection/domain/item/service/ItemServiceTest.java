@@ -1,5 +1,6 @@
 package com.marketcollection.domain.item.service;
 
+import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.ItemSaleStatus;
@@ -64,7 +65,7 @@ class ItemServiceTest {
         itemFormDto.setSalePrice(90);
         itemFormDto.setStockQuantity(100);
         itemFormDto.setDescription("description");
-        itemFormDto.setCategoryId(1L);
+        itemFormDto.setCategory(Category.FRUIT_RICE);
         itemFormDto.setItemSaleStatus(ItemSaleStatus.ON_SALE);
 
         List<MultipartFile> multipartFiles = createItemImageFiles();
