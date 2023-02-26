@@ -8,6 +8,7 @@ import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,5 +170,23 @@ public class ItemService {
             }
         }
         return item.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public PageCursor<Item> getItemCursorList(Long cursorItemId, Pageable pageable) {
+        final List<Item> items = findByCursorSize(cursorItemId, pageable);
+        final Long sizeOfLastItemId = items.isEmpty() ? null : items.get(items.size() - 1).getId();
+        return new PageCursor<>(items, hasNext(sizeOfLastItemId));
+    }
+
+    private List<Item> findByCursorSize(Long cursorItemId, Pageable pageable) {
+        return cursorItemId == null ?
+                itemRepository.findAllByOrderByIdDesc(pageable) :
+                itemRepository.findByIdLessThanOrderByIdDesc(cursorItemId, pageable);
+    }
+
+    private Boolean hasNext(Long id) {
+        if(id == null) return false;
+        return itemRepository.existsByIdLessThan(id);
     }
 }
