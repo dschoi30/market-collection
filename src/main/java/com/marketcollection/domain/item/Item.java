@@ -17,21 +17,34 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
+@Table(indexes = {@Index(name = "IDX_ITEM_CATEGORY", columnList = "category")})
 @Entity
 public class Item extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String itemName;
+
+    @Column(nullable = false)
     private int originalPrice;
+
+    @Column(nullable = false)
     private int salePrice;
+
+    @Column(nullable = false)
     private int stockQuantity;
+
+    @Column(nullable = false)
     private String description;
+
     @Enumerated(EnumType.STRING)
     private Category category;
+
     private String repImageUrl;
     private int salesCount;
     private int hit;
+
     @Enumerated(EnumType.STRING)
     private ItemSaleStatus itemSaleStatus;
 

@@ -89,7 +89,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     @Override
     public Page<ItemListDto> getItemListPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         QItem item = QItem.item;
-        QItemImage itemImage = QItemImage.itemImage;
 
         List<ItemListDto> content = queryFactory
                 .select(
@@ -98,13 +97,11 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                                 item.itemName,
                                 item.originalPrice,
                                 item.salePrice,
-                                itemImage.itemImageUrl
+                                item.repImageUrl
                         ))
-                .from(itemImage)
-                .join(itemImage.item, item)
+                .from(item)
                 .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE))
                 .where(itemNameLike(itemSearchDto.getSearchQuery()))
-                .where(itemImage.isRepImage.isTrue())
                 .orderBy(item.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -112,11 +109,9 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
         long total = queryFactory
                 .select(Wildcard.count)
-                .from(itemImage)
-                .join(itemImage.item, item)
+                .from(item)
                 .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE))
                 .where(itemNameLike(itemSearchDto.getSearchQuery()))
-                .where(itemImage.isRepImage.isTrue())
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total);
