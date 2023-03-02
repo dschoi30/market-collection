@@ -22,6 +22,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    // 헤더에 회원 정보 출력
     @ModelAttribute
     public void setMemberInfo(Model model, @LoginUser SessionUser user) {
         if(user != null) {
@@ -29,59 +30,61 @@ public class OrderController {
         }
     }
 
+    // 장바구니 미경유 주문 정보 생성
     @PostMapping("/order/direct")
     public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
-
         OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "Y");
         model.addAttribute("orderDto", orderDto);
 
         return "order/order";
     }
+
+    // 장바구니 경유 주문 정보 생성
     @PostMapping("/order")
     public String setOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
-
         OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "N");
         model.addAttribute("orderDto", orderDto);
 
         return "order/order";
     }
 
+    // 주문 처리
     @PostMapping("/order/checkout")
     public String order(@LoginUser SessionUser user, @ModelAttribute OrderDto orderDto) {
-        System.out.println("direct===" + orderDto.getDirectOrderYn());
         Long orderId = orderService.order(user.getEmail(), orderDto);
 
         return "redirect:/";
     }
 
+    // 내 주문 내역 조회
     @GetMapping({"/orders", "/orders/{page}"})
     public String getOrderHistory(Model model, @LoginUser SessionUser user,
                                   OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
-
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
         Page<OrderHistoryDto> orders = orderService.getOrderHistory(user.getEmail(), orderSearchDto, pageable);
 
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearchDto", orderSearchDto);
-        model.addAttribute("maxPage", 5);
+        model.addAttribute("maxPage", 10);
 
         return "order/orderHistory";
     }
 
+    // 관리자 주문 관리
     @GetMapping({"/admin/orders", "/admin/orders/{page}"})
     public String getAdminOrderList(Model model,
                                     OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
-
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
         Page<AdminOrderDto> orders = orderService.getAdminOrderList(orderSearchDto, pageable);
 
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearchDto", orderSearchDto);
-        model.addAttribute("maxPage", 5);
+        model.addAttribute("maxPage", 10);
 
         return "order/adminOrderList";
     }
 
+    // 주문 취소
     @PostMapping("/orders/{orderId}/cancel")
     public @ResponseBody ResponseEntity cancelOrder(@LoginUser SessionUser user, @PathVariable("orderId") Long orderId) {
         if(!orderService.validateOrder(orderId, user.getEmail())) {

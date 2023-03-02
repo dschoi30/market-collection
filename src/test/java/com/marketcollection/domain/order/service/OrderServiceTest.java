@@ -62,7 +62,7 @@ class OrderServiceTest {
         OrderDto orderDto = new OrderDto();
         orderDto.setMemberInfo(member);
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
-        OrderItemDto orderItemDto = new OrderItemDto(item.getId(), item.getItemName(), item.getSalePrice(), 1);
+        OrderItemDto orderItemDto = new OrderItemDto(item, 1);
         orderItemDtos.add(orderItemDto);
         orderDto.setOrderItemDtos(orderItemDtos);
         Long orderId = orderService.order(member.getEmail(), orderDto);

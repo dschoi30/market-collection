@@ -31,6 +31,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
 
+    // 장바구니 상품 추가
     public Long addCart(String memberId, Long itemId, int count) {
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         Cart cart = cartRepository.findByMemberId(member.getId());
@@ -51,6 +52,7 @@ public class CartService {
         return cart.getId();
     }
 
+    // 장바구니 목록 조회
     public List<CartItemDto> getCartItemList(String memberId) {
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         Cart cart = cartRepository.findByMemberId(member.getId());
@@ -65,6 +67,7 @@ public class CartService {
         return cartItemDtos;
     }
 
+    // 주문 완료 후 장바구니 상품 제거
     public void deleteCartItemsAfterOrder(Long memberId, List<OrderItem> orderItems) {
 
         for (OrderItem orderItem : orderItems) {
@@ -74,6 +77,7 @@ public class CartService {
         }
     }
 
+    // 주문자 유효성 검사
     public boolean validateCartItem(String email, Long cartItemId) {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);
@@ -81,11 +85,13 @@ public class CartService {
         return StringUtils.equals(member.getEmail(), savedMember.getEmail());
     }
 
+    // 장바구니 상품 수량 변경
     public void updateCartItem(Long cartItemId, int count) {
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);
         cartItem.updateCount(count);
     }
 
+    // 장바구니 상품 제거
     public void deleteCartItem(Long cartItemId) {
         cartItemRepository.deleteById(cartItemId);
     }

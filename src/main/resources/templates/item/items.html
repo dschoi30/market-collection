@@ -54,9 +54,9 @@
                     </a>
                 </div>
             </div>
-        <button class="btn btn-primary btn-more" th:if="${status.count eq status.size}" th:value="${item.id}" onclick="printMoreItems(this.value)">more</button>
+        <button class="btn btn-primary btn-more" th:if="${status.count eq status.size}" th:value="${item.id}" onclick="printMoreItems(this.value)">더 보기</button>
         </th:block>
-<!--        <div th:if="${recentItems.size() > 0}" class="recent-view">
+        <div th:if="${recentItems.size() > 0}" class="recent-view">
             <div>최근 본 상품</div>
             <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">
                 <div class="carousel-inner" th:each="recentItem, status: ${recentItems}">
@@ -77,35 +77,13 @@
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
                 </button>
                 <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
                 </button>
             </div>
-        </div>-->
+        </div>
     </div>
-<!--    <div th:with="start=${(items.number / maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
-        <ul class="pagination justify-content-center">
-
-            <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
-                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number - 1}}" aria-label='Previous' class="page-link">
-                    <span aria-hidden='true'>&lt</span>
-                </a>
-            </li>
-
-            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq page - 1}?'active':''">
-                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page - 1}}" th:inline="text" class="page-link">[[${page}]]</a>
-            </li>
-
-            <li class="page-item" th:classappend="${items.number + 1 ge items.totalPages}?'disabled':''">
-                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number + 1}}" aria-label='Next' class="page-link">
-                    <span aria-hidden='true'>&gt</span>
-                </a>
-            </li>
-        </ul>
-    </div>-->
 </div>
 
 </html>

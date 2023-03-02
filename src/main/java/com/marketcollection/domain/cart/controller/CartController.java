@@ -20,6 +20,7 @@ public class CartController {
 
     private final CartService cartService;
 
+    // 헤더에 회원 정보 출력
     @ModelAttribute
     public void setMemberInfo(Model model, @LoginUser SessionUser user) {
         if(user != null) {
@@ -27,6 +28,7 @@ public class CartController {
         }
     }
 
+    // 장바구니 상품 추가
     @PostMapping("/cart")
     public @ResponseBody ResponseEntity<Long> addCart(@LoginUser SessionUser user, @RequestBody CartRequestDto cartRequestDto) {
         Long cartId = cartService.addCart(user.getEmail(), cartRequestDto.getItemId(), cartRequestDto.getCount());
@@ -34,6 +36,7 @@ public class CartController {
         return new ResponseEntity<Long>(cartId, HttpStatus.OK);
     }
 
+    // 장바구니 상품 목록 조회
     @GetMapping("/cart")
     public String getCartItemList(Model model, @LoginUser SessionUser user) {
         List<CartItemDto> cartItems = cartService.getCartItemList(user.getEmail());
@@ -43,6 +46,7 @@ public class CartController {
         return "cart/cart";
     }
 
+    // 장바구니 상품 수량 변경
     @PatchMapping("/cart/{cartItemId}")
     public @ResponseBody ResponseEntity updateCartItem(@LoginUser SessionUser user, @PathVariable("cartItemId") Long cartItemId, int count) {
         if(count <= 0) {
@@ -56,6 +60,7 @@ public class CartController {
         return new ResponseEntity<Long>(cartItemId, HttpStatus.OK);
     }
 
+    // 장바구니 상품 삭제
     @DeleteMapping("/cart/{cartItemId}")
     public @ResponseBody ResponseEntity deleteCartItem(@LoginUser SessionUser user, @PathVariable("cartItemId") Long cartItemId) {
         if(!cartService.validateCartItem(user.getEmail(), cartItemId)) {

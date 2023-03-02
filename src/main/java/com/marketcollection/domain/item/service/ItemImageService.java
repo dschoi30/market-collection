@@ -23,8 +23,8 @@ public class ItemImageService {
     private final FileService fileService;
     public final ItemImageRepository itemImageRepository;
 
+    // 상품 이미지 저장
     public void save(ItemImageDto itemImageDto, MultipartFile multipartFile) throws Exception {
-
         String originalFilename = multipartFile.getOriginalFilename();
         String renamedFileName = "";
         String itemImageUrl = "";
@@ -39,7 +39,7 @@ public class ItemImageService {
         itemImageRepository.save(itemImage);
     }
 
-
+    // 썸네일 이미지 저장
     public ItemImage saveThumbnail(ItemImageDto itemImageDto, MultipartFile multipartFile) throws Exception {
 
         String originalFilename = multipartFile.getOriginalFilename();
@@ -58,7 +58,7 @@ public class ItemImageService {
         return itemImage;
     }
 
-
+    // 상품 이미지 수정
     public void updateItemImage(Long itemImageId, MultipartFile multipartFile) throws Exception {
         if(!multipartFile.isEmpty()) {
             ItemImage itemImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
@@ -75,8 +75,8 @@ public class ItemImageService {
 
     }
 
+    // 썸네일 이미지 수정
     public void updateThumbnailImage(Long itemImageId, MultipartFile multipartFile) throws Exception {
-        System.out.println("id===" + itemImageId);
         if(!multipartFile.isEmpty()) {
             ItemImage thumbnailImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
 

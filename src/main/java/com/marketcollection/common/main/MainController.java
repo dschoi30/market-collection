@@ -39,7 +39,7 @@ public class MainController {
         model.addAttribute("items", items);
         model.addAttribute("recentItems", recentItems);
         model.addAttribute("itemSearchDto", itemSearchDto);
-        model.addAttribute("maxPage", 5);
+        model.addAttribute("maxPage", 10);
 
         return "main";
     }

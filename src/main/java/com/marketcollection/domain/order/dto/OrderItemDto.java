@@ -16,11 +16,12 @@ public class OrderItemDto {
     private int orderPrice;
     private String imageUrl;
 
-    public OrderItemDto(Long itemId, String itemName, int salePrice, int count) {
-        this.itemId = itemId;
-        this.itemName = itemName;
-        this.orderPrice = salePrice * count;
+    public OrderItemDto(Item item, int count) {
+        this.itemId = item.getId();
+        this.itemName = item.getItemName();
+        this.orderPrice = item.getSalePrice() * count;
         this.count = count;
+        this.imageUrl = item.getRepImageUrl();
     }
 
     public OrderItemDto(OrderItem orderItem) {

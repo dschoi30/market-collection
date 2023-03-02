@@ -15,6 +15,10 @@
     .mgb-30 {
       margin-bottom: 30px;
     }
+    .thumbnail {
+      width: 50px;
+      height: 50px;
+    }
   </style>
 </th:block>
 <th:block layout:fragment="script">
@@ -108,7 +112,7 @@
         <table class="table">
           <thead>
             <tr class="text-center">
-              <td colspan="2">상품정보</td>
+              <td colspan="3">상품정보</td>
               <td>상품금액</td>
             </tr>
           </thead>
@@ -116,10 +120,10 @@
           <tr th:each="orderItem, status: ${orderDto.orderItemDtos}" class="order-items">
             <input type="hidden" th:hidden="${orderItem.itemId}" th:value="${orderItem.itemId}" id="itemId">
             <input type="hidden" th:hidden="${orderItem.count}" th:value="${orderItem.count}" id="count">
-            <td th:text="${orderItem.imageUrl}"></td>
-            <td th:text="${orderItem.itemName}"></td>
-            <td th:text="${orderItem.count} + '개'" ></td>
-            <td th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} + '원'" class="text-end"></td>
+            <td><img class="rounded thumbnail" th:src="${orderItem.imageUrl}"></td>
+            <td class="align-middle" th:text="${orderItem.itemName}"></td>
+            <td class="align-middle" th:text="${orderItem.count} + '개'" ></td>
+            <td class="text-center align-middle" th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} + '원'"></td>
           </tr>
           </tbody>
         </table>
@@ -163,8 +167,7 @@
         <p class="h4 mgb-30">결제 수단</p>
       </div>
     </div>
-
-      <button class="btn btn-primary text-center" onclick="order()">저장</button>
+    <button class="btn btn-primary text-center" onclick="order()">저장</button>
 
   </th:block>
 
