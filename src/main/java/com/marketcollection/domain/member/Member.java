@@ -1,7 +1,6 @@
 package com.marketcollection.domain.member;
 
 import com.marketcollection.domain.common.BaseEntity;
-import com.marketcollection.common.entity.Address;
 import com.marketcollection.domain.order.dto.OrderDto;
 import lombok.*;
 

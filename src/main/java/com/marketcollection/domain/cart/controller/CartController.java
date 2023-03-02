@@ -31,7 +31,7 @@ public class CartController {
     // 장바구니 상품 추가
     @PostMapping("/cart")
     public @ResponseBody ResponseEntity<Long> addCart(@LoginUser SessionUser user, @RequestBody CartRequestDto cartRequestDto) {
-        Long cartId = cartService.addCart(user.getEmail(), cartRequestDto.getItemId(), cartRequestDto.getCount());
+        Long cartId = cartService.addCart(user.getEmail(), cartRequestDto);
 
         return new ResponseEntity<Long>(cartId, HttpStatus.OK);
     }

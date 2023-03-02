@@ -32,7 +32,7 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
 
     // 장바구니 상품 추가
-    public Long addCart(String memberId, Long itemId, int count) {
+    public Long addCart(String memberId, CartRequestDto cartRequestDto) {
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         Cart cart = cartRepository.findByMemberId(member.getId());
         if(cart == null) {
@@ -40,16 +40,16 @@ public class CartService {
             cartRepository.save(cart);
         }
 
-        Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
-        CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), itemId);
+        Item item = itemRepository.findById(cartRequestDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+        CartItem cartItem = cartItemRepository.findByCartIdAndItemId(cart.getId(), cartRequestDto.getItemId());
 
         if(cartItem == null) {
-            cartItem = CartItem.createCartItem(cart, item, count);
+            cartItem = CartItem.createCartItem(cart, item, cartRequestDto.getCount());
             cartItemRepository.save(cartItem);
         } else {
-            cartItem.addCount(count);
+            cartItem.addCount(cartRequestDto.getCount()); // 장바구니에 해당 상품이 이미 존재하는 경우 수량 추가
         }
-        return cart.getId();
+        return cartItem.getId();
     }
 
     // 장바구니 목록 조회

@@ -26,6 +26,13 @@ public class OrderItem extends BaseEntity {
     private int orderPrice;
     private int count;
 
+    public OrderItem(Item item, Order order, String repImageUrl, int orderPrice) {
+        this.item = item;
+        this.order = order;
+        this.repImageUrl = repImageUrl;
+        this.orderPrice = orderPrice;
+    }
+
     public static OrderItem createOrderItem(Item item, int count) {
         OrderItem orderItem = OrderItem.builder()
                 .item(item)

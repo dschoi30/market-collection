@@ -1,10 +1,18 @@
-package com.marketcollection.common.main;
+package com.marketcollection.common;
 
+import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.repository.ItemRepository;
+import com.marketcollection.domain.member.Member;
+import com.marketcollection.domain.member.MemberStatus;
+import com.marketcollection.domain.member.Role;
+import com.marketcollection.domain.member.SocialType;
+import com.marketcollection.domain.order.Order;
+import com.marketcollection.domain.order.OrderItem;
+import com.marketcollection.domain.order.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -15,7 +23,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,12 +30,12 @@ import java.util.stream.IntStream;
 
 @Profile("local")
 @RequiredArgsConstructor
-@Component
+//@Component
 public class InitDB {
 
     private final InitService initService;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
             initService.dbInit1();
     }
@@ -60,7 +67,7 @@ public class InitDB {
         public void dbInit1() {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            List<Item> items = IntStream.range(1, 10)
+            List<Item> items = IntStream.range(1, 100000)
                     .parallel()
                     .mapToObj(i -> Item.builder()
                             .itemName("향기가득 샤인머스캣_" + i)
@@ -79,7 +86,7 @@ public class InitDB {
             stopWatch.stop();
             System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());
 
-           /* for(int i = 1; i <= 10; i++) {
+            for(int i = 1; i <= 10000; i++) {
 
                 Item item = Item.builder()
                         .itemName("향기가득 샤인머스캣_" + i)
@@ -101,14 +108,14 @@ public class InitDB {
                 for(int j = 0; j < 3; j++) {
                     ItemImage itemImage = new ItemImage(item, "grape2", "grape2", "/image/item/grape2.jpg", false);
                     em.persist(itemImage);
-                }*/
+                }
 
-/*                Member member = Member.builder()
+                Member member = Member.builder()
                         .socialType(SocialType.NAVER)
                         .memberStatus(MemberStatus.ACTIVE)
                         .memberName("tester_" + i)
                         .email("tester" + i + "@naver.com")
-                        .address(new Address())
+                        .address(new BaseEntity.Address())
                         .role(Role.USER)
                         .build();
                 em.persist(member);
@@ -122,14 +129,14 @@ public class InitDB {
 
                 Order order = Order.builder()
                         .member(member)
-                        .address(new Address())
+                        .address(new BaseEntity.Address())
                         .orderItems(List.of(orderItem))
                         .orderStatus(OrderStatus.ORDERED)
                         .build();
                 orderItem.setOrder(order);
 
                 em.persist(order);
-            }*/
+            }
         }
     }
 }
