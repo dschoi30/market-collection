@@ -1,6 +1,7 @@
 package com.marketcollection.domain.item.controller;
 
 import com.marketcollection.common.auth.LoginUser;
+import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.common.auth.dto.SessionUser;
@@ -10,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -80,7 +80,7 @@ public class ItemController {
             ItemFormDto itemFormDto = itemService.findById(itemId);
             model.addAttribute("itemFormDto", itemFormDto);
         } catch (EntityNotFoundException e) {
-            model.addAttribute("상품이 존재하지 않습니다.");
+            model.addAttribute("errorMessage", "상품이 존재하지 않습니다.");
         }
         return "item/itemForm";
     }

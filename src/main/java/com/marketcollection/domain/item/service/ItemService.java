@@ -1,5 +1,6 @@
 package com.marketcollection.domain.item.service;
 
+import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
@@ -8,7 +9,6 @@ import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
