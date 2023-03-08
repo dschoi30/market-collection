@@ -48,8 +48,8 @@ var item = {
         }).done(function () {
             alert('상품이 등록되었습니다.');
             window.location.href = '/';
-        }).fail(function (error) {
-            alert(JSON.stringify(error))
+        }).fail(function (jqXHR) {
+            alert(jqXHR.responseText);
         });
     },
     update: function() {

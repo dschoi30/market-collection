@@ -33,7 +33,6 @@
 </th:block>
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-
    </script>
 </th:block>
 
@@ -71,7 +70,7 @@
                             <span class="input-group mt-2">
                                 <span th:text="${#numbers.formatInteger(cartItem.salePrice, 1, 'COMMA')} + '원'" class="align-self-center mgr-5"></span>
                                 <input type="number" name="count" th:data-id="${cartItem.cartItemId}" th:data-price="${cartItem.salePrice}" th:value="${cartItem.count}" min="1"
-                                       onchange="changeCount(this)" class="form-control p-0" >
+                                       onchange="changeCount(this)" class="form-control p-0">
                                 <button type="button" class="btn-custom" aria-label="Close">
                                 <span class="btn-close" aria-hidden="true" th:data-id="${cartItem.cartItemId}"
                                       onclick="deleteCartItem(this)"></span>

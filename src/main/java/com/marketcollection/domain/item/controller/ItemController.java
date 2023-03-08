@@ -2,6 +2,7 @@ package com.marketcollection.domain.item.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.domain.common.PageCursor;
+import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.common.auth.dto.SessionUser;
@@ -33,6 +34,10 @@ public class ItemController {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
         }
+    }
+
+    @ModelAttribute("categories")
+    public Category[] categories() { return Category.values();
     }
 
     // 상품 저장

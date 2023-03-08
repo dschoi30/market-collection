@@ -178,6 +178,9 @@ public class ItemService {
     @Transactional(readOnly = true)
     public PageCursor<Item> getItemCursorList(Long cursorItemId, Pageable pageable) {
         final List<Item> items = findByCursorSize(cursorItemId, pageable);
+        for (Item item : items) {
+            
+        }
         final Long lastItemIdOfList = items.isEmpty() ? null : items.get(items.size() - 1).getId(); // 목록의 마지막 상품 ID 확인
         return new PageCursor<>(items, hasNext(lastItemIdOfList));
     }

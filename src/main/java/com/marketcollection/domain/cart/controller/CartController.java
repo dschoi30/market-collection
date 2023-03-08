@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,10 +33,25 @@ public class CartController {
 
     // 장바구니 상품 추가
     @PostMapping("/cart")
-    public @ResponseBody ResponseEntity<Long> addCart(@LoginUser SessionUser user, @RequestBody CartRequestDto cartRequestDto) {
-        Long cartId = cartService.addCart(user.getEmail(), cartRequestDto);
+    public @ResponseBody ResponseEntity addCart(@LoginUser SessionUser user, @RequestBody @Valid CartRequestDto cartRequestDto,
+                                                BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                sb.append(fieldError.getDefaultMessage());
+            }
+            return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
+        }
 
-        return new ResponseEntity<Long>(cartId, HttpStatus.OK);
+        Long cartItemId;
+        try {
+            cartItemId = cartService.addCart(user.getEmail(), cartRequestDto);
+        } catch(Exception e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<Long>(cartItemId, HttpStatus.OK);
     }
 
     // 장바구니 상품 목록 조회

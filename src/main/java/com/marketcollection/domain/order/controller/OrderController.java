@@ -12,8 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -32,7 +35,11 @@ public class OrderController {
 
     // 장바구니 미경유 주문 정보 생성
     @PostMapping("/order/direct")
-    public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
+    public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, @Valid OrderRequestDto orderRequestDto) {
+        List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
+        for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
+            if(orderItemRequestDto.getCount() <= 0) throw new IllegalArgumentException("최소 1개 이상 주문해야 합니다.");
+        }
         OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "Y");
         model.addAttribute("orderDto", orderDto);
 
@@ -41,7 +48,11 @@ public class OrderController {
 
     // 장바구니 경유 주문 정보 생성
     @PostMapping("/order")
-    public String setOrderInfo(Model model, @LoginUser SessionUser user, @ModelAttribute OrderRequestDto orderRequestDto) {
+    public String setOrderInfo(Model model, @LoginUser SessionUser user, @Valid OrderRequestDto orderRequestDto) {
+        List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
+        for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
+            if(orderItemRequestDto.getCount() <= 0) throw new IllegalArgumentException("최소 1개 이상 주문해야 합니다.");
+        }
         OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "N");
         model.addAttribute("orderDto", orderDto);
 

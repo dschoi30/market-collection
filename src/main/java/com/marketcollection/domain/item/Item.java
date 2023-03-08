@@ -23,19 +23,14 @@ public class Item extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String itemName;
 
-    @Column(nullable = false)
     private int originalPrice;
 
-    @Column(nullable = false)
     private int salePrice;
 
-    @Column(nullable = false)
     private int stockQuantity;
 
-    @Column(nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
