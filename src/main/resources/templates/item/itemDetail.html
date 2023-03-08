@@ -37,7 +37,7 @@
             calculateTotalPrice();
 
             $(function () {
-                // 바로 구매 ====================
+
                 function order() {
                     let orderInfo = "";
                     const itemId = $("#itemId").val();
@@ -74,7 +74,7 @@
             const url = "/cart";
             const paramData = {
                 itemId: $("#itemId").val(),
-                count: $("#count").val()
+                count: $("#count").val(),
             }
 
             const param = JSON.stringify(paramData);

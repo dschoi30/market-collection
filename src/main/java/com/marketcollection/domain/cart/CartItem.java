@@ -24,6 +24,12 @@ public class CartItem {
 
     private int count;
 
+    public CartItem(Cart cart, Item item, int count) {
+        this.cart = cart;
+        this.item = item;
+        this.count = count;
+    }
+
     public static CartItem createCartItem(Cart cart, Item item, int count) {
         CartItem cartItem = CartItem.builder()
                 .cart(cart)

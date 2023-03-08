@@ -1,6 +1,6 @@
 package com.marketcollection.common.auth.dto;
 
-import com.marketcollection.common.entity.Address;
+import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.member.MemberStatus;
 import com.marketcollection.domain.member.Role;
 import com.marketcollection.domain.member.SocialType;
@@ -79,7 +79,7 @@ public class OAuthAttributes {
                 .socialType(socialType)
                 .email(email)
                 .memberName(name)
-                .address(new Address())
+                .address(new BaseEntity.Address())
                 .role(Role.USER)
                 .memberStatus(MemberStatus.ACTIVE)
                 .build();

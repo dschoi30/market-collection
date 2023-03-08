@@ -28,8 +28,8 @@ function updateCartItemCount(cartItemId, count) {
         success: function() {
             console.log("cartItem count update succeed");
         },
-        error: function(error) {
-            alert(error);
+        error: function(jqXHR) {
+            alert(jqXHR.responseText);
         }
     });
 }

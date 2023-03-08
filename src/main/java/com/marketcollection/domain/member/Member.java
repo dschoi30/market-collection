@@ -1,7 +1,7 @@
 package com.marketcollection.domain.member;
 
 import com.marketcollection.domain.common.BaseEntity;
-import com.marketcollection.common.entity.Address;
+import com.marketcollection.domain.order.dto.OrderDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -36,8 +36,8 @@ public class Member extends BaseEntity {
         return this;
     }
 
-    public void updateOrderInfo(int phoneNumber, int zipCode, String address, String detailAddess) {
-        this.phoneNumber = phoneNumber;
-        this.address = new Address(zipCode, address, detailAddess);
+    public void updateOrderInfo(OrderDto orderDto) {
+        this.phoneNumber = orderDto.getPhoneNumber();
+        this.address = new Address(orderDto.getZipCode(), orderDto.getAddress(), orderDto.getDetailAddress());
     }
 }

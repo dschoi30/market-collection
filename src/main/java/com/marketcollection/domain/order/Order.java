@@ -2,13 +2,10 @@ package com.marketcollection.domain.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.domain.common.BaseEntity;
-import com.marketcollection.common.entity.Address;
 import com.marketcollection.domain.member.Member;
-import com.marketcollection.domain.order.dto.OrderDto;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,7 +31,16 @@ public class Order extends BaseEntity {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
+    public Order(Member member, List<OrderItem> orderItems, int phoneNumber, Address address, OrderStatus orderStatus) {
+        this.member = member;
+        this.orderItems = orderItems;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.orderStatus = orderStatus;
+    }
 
     public static Order createOrder(Member member, List<OrderItem> orderItems) {
         return Order.builder()

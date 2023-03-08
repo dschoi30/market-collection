@@ -15,23 +15,32 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-@ToString
 @NoArgsConstructor
 @Getter
+@Table(indexes = {@Index(name = "idx_item_category", columnList = "category")})
 @Entity
 public class Item extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String itemName;
+
     private int originalPrice;
+
     private int salePrice;
+
     private int stockQuantity;
+
     private String description;
-    private Long categoryId;
+
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
     private String repImageUrl;
     private int salesCount;
     private int hit;
+
+    @Enumerated(EnumType.STRING)
     private ItemSaleStatus itemSaleStatus;
 
     @JsonIgnore
@@ -39,13 +48,13 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
     @Builder
-    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Long categoryId, String repImageUrl, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
+    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Category category, String repImageUrl, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
         this.stockQuantity = stockQuantity;
         this.description = description;
-        this.categoryId = categoryId;
+        this.category = category;
         this.repImageUrl = repImageUrl;
         this.salesCount = salesCount;
         this.hit = hit;
@@ -58,7 +67,7 @@ public class Item extends BaseEntity {
         this.salePrice = itemFormDto.getSalePrice();
         this.stockQuantity = itemFormDto.getStockQuantity();
         this.description = itemFormDto.getDescription();
-        this.categoryId = itemFormDto.getCategoryId();
+        this.category = itemFormDto.getCategory();
         this.itemSaleStatus = itemFormDto.getItemSaleStatus();
     }
 

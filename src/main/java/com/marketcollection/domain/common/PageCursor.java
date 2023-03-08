@@ -1,4 +1,4 @@
-package com.marketcollection.domain.item.dto;
+package com.marketcollection.domain.common;
 
 import lombok.Getter;
 import lombok.Setter;

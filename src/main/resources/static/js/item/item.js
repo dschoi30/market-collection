@@ -15,7 +15,7 @@ var item = {
         const formData = new FormData();
         const data = {
             itemSaleStatus: $('#itemSaleStatus').val(),
-            categoryId: $('#categoryId').val(),
+            category: $('#category').val(),
             itemName: $('#itemName').val(),
             originalPrice: $('#originalPrice').val(),
             salePrice: $('#salePrice').val(),
@@ -48,8 +48,8 @@ var item = {
         }).done(function () {
             alert('상품이 등록되었습니다.');
             window.location.href = '/';
-        }).fail(function (error) {
-            alert(JSON.stringify(error))
+        }).fail(function (jqXHR) {
+            alert(jqXHR.responseText);
         });
     },
     update: function() {
@@ -64,7 +64,7 @@ var item = {
         const data = {
             id: $('#id').val(),
             itemSaleStatus: $('#itemSaleStatus').val(),
-            categoryId: $('#categoryId').val(),
+            category: $('#category').val(),
             itemName: $('#itemName').val(),
             originalPrice: $('#originalPrice').val(),
             salePrice: $('#salePrice').val(),
