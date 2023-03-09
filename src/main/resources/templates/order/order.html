@@ -24,6 +24,21 @@
 <th:block layout:fragment="script">
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script th:inline="javascript">
+/*    $(document).ready(function() {
+      // 0 이상 최대 포인트 이하
+      $("#usingPoint").on("propertychange change keyup paste input", function(){
+        const maxPoint = $("#existingPoint").val();
+        console.log(maxPoint);
+        let inputValue = parseInt($(this).val());
+        $(this).val(inputValue);
+        console.log(inputValue);
+        if(inputValue < 0) {
+          $(this).val(0);
+        } else if(inputValue > maxPoint) {
+          $(this).val(maxPoint);
+        }
+      });
+    });*/
 
     function execDaumPostcode() {
       new daum.Postcode({
@@ -75,26 +90,79 @@
         orderInfo += "<input type='number' name='orderItemDtos[" + i + "].itemId' value='" + itemId +"'>";
         orderInfo += "<input type='number' name='orderItemDtos[" + i + "].count' value='" + count + "'>";
       }
-      const zipCode = $("#zipCode").val();
       const phoneNumber = $("#phoneNumber").val();
+      const zipCode = $("#zipCode").val();
       const address = $("#address").val();
       const detailAddress = $("#detailAddress").val();
       const directOrderYn = $("#directOrderYn").val();
+      const totalOrderAmount = $("#totalOrderAmount").val();
+      const usingPoint = $("#usingPoint").val();
+      const totalPaymentAmount = totalOrderAmount - usingPoint;
       orderInfo += "<input type='number' name='phoneNumber' value='" + phoneNumber + "'>";
       orderInfo += "<input type='number' name='zipCode' value='" + zipCode + "'>";
       orderInfo += "<input type='text' name='address' value='" + address + "'>";
       orderInfo += "<input type='text' name='detailAddress' value='" + detailAddress + "'>";
       orderInfo += "<input type='text' name='directOrderYn' value='" + directOrderYn + "'>";
+      // orderInfo += "<input type='number' name='usingPoint' value='" + usingPoint + "'>";
+      // orderInfo += "<input type='number' name='totalPaymentAmount' value='" + totalPaymentAmount + "'>";
       console.log(orderInfo);
       return orderInfo;
     }
 
     function order() {
-      const form = $("<form action='/order/checkout' method='post'>" +
+/*      const form = $("<form action='/order/checkout' method='post'>" +
               setOrderInfo() +
               "</form> ");
       $("body").append(form);
-      form.submit();
+      form.submit();*/
+      const url = "/order/checkout";
+      const dataList = [];
+      const paramData = {};
+
+      const orderItems = $(".order-items");
+      for (let i = 0; i < orderItems.length; i++) {
+        const itemId = $(orderItems[i]).find("#itemId").val();
+        const count = $(orderItems[i]).find("#count").val();
+        const data = {};
+        data["itemId"] = itemId;
+        data["count"] = count;
+        console.log(data);
+        dataList.push(data);
+      }
+      paramData["orderItemDtos"] = dataList;
+
+      paramData.memberName = "test";
+      paramData.phoneNumber = $("#phoneNumber").val();
+      paramData.zipCode = $("#zipCode").val();
+      paramData.address = $("#address").val();
+      paramData.detailAddress = $("#detailAddress").val();
+      paramData.directOrderYn = $("#directOrderYn").val();
+      paramData.totalOrderAmount = $("#totalOrderAmount").val();
+      paramData.totalSavingPoint = $("#totalSavingPoint").val();
+      paramData.usingPoint = $("#usingPoint").val();
+      paramData.totalPaymentAmount = totalOrderAmount - usingPoint;
+      const param = JSON.stringify(paramData);
+      console.log(param);
+      $.ajax({
+        url: url,
+        type: "POST",
+        contentType: "application/json",
+        data: param,
+        dataType: "json",
+        cache: false,
+        success: function(result, status) {
+          alert("주문이 완료되었습니다.");
+          location.href="/";
+        },
+        error: function(jqXHR, status, error) {
+          if(jqXHR.status === '401') {
+            alert("로그인 후 이용 가능합니다.");
+            location.href='/members/login';
+          } else {
+            alert(jqXHR.responseText);
+          }
+        }
+      });
     }
   </script>
 </th:block>
@@ -133,8 +201,8 @@
         <table class="table">
           <tbody>
           <tr>
-            <td style="width: 13%">보내는 분</td>
-            <td th:text="*{memberName}"></td>
+            <td style="width: 15%">보내는 분</td>
+            <td th:id="memberName" th:text="${orderDto.memberName}" th:value="${orderDto.memberName}"></td>
           </tr>
           <tr>
             <td>연락처</td>
@@ -152,23 +220,59 @@
         <table class="table">
           <tbody>
           <tr>
-            <td style="width: 13%">배송지</td>
+            <td style="width: 15%">배송지</td>
             <td>
-              <input type="text" id="zipCode" placeholder="우편번호" size="10" th:value="*{zipCode}">
+              <input type="text" id="zipCode" placeholder="우편번호" size="10" th:field="*{zipCode}">
               <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기">&nbsp;
-              <input type="text" id="address"  placeholder="주소" size="50" style="margin-bottom: 5px;" th:value="*{address}"><br>
-              <input type="text" id="detailAddress"  placeholder="상세주소" size="50" th:value="*{detailAddress}">
+              <input type="text" id="address"  placeholder="주소" size="50" style="margin-bottom: 5px;" th:field="*{address}"><br>
+              <input type="text" id="detailAddress"  placeholder="상세주소" size="50" th:field="*{detailAddress}">
             </td>
           </tr>
           </tbody>
         </table>
       </div>
       <div class="mgt-30">
+        <p class="h4 mgb-30">포인트</p>
+        <table class="table">
+          <tr>
+            <td style="width: 15%">포인트 적용</td>
+            <td>
+              <span><input type="text" size="6" dir="rtl" name="usingPoint" id="usingPoint" value="0"/>&nbsp; 원</span> &nbsp;
+              <input type="checkbox" class="checked-all"> 전액 사용 ( 사용 가능 포인트 : <span id="existingPoint" th:text="${orderDto.existingPoint}"></span> 원 )
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="mgt-30">
         <p class="h4 mgb-30">결제 수단</p>
+        <table class="table">
+          <tr>
+            <td style="width: 15%">결제수단 선택</td>
+            <td><input type="radio"> 신용카드</td>
+          </tr>
+        </table>
       </div>
     </div>
-    <button class="btn btn-primary text-center" onclick="order()">저장</button>
-
+      <div class="mgt-30">
+        <p class="h4 mgb-30">결제 금액</p>
+        <table class="table">
+          <tr>
+            <td style="width: 15%">주문 금액</td>
+            <td th:id="totalOrderAmount" th:value="${orderDto.totalOrderAmount}" th:text="${#numbers.formatInteger(orderDto.totalOrderAmount, 1, 'COMMA') + ' 원'}"> </td>
+          </tr>
+          <tr>
+            <td>포인트 사용</td>
+            <td class="using-point"> 원</td>
+          </tr>
+          <tr>
+            <td>최종 결제 금액</td>
+            <td class="total-payment-amount"> 원 ( 적립 포인트 : <span th:id="totalSavingPoint" th:value="${orderDto.totalSavingPoint}" th:text="${#numbers.formatInteger(orderDto.totalSavingPoint, 1, 'COMMA')}"></span> 원 )</td>
+          </tr>
+        </table>
+      </div>
+    <div class="mgt-30 mgb-30 text-center">
+      <button class="btn btn-primary btn-lg col-5" onclick="order()">결제하기</button>
+    </div>
   </th:block>
 
 </div>

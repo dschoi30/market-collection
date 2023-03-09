@@ -22,20 +22,4 @@ public abstract class BaseEntity extends BaseTimeEntity{
 
     @LastModifiedBy
     private String modifiedBy;
-
-    @NoArgsConstructor
-    @Getter
-    @Embeddable
-    public static class Address {
-
-        private int zipCode;
-        private String address;
-        private String detailAddress;
-
-        public Address(int zipCode, String address, String detailAddress) {
-            this.zipCode = zipCode;
-            this.address = address;
-            this.detailAddress = detailAddress;
-        }
-    }
 }

@@ -21,7 +21,10 @@
                 <span sec:authorize="isAnonymous()">
                     <a href="/member/login" class="nav-link">로그인</a>
                 </span>
-                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
+                <span class="badge text-bg-light" sec:authorize="isAuthenticated()">
+                    [[${grade}]]
+                </span>
+                 <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
                     [[${userName}]]님
                 </span>
                 <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">

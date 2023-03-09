@@ -1,11 +1,12 @@
 package com.marketcollection.domain.member;
 
+import com.marketcollection.domain.common.Address;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.order.dto.OrderDto;
 import lombok.*;
 
 import javax.persistence.*;
-@ToString
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -20,7 +21,7 @@ public class Member extends BaseEntity {
 
     private String email;
     private String memberName;
-    private int phoneNumber;
+    private String phoneNumber;
 
     @Embedded
     private Address address;
@@ -28,6 +29,10 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private Grade grade;
+
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus;
 
@@ -39,5 +44,10 @@ public class Member extends BaseEntity {
     public void updateOrderInfo(OrderDto orderDto) {
         this.phoneNumber = orderDto.getPhoneNumber();
         this.address = new Address(orderDto.getZipCode(), orderDto.getAddress(), orderDto.getDetailAddress());
+        this.point += orderDto.getTotalSavingPoint() - orderDto.getUsingPoint();
+    }
+
+    public void updateOrderPoint(int point) {
+        this.point = point;
     }
 }

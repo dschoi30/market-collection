@@ -1,18 +1,15 @@
 package com.marketcollection.domain.order.service;
 
-import com.marketcollection.domain.cart.repository.CartItemRepository;
 import com.marketcollection.domain.cart.service.CartService;
 import com.marketcollection.domain.item.Item;
-import com.marketcollection.domain.item.ItemImage;
-import com.marketcollection.domain.item.repository.ItemImageRepository;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.member.repository.MemberRepository;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderItem;
 import com.marketcollection.domain.order.dto.*;
-import com.marketcollection.domain.order.repository.OrderItemRepository;
 import com.marketcollection.domain.order.repository.OrderRepository;
+import com.marketcollection.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,50 +32,79 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final CartService cartService;
+    private final PointService pointService;
 
     // 주문 정보 생성
     public OrderDto setOrderInfo(String memberId, OrderRequestDto orderRequestDto, String directOrderYn) {
         OrderDto orderDto = new OrderDto();
+
+        // 주문자 정보
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         orderDto.setMemberInfo(member);
-        orderDto.setDirectOrderYn(directOrderYn); // 장바구니 경유 여부 확인
+        double savingRate = getPointSavingRate(member);
 
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
         List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
         for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
             Item item = itemRepository.findById(orderItemRequestDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
-            OrderItemDto orderItemDto = new OrderItemDto(item, orderItemRequestDto.getCount());
+            OrderItemDto orderItemDto = new OrderItemDto(item, orderItemRequestDto.getCount(), savingRate);
             orderItemDtos.add(orderItemDto);
         }
-            orderDto.setOrderItemDtos(orderItemDtos);
 
+        // 주문 상품 정보
+        int totalOrderPrice = orderItemDtos.stream().mapToInt(OrderItemDto::getOrderPrice).sum();
+        int totalSavingPoint = orderItemDtos.stream().mapToInt(OrderItemDto::getSavingPoint).sum();
+        orderDto.setOrderItemInfo(orderItemDtos, totalOrderPrice, totalSavingPoint);
+        orderDto.setDirectOrderYn(directOrderYn);
+        System.out.println("totalSavingPoint===" + totalSavingPoint);
         return orderDto;
+    }
+
+    public double getPointSavingRate(Member member) {
+        double savingRate = 0;
+        switch (member.getGrade()) {
+            case NORMAL: savingRate = 0.005; break;
+            case FRIENDS: savingRate = 0.01; break;
+            case WHITE: savingRate = 0.3; break;
+            case LAVENDER: savingRate = 0.5; break;
+            case PURPLE: savingRate = 0.7; break;
+            case THE_PURPLE: savingRate = 0.8; break;
+        }
+        return savingRate;
     }
 
     // 주문 처리
     public Long order(String memberId, OrderDto orderDto) {
+        System.out.println("DTO내용===" + orderDto.toString());
+        System.out.println("DTO내용===" + orderDto.getOrderItemDtos().get(0).toString());
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         member.updateOrderInfo(orderDto); // 주문자 정보로 회원 정보 업데이트
+        double savingRate = getPointSavingRate(member);
 
-        List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
         List<OrderItem> orderItems = new ArrayList<>();
-
+        List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
         for (OrderItemDto orderItemDto : orderItemDtos) {
             Item item = itemRepository.findById(orderItemDto.getItemId()).orElseThrow(EntityNotFoundException::new);
-            OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount());
             item.addSalesCount(orderItemDto.getCount()); // 상품 판매 수량 업데이트
+
+            OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount(), savingRate);
+//            pointService.createOrderPoint(memberId, orderItem);
+
             orderItems.add(orderItem);
         }
 
-        Order order = Order.createOrder(member, orderItems);
+        Order order = Order.createOrder(member, orderItems, orderDto);
+
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
         }
         orderRepository.save(order);
+
         if(Objects.equals(orderDto.getDirectOrderYn(), "N")) {
             cartService.deleteCartItemsAfterOrder(member.getId(), orderItems); // 장바구니 목록에서 주문 완료 상품 삭제
         }
+
         return order.getId();
     }
 

@@ -9,17 +9,18 @@ import lombok.ToString;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @ToString
 @NoArgsConstructor
-@Getter @Setter
+@Getter
 public class OrderDto {
     @NotBlank @Size(max = 20, message = "주문자명은 필수 입력 값입니다.")
     private String memberName;
 
     @Min(value = 10)
-    private int phoneNumber;
+    private String phoneNumber;
 
     @Min(value = 5)
     private int zipCode;
@@ -30,7 +31,14 @@ public class OrderDto {
     @NotBlank
     private String detailAddress;
 
-    private List<OrderItemDto> orderItemDtos;
+    private int existingPoint;
+
+    private int totalOrderAmount;
+    private int totalSavingPoint;
+    private int usingPoint;
+    private int totalPaymentAmount;
+
+    private List<OrderItemDto> orderItemDtos = new ArrayList<>();
     private String directOrderYn;
 
     public void setMemberInfo(Member member) {
@@ -39,5 +47,16 @@ public class OrderDto {
         this.zipCode = member.getAddress().getZipCode();
         this.address = member.getAddress().getAddress();
         this.detailAddress = member.getAddress().getDetailAddress();
+        this.existingPoint = member.getPoint();
+    }
+
+    public void setOrderItemInfo(List<OrderItemDto> orderItemDtos, int totalOrderAmount, int totalSavingPoint) {
+        this.orderItemDtos = orderItemDtos;
+        this.totalOrderAmount = totalOrderAmount;
+        this.totalSavingPoint = totalSavingPoint;
+    }
+
+    public void setDirectOrderYn(String directOrderYn) {
+        this.directOrderYn = directOrderYn;
     }
 }

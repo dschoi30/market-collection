@@ -61,10 +61,10 @@ public class OrderController {
 
     // 주문 처리
     @PostMapping("/order/checkout")
-    public String order(@LoginUser SessionUser user, @ModelAttribute OrderDto orderDto) {
+    public @ResponseBody ResponseEntity order(@LoginUser SessionUser user, @Valid @RequestBody OrderDto orderDto) {
         Long orderId = orderService.order(user.getEmail(), orderDto);
 
-        return "redirect:/";
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
 
     // 내 주문 내역 조회
