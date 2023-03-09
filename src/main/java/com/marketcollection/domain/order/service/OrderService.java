@@ -89,7 +89,6 @@ public class OrderService {
             item.addSalesCount(orderItemDto.getCount()); // 상품 판매 수량 업데이트
 
             OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount(), savingRate);
-//            pointService.createOrderPoint(memberId, orderItem);
 
             orderItems.add(orderItem);
         }
@@ -101,6 +100,10 @@ public class OrderService {
         }
         orderRepository.save(order);
 
+        for (OrderItem orderItem : orderItems) {
+            pointService.createOrderPoint(memberId, orderItem);
+        }
+        pointService.createUsingPoint(memberId, orderDto);
         if(Objects.equals(orderDto.getDirectOrderYn(), "N")) {
             cartService.deleteCartItemsAfterOrder(member.getId(), orderItems); // 장바구니 목록에서 주문 완료 상품 삭제
         }

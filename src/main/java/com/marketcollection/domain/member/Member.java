@@ -46,8 +46,4 @@ public class Member extends BaseEntity {
         this.address = new Address(orderDto.getZipCode(), orderDto.getAddress(), orderDto.getDetailAddress());
         this.point += orderDto.getTotalSavingPoint() - orderDto.getUsingPoint();
     }
-
-    public void updateOrderPoint(int point) {
-        this.point = point;
-    }
 }

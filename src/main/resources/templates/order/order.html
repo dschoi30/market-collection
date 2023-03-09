@@ -79,7 +79,7 @@
       }).open();
     }
 
-    function setOrderInfo() {
+/*    function setOrderInfo() {
       const orderItems = $(".order-items");
       let orderInfo = "";
 
@@ -107,7 +107,7 @@
       // orderInfo += "<input type='number' name='totalPaymentAmount' value='" + totalPaymentAmount + "'>";
       console.log(orderInfo);
       return orderInfo;
-    }
+    }*/
 
     function order() {
 /*      const form = $("<form action='/order/checkout' method='post'>" +
@@ -126,23 +126,24 @@
         const data = {};
         data["itemId"] = itemId;
         data["count"] = count;
-        console.log(data);
         dataList.push(data);
       }
       paramData["orderItemDtos"] = dataList;
-
-      paramData.memberName = "test";
+      const totalOrderAmount = $("#totalOrderAmount").attr("value");
+      const usingPoint = $("#usingPoint").val();
+      paramData.memberName = $("#memberName").attr("value");
       paramData.phoneNumber = $("#phoneNumber").val();
       paramData.zipCode = $("#zipCode").val();
       paramData.address = $("#address").val();
       paramData.detailAddress = $("#detailAddress").val();
       paramData.directOrderYn = $("#directOrderYn").val();
-      paramData.totalOrderAmount = $("#totalOrderAmount").val();
-      paramData.totalSavingPoint = $("#totalSavingPoint").val();
-      paramData.usingPoint = $("#usingPoint").val();
+      paramData.totalOrderAmount = totalOrderAmount;
+      paramData.totalSavingPoint = $("#totalSavingPoint").attr("value");
+      paramData.usingPoint = usingPoint;
       paramData.totalPaymentAmount = totalOrderAmount - usingPoint;
       const param = JSON.stringify(paramData);
       console.log(param);
+
       $.ajax({
         url: url,
         type: "POST",

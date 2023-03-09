@@ -76,7 +76,7 @@ public class InitDB {
                             .salePrice((int) (Math.random() * 10000) * 10)
                             .stockQuantity(10000)
                             .description("너무 맛있어요")
-                            .category(Category.FRUIT_RICE)
+                            .category(Category.SEAFOOD)
                             .repImageUrl("/image/item/grape1.jpg")
                             .salesCount((int) (Math.random() * 10000))
                             .hit((int) (Math.random() * 10000))
@@ -95,10 +95,10 @@ public class InitDB {
                         .salePrice((int)(Math.random() * 10000) * 10)
                         .stockQuantity(10000)
                         .description("너무 맛있어요")
-                        .category(Category.SOUP_SIDEDISH_MAINDISH)
+                        .category(Category.FRUIT_RICE)
                         .repImageUrl("/image/item/grape1.jpg")
-                        .salesCount((int)(Math.random() * 10000))
-                        .hit((int)(Math.random() * 10000))
+//                        .salesCount((int)(Math.random() * 10000))
+//                        .hit((int)(Math.random() * 10000))
                         .itemSaleStatus(ItemSaleStatus.ON_SALE)
                         .build();
                 em.persist(item);

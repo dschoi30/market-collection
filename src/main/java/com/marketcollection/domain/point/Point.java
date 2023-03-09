@@ -3,6 +3,7 @@ package com.marketcollection.domain.point;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.order.OrderItem;
+import com.marketcollection.domain.order.dto.OrderDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,6 +40,14 @@ public class Point extends BaseEntity {
                 .point(orderItem.getSavingPoint())
                 .eventType(EventType.ORDER)
                 .expireDate(LocalDateTime.now().plusYears(1))
+                .build();
+    }
+
+    public static Point createUsingPoint(Member member, OrderDto orderDto) {
+        return Point.builder()
+                .member(member)
+                .point(orderDto.getUsingPoint())
+                .eventType(EventType.USED)
                 .build();
     }
 }

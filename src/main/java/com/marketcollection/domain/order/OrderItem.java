@@ -40,7 +40,7 @@ public class OrderItem extends BaseEntity {
                 .repImageUrl(item.getRepImageUrl())
                 .orderPrice(item.getSalePrice())
                 .count(count)
-                .savingPoint((int) Math.round(item.getSalePrice() * savingRate))
+                .savingPoint((int) Math.round(item.getSalePrice() * count * savingRate))
                 .build();
         item.deductStock(count);
         return orderItem;

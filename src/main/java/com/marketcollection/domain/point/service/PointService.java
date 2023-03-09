@@ -24,8 +24,12 @@ public class PointService {
     public void createOrderPoint(String memberId, OrderItem orderItem) {
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
 
-
         Point point = Point.createOrderPoint(member, orderItem);
         pointRepository.save(point);
+    }
+
+    public void createUsingPoint(String memberId, OrderDto orderDto) {
+        Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
+        Point point = Point.createUsingPoint(member, orderDto);
     }
 }
