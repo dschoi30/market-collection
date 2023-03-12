@@ -34,7 +34,7 @@ public class OrderItem extends BaseEntity {
         this.orderPrice = orderPrice;
     }
 
-    public static OrderItem createOrderItem(Item item, int count, double savingRate) {
+    public static OrderItem createOrderItem(Item item, int count, float savingRate) {
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
                 .repImageUrl(item.getRepImageUrl())

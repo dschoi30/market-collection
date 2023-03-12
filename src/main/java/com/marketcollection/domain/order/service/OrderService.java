@@ -41,55 +41,38 @@ public class OrderService {
         // 주문자 정보
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         orderDto.setMemberInfo(member);
-        double savingRate = getPointSavingRate(member);
 
+        // 주문 상품 정보
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
         List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
         for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
             Item item = itemRepository.findById(orderItemRequestDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
-            OrderItemDto orderItemDto = new OrderItemDto(item, orderItemRequestDto.getCount(), savingRate);
+            OrderItemDto orderItemDto = new OrderItemDto(item, orderItemRequestDto.getCount(), member.getGrade().getPointSavingRate());
             orderItemDtos.add(orderItemDto);
         }
 
-        // 주문 상품 정보
         int totalOrderPrice = orderItemDtos.stream().mapToInt(OrderItemDto::getOrderPrice).sum();
         int totalSavingPoint = orderItemDtos.stream().mapToInt(OrderItemDto::getSavingPoint).sum();
         orderDto.setOrderItemInfo(orderItemDtos, totalOrderPrice, totalSavingPoint);
         orderDto.setDirectOrderYn(directOrderYn);
-        System.out.println("totalSavingPoint===" + totalSavingPoint);
         return orderDto;
-    }
-
-    public double getPointSavingRate(Member member) {
-        double savingRate = 0;
-        switch (member.getGrade()) {
-            case NORMAL: savingRate = 0.005; break;
-            case FRIENDS: savingRate = 0.01; break;
-            case WHITE: savingRate = 0.3; break;
-            case LAVENDER: savingRate = 0.5; break;
-            case PURPLE: savingRate = 0.7; break;
-            case THE_PURPLE: savingRate = 0.8; break;
-        }
-        return savingRate;
     }
 
     // 주문 처리
     public Long order(String memberId, OrderDto orderDto) {
-        System.out.println("DTO내용===" + orderDto.toString());
-        System.out.println("DTO내용===" + orderDto.getOrderItemDtos().get(0).toString());
+        // 주문자 정보로 회원 정보 업데이트
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
-        member.updateOrderInfo(orderDto); // 주문자 정보로 회원 정보 업데이트
-        double savingRate = getPointSavingRate(member);
+        member.updateOrderInfo(orderDto);
 
+        // 주문 등록
         List<OrderItem> orderItems = new ArrayList<>();
         List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
         for (OrderItemDto orderItemDto : orderItemDtos) {
             Item item = itemRepository.findById(orderItemDto.getItemId()).orElseThrow(EntityNotFoundException::new);
             item.addSalesCount(orderItemDto.getCount()); // 상품 판매 수량 업데이트
 
-            OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount(), savingRate);
-
+            OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount(), member.getGrade().getPointSavingRate());
             orderItems.add(orderItem);
         }
 
@@ -100,12 +83,17 @@ public class OrderService {
         }
         orderRepository.save(order);
 
+        // 포인트 입출 내역 등록
         for (OrderItem orderItem : orderItems) {
-            pointService.createOrderPoint(memberId, orderItem);
+            pointService.createOrderPoint(member, orderItem);
         }
-        pointService.createUsingPoint(memberId, orderDto);
+        if (orderDto.getUsingPoint() > 0) {
+            pointService.createUsingPoint(member, orderDto);
+        }
+
+        // 장바구니 목록 정리
         if(Objects.equals(orderDto.getDirectOrderYn(), "N")) {
-            cartService.deleteCartItemsAfterOrder(member.getId(), orderItems); // 장바구니 목록에서 주문 완료 상품 삭제
+            cartService.deleteCartItemsAfterOrder(member.getId(), orderItems);
         }
 
         return order.getId();
@@ -159,7 +147,7 @@ public class OrderService {
             Member member = memberRepository.findById(order.getMember().getId()).orElseThrow(EntityNotFoundException::new);
             adminOrderDto.addMemberInfo(member.getEmail());
             List<OrderItem> orderItems = order.getOrderItems();
-            adminOrderDto.addItemInfo(orderItems.get(0).getItem().getRepImageUrl(), // 주문 목록 중 첫 번째 상품의 정보로 Dto 생성
+            adminOrderDto.addItemInfo(orderItems.get(0).getItem().getRepImageUrl(), // 주문 목록 중 첫 번째 상품의 정보를 대표로 뷰에 노출
                     orderItems.get(0).getItem().getItemName(), orderItems.size(), order.getTotalOrderPrice());
             adminOrderDtos.add(adminOrderDto);
         }

@@ -6,7 +6,13 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Grade {
-    NORMAL("일반"), FRIENDS("프렌즈"), WHITE("화이트"), LAVENDER("라벤더"), PURPLE("퍼플"), THE_PURPLE("더퍼플");
+    NORMAL("일반", 0.005f),
+    FRIENDS("프렌즈", 0.01f),
+    WHITE("화이트", 0.03f),
+    LAVENDER("라벤더", 0.05f),
+    PURPLE("퍼플", 0.07f),
+    THE_PURPLE("더퍼플", 0.08f);
 
     private final String title;
+    private final float pointSavingRate;
 }
