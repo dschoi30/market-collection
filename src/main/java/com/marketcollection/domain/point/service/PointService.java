@@ -24,5 +24,6 @@ public class PointService {
 
     public void createUsingPoint(Member member, OrderDto orderDto) {
         Point point = Point.createUsingPoint(member, orderDto);
+        pointRepository.save(point);
     }
 }
