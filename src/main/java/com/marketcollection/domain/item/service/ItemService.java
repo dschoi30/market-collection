@@ -19,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,12 +164,14 @@ public class ItemService {
         item.updateItem(itemFormDto);
 
         List<Long> itemImageIds = itemFormDto.getItemImageIds();
-
-        for(int i = 0; i < itemImageIds.size(); i++) {
-            if(i == 0) {
-               itemImageService.updateThumbnailImage(itemImageIds.get(i), itemImageFiles.get(i));
-            } else {
-                itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i));
+        if(itemImageFiles != null) {
+            for(int i = 0; i < itemImageFiles.size(); i++) {
+                if(i == 0) {
+                    ItemImage itemImage = itemImageService.updateThumbnailImage(itemImageIds.get(i), itemImageFiles.get(i));
+                    item.addRepImageUrl(itemImage.getItemImageUrl());
+                } else {
+                    itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i));
+                }
             }
         }
         return item.getId();

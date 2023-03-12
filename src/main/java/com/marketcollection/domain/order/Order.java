@@ -1,11 +1,14 @@
 package com.marketcollection.domain.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.marketcollection.domain.common.Address;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.member.Member;
+import com.marketcollection.domain.order.dto.OrderDto;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,15 +29,22 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
-    private int phoneNumber;
+    private String phoneNumber;
 
     @Embedded
     private Address address;
 
+    private int totalSavingPoint;
+    private int usingPoint;
+    private int totalPaymentAmount;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    public Order(Member member, List<OrderItem> orderItems, int phoneNumber, Address address, OrderStatus orderStatus) {
+    public Order(Member member, List<OrderItem> orderItems, String phoneNumber, Address address, OrderStatus orderStatus) {
         this.member = member;
         this.orderItems = orderItems;
         this.phoneNumber = phoneNumber;
@@ -42,14 +52,17 @@ public class Order extends BaseEntity {
         this.orderStatus = orderStatus;
     }
 
-    public static Order createOrder(Member member, List<OrderItem> orderItems) {
+    public static Order createOrder(Member member, List<OrderItem> orderItems, OrderDto orderDto) {
+        int savingPoint = orderItems.stream().mapToInt(OrderItem::getSavingPoint).sum();
+        int orderAmount = orderItems.stream().mapToInt(OrderItem::getOrderPrice).sum();
         return Order.builder()
                 .member(member)
                 .phoneNumber(member.getPhoneNumber())
-                .address(new Address(member.getAddress().getZipCode(),
-                        member.getAddress().getAddress(),
-                        member.getAddress().getDetailAddress()))
+                .address(member.getAddress())
                 .orderItems(orderItems)
+                .totalSavingPoint(savingPoint)
+                .usingPoint(orderDto.getUsingPoint())
+                .totalPaymentAmount(orderAmount - orderDto.getUsingPoint())
                 .orderStatus(OrderStatus.ORDERED)
                 .build();
     }

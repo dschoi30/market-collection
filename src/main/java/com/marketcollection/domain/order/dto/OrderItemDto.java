@@ -5,11 +5,12 @@ import com.marketcollection.domain.order.OrderItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
+@ToString
 @NoArgsConstructor
 @Getter @Setter
 public class OrderItemDto {
@@ -20,13 +21,15 @@ public class OrderItemDto {
     @Min(value = 1, message = "최소 1개 이상 주문되어야 합니다.")
     private int count;
     private int orderPrice;
+    private int savingPoint;
     private String imageUrl;
 
-    public OrderItemDto(Item item, int count) {
+    public OrderItemDto(Item item, int count, double savingRate) {
         this.itemId = item.getId();
         this.itemName = item.getItemName();
-        this.orderPrice = item.getSalePrice() * count;
         this.count = count;
+        this.orderPrice = item.getSalePrice() * count;
+        this.savingPoint = (int) Math.round(item.getSalePrice() * count * savingRate);
         this.imageUrl = item.getRepImageUrl();
     }
 

@@ -76,18 +76,23 @@ public class ItemImageService {
     }
 
     // 썸네일 이미지 수정
-    public void updateThumbnailImage(Long itemImageId, MultipartFile multipartFile) throws Exception {
-        if(!multipartFile.isEmpty()) {
-            ItemImage thumbnailImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
+    public ItemImage updateThumbnailImage(Long itemImageId, MultipartFile multipartFile) throws Exception {
+        String originalFileName = "";
+        String renamedFileName = "";
+        String itemImageUrl = "";
+        ItemImage thumbnailImage = null;
+        if (!multipartFile.isEmpty()) {
+            thumbnailImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
 
-            if(!StringUtils.isEmpty(thumbnailImage.getRenamedFileName())) {
+            if (!StringUtils.isEmpty(thumbnailImage.getRenamedFileName())) {
                 fileService.deleteFile(itemImageLocation + "/" + thumbnailImage.getRenamedFileName());
             }
 
-            String originalFileName = multipartFile.getOriginalFilename();
-            String renamedFileName = fileService.createThumbnailImage(itemImageLocation, originalFileName, multipartFile);
-            String itemImageUrl ="/image/item/" + renamedFileName;
+            originalFileName = multipartFile.getOriginalFilename();
+            renamedFileName = fileService.createThumbnailImage(itemImageLocation, originalFileName, multipartFile);
+            itemImageUrl = "/image/item/" + renamedFileName;
             thumbnailImage.updateItemIamge(originalFileName, renamedFileName, itemImageUrl);
         }
+        return thumbnailImage;
     }
 }

@@ -40,7 +40,7 @@ public class ItemController {
     public Category[] categories() { return Category.values();
     }
 
-    // 상품 저장
+    // 상품 등록 페이지
     @GetMapping("/admin/item/new")
     public String saveItem(Model model) {
         model.addAttribute("itemFormDto", new ItemFormDto());

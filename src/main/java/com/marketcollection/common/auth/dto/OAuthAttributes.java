@@ -1,10 +1,8 @@
 package com.marketcollection.common.auth.dto;
 
+import com.marketcollection.domain.common.Address;
 import com.marketcollection.domain.common.BaseEntity;
-import com.marketcollection.domain.member.MemberStatus;
-import com.marketcollection.domain.member.Role;
-import com.marketcollection.domain.member.SocialType;
-import com.marketcollection.domain.member.Member;
+import com.marketcollection.domain.member.*;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -79,8 +77,9 @@ public class OAuthAttributes {
                 .socialType(socialType)
                 .email(email)
                 .memberName(name)
-                .address(new BaseEntity.Address())
+                .address(new Address())
                 .role(Role.USER)
+                .grade(Grade.NORMAL)
                 .memberStatus(MemberStatus.ACTIVE)
                 .build();
     }

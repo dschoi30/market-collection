@@ -77,7 +77,10 @@ var item = {
 
         for (let i = 0; i < fileInput.length; i++) {
             if (fileInput[i].files.length > 0) {
-                for (let j = 0; j < fileInput[i].length; j++) {
+                for (let j = 0; j < fileInput[i].files.length; j++) {
+                    console.log("fileInput[i].files[j] = " + fileInput[i].files[j]);
+
+                    // formData에 'file'이라는 키값으로 fileInput 값을 append 시킨다.
                     formData.append('file', $('.custom-file-input')[i].files[j]);
                 }
             }

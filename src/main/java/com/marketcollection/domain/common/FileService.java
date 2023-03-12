@@ -58,29 +58,4 @@ public class FileService {
             log.info("파일이 존재하지 않습니다.");
         }
     }
-
-    @RequiredArgsConstructor
-    @Controller
-    public static class MainController {
-
-        private final ItemService itemService;
-
-        @GetMapping("/")
-        public String mainPage(Model model, @LoginUser SessionUser user, ItemSearchDto itemSearchDto,
-                               Optional<Integer> page, HttpServletRequest request) {
-            if(user != null) {
-                model.addAttribute("userName", user.getUserName());
-            }
-
-            Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
-            Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
-            List<ItemListDto> recentItems = itemService.getRecentViewList(request);
-            model.addAttribute("items", items);
-            model.addAttribute("recentItems", recentItems);
-            model.addAttribute("itemSearchDto", itemSearchDto);
-            model.addAttribute("maxPage", 10);
-
-            return "main";
-        }
-    }
 }

@@ -5,15 +5,13 @@ import com.marketcollection.domain.cart.CartItem;
 import com.marketcollection.domain.cart.dto.CartRequestDto;
 import com.marketcollection.domain.cart.repository.CartItemRepository;
 import com.marketcollection.domain.cart.repository.CartRepository;
+import com.marketcollection.domain.common.Address;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.repository.ItemRepository;
-import com.marketcollection.domain.member.Member;
-import com.marketcollection.domain.member.MemberStatus;
-import com.marketcollection.domain.member.Role;
-import com.marketcollection.domain.member.SocialType;
+import com.marketcollection.domain.member.*;
 import com.marketcollection.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,7 @@ class CartServiceTest {
 
     public Member saveMember() {
         Member member = new Member(1L, SocialType.NAVER, "test@gmail.com", "test1",
-                01012341234, new BaseEntity.Address(), 0, Role.USER, MemberStatus.ACTIVE);
+                "01012341234", new Address(), 0, Role.USER, Grade.NORMAL, MemberStatus.ACTIVE);
         return memberRepository.save(member);
     }
     public Item saveItem() {
