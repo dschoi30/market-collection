@@ -1,18 +1,43 @@
 package com.marketcollection.domain.review;
 
 import com.marketcollection.domain.common.BaseEntity;
+import com.marketcollection.domain.item.Item;
+import com.marketcollection.domain.member.Member;
+import com.marketcollection.domain.review.dto.ReviewFormDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import javax.persistence.*;
+import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Getter
 @Entity
 public class Review extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String reviewer;
-    private String title;
+    @JoinColumn(name = "item_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Item item;
+
+    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
+
     private String content;
-    private int rating; // 리뷰 평점 1 ~ 5점
+    private int recommendCount;
+
+    public static Review createReview(ReviewFormDto reviewFormDto, Item item, Member member) {
+        return Review.builder()
+                .item(item)
+                .member(member)
+                .content(reviewFormDto.getContent())
+                .build();
+    }
 }

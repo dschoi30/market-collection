@@ -38,6 +38,7 @@ public class Item extends BaseEntity {
 
     private String repImageUrl;
     private int salesCount;
+    private int reviewCount;
     private int hit;
 
     @Enumerated(EnumType.STRING)
@@ -48,7 +49,8 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
     @Builder
-    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Category category, String repImageUrl, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
+    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description,
+                Category category, String repImageUrl, int salesCount, int reviewCount, int hit, ItemSaleStatus itemSaleStatus) {
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
@@ -57,6 +59,7 @@ public class Item extends BaseEntity {
         this.category = category;
         this.repImageUrl = repImageUrl;
         this.salesCount = salesCount;
+        this.reviewCount = reviewCount;
         this.hit = hit;
         this.itemSaleStatus = itemSaleStatus;
     }
@@ -102,4 +105,5 @@ public class Item extends BaseEntity {
         this.repImageUrl = imageUrl;
     }
 
+    public void addReviewCount() { this.reviewCount++; }
 }
