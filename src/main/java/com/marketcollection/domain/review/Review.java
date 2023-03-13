@@ -31,7 +31,7 @@ public class Review extends BaseEntity {
     private Member member;
 
     private String content;
-    private int recommendCount;
+    private int likes;
 
     public static Review createReview(ReviewFormDto reviewFormDto, Item item, Member member) {
         return Review.builder()

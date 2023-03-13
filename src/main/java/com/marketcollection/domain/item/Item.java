@@ -2,6 +2,7 @@ package com.marketcollection.domain.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.domain.common.BaseEntity;
+import com.marketcollection.domain.common.BaseTimeEntity;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.order.exception.OutOfStockException;
 import lombok.Builder;
