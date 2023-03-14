@@ -1,6 +1,7 @@
 package com.marketcollection.domain.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.common.BaseTimeEntity;
 import com.marketcollection.domain.item.dto.ItemFormDto;
@@ -82,7 +83,7 @@ public class Item extends BaseEntity {
     public void deductStock(int count) {
         int restStock = this.stockQuantity - count;
         if(restStock < 0) {
-            throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
+            throw new OutOfStockException(ErrorCode.OUT_OF_STOCK);
         }
         this.stockQuantity = restStock;
     }
@@ -90,7 +91,7 @@ public class Item extends BaseEntity {
     public void checkStock(int count) {
         int restStock = this.stockQuantity - count;
         if(restStock < 0) {
-            throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
+            throw new OutOfStockException(ErrorCode.OUT_OF_STOCK);
         }
     }
 

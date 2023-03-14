@@ -25,6 +25,11 @@
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script th:inline="javascript">
     $(document).ready(function() {
+      var errorMessage = [[${errorMessage}]];
+      if(errorMessage != null){
+        alert(errorMessage);
+      }
+
       $("#usingPoint").on("propertychange change keyup paste input", function() {
         const maxPoint = $("#existingPoint").attr("value");
         let inputValue = parseInt($(this).val());
