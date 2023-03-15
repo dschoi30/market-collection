@@ -1,35 +1,13 @@
-var review = {
-    init: function() {
-        var _this = this;
-        $('#btn-save').on('click', function () {
-            _this.save();
-        })
-    },
-    save: function() {
-        const url = "/review"
-        const paramData = {
-            itemId: $('#itemId').val(),
-            content: $('#content').val()
-        }
-        const param = JSON.stringify(paramData);
-        console.log(param);
+async function getReviewList({itemId, page, size, goLast}) {
+    const result = await axios.get(`/reviews/${itemId}`, {params: {page, size}})
+    console.log(result);
 
-        $.ajax({
-            url: url,
-            type: 'POST',
-            contentType: "application/json",
-            data: param,
-            dataType: "json",
-            cache: false,
-            success: function () {
-                alert("상품 리뷰가 등록되었습니다.");
-                window.location.href = '/orders';
-            },
-            error: function (jqXHR, status, error) {
-                alert(jqXHR.responseText);
-            }
-        });
+    if(goLast){
+        const total = result.data.total
+        const lastPage = parseInt(Math.ceil(total/size))
+
+        return getReviewList({itemId:itemId, page:lastPage, size:size})
     }
-};
 
-review.init();
+    return result.data;
+}

@@ -19,14 +19,30 @@
 </th:block>
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-/*        $(document).ready(function(){
-            const errorMessage = [[${errorMessage}]];
-            if(errorMessage != null){
-                alert(errorMessage);
+        function saveReview() {
+            const url = "/review"
+            const paramData = {
+                itemId: $('#itemId').val(),
+                content: $('#content').val()
             }
-
-            bindDomEvent();
-        });*/
+            const param = JSON.stringify(paramData);
+            console.log(param);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: "application/json",
+                data: param,
+                dataType: "json",
+                cache: false,
+                success: function () {
+                    alert("상품 리뷰가 등록되었습니다.");
+                    window.location.href = '/orders';
+                },
+                error: function (jqXHR, status, error) {
+                    alert(jqXHR.responseText);
+                }
+            });
+        }
     </script>
 </th:block>
 
@@ -58,9 +74,7 @@
 
     </form>
 
-    <button class="btn btn-primary" id="btn-save">저장</button>
-
-    <script src="/js/review/review.js"></script>
+    <button class="btn btn-primary" th:onclick="saveReview()">저장</button>
 </div>
 
 </html>

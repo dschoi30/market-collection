@@ -23,8 +23,12 @@
             width: 100%;
             height: auto;
         }
+        .review-info {
+            color: #808080;
+        }
     </style>
 </th:block>
+
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
@@ -95,6 +99,82 @@
             });
         }
 
+        const itemId = [[${item.id}]];
+        console.log(itemId);
+
+
+        const reviewList = document.querySelector('.review-list');
+        const reviewPage = document.querySelector('.review-page');
+
+        function printList(dtoList){ //댓글 목록 출력
+            let str = '';
+
+            if(dtoList && dtoList.length > 0){
+
+                for (const dto of dtoList) {
+
+                    str += `<table>
+                        <tr class="list-group-item d-flex replyItem">
+                            <td style="width: 20%">
+                                <input type="hidden" data-id="${dto.itemId}">
+                                <input type="hidden" data-id="${dto.id}">
+                                <div>
+                                    <span class="badge text-bg-light">${dto.memberGrade}</span>
+                                    <span>${dto.memberName}</span>
+                                </div>
+                            </td>
+                            <td style="width: 80%">
+                                <div class="review-info">${dto.itemName}</div>
+                                <p>${dto.content}</p>
+                                <span class="review-info">${dto.createdDate}</span>
+                                <span class="review-info text-end">
+                                    <button class="btn btn-outline-secondary" th:value="${dto.id}"
+                                    onclick="recommendReview(this.value)">도움 돼요 ${dto.likes}</button>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>`
+                }
+            }
+            reviewList.innerHTML = str
+        }
+
+        function printPages(data){ //페이지 목록 출력
+
+            //pagination
+            let pageStr = '';
+
+            if(data.prev) {
+                pageStr +=`<li class="page-item"><a class="page-link" data-page="${data.start-1}">PREV</a></li>`
+            }
+
+            for(let i = data.start; i <= data.end; i++){
+                pageStr +=`<li class="page-item ${i === data.page?"active":""} "><a class="page-link" data-page="${i}">${i}</a></li>`
+            }
+
+            if(data.next) {
+                pageStr +=`<li class="page-item"><a class="page-link" data-page="${data.end +1}">NEXT</a></li>`
+            }
+            reviewPage.innerHTML = pageStr
+        }
+
+        function printReplies(page,size,goLast){
+
+            getReviewList({itemId, page, size, goLast}).then(
+                data => {
+                    printList(data.dtoList) //목록 처리
+                    printPages(data) //페이지 처리
+                }
+            ).catch(e => {
+                console.error(e)
+            })
+        }
+
+        printReplies(1,10, true)
+
+        function recommendReview(data) {
+
+        }
     </script>
 </th:block>
 
@@ -152,6 +232,21 @@
                 <img th:if="${not #strings.isEmpty(itemImage.itemImageUrl)}" th:src="${itemImage.itemImageUrl}" class="wd100 mgb-30">
             </div>
         </div>
+        <div class="mb-4">
+            <hr>
+            <h4>상품 후기</h4>
+            <hr class="my-4">
+            <ul class="list-group review-list">
+            </ul>
+        </div>
+        <div class="mb-4">
+            <ul class="pagination review-page justify-content-center">
+            </ul>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+        <script src="/js/review/review.js"></script>
     </div>
 </div>
 
