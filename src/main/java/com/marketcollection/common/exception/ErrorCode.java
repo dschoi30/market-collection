@@ -10,8 +10,8 @@ public enum ErrorCode {
 
     BINDING_WRONG(HttpStatus.BAD_REQUEST.value(), "요청 필드 값이 유효하지 않습니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 회원이 존재하지 않습니다"),
-    OUT_OF_STOCK(HttpStatus.BAD_REQUEST.value(), "상품의 재고가 부족합니다.");
-
+    OUT_OF_STOCK(HttpStatus.BAD_REQUEST.value(), "상품의 재고가 부족합니다."),
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED.value(), "로그인 후 이용 가능합니다.");
     private final int status;
     private final String message;
 

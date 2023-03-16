@@ -16,6 +16,9 @@
       width: 80px;
       height: 80px;
     }
+    .btn-no-padding {
+      padding: 0 5px;
+    }
   </style>
 </th:block>
 
@@ -91,7 +94,7 @@
               <span th:text="${orderItem.count} +'개'"></span>
               <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
                 <a th:href="@{/review/{itemId}/new(itemId=${orderItem.itemId})}">리뷰 작성</a>
-                <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문취소</button>
+                <button type="button" class="btn btn-outline-secondary btn-no-padding" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문 취소</button>
               </th:block>
               <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
                 <span>(취소 완료)</span>

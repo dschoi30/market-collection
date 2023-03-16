@@ -1,9 +1,12 @@
 package com.marketcollection.domain.review.service;
 
+import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.member.repository.MemberRepository;
+import com.marketcollection.domain.reaction.Reaction;
+import com.marketcollection.domain.reaction.ReactionRepository;
 import com.marketcollection.domain.review.Review;
 import com.marketcollection.domain.review.dto.PageRequestDto;
 import com.marketcollection.domain.review.dto.PageResponseDto;
@@ -17,9 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
+    private final ReactionRepository reactionRepository;
 
     public Long save(String memberId, ReviewDto reviewDto) {
 
@@ -60,4 +64,18 @@ public class ReviewService {
                 .build();
     }
 
+    public int updateReaction(String memberId, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(EntityNotFoundException::new);
+        Optional<Reaction> savedReaction = reactionRepository.findByMemberIdAndReviewId(memberId, reviewId);
+        if(savedReaction.isEmpty()) {
+            Reaction reaction = Reaction.createReaction(review, memberId);
+            reactionRepository.save(reaction);
+            review.addLikes();
+        } else {
+            reactionRepository.delete(savedReaction.get());
+            review.deleteLikes();
+        }
+
+        return review.getLikes();
+    }
 }

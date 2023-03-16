@@ -33,8 +33,7 @@ class CartServiceTest {
     @Autowired ItemRepository itemRepository;
     @Autowired CartService cartService;
     @Autowired CartRepository cartRepository;
-    @Autowired
-    private CartItemRepository cartItemRepository;
+    @Autowired CartItemRepository cartItemRepository;
 
     public Member saveMember() {
         Member member = new Member(1L, SocialType.NAVER, "test@gmail.com", "test1",
@@ -43,7 +42,7 @@ class CartServiceTest {
     }
     public Item saveItem() {
         Item item = new Item("test1", 10000, 9000, 10000, "content",
-                Category.FRUIT_RICE, "", 0, 0, ItemSaleStatus.ON_SALE);
+                Category.FRUIT_RICE, "", 0, 0, 0, ItemSaleStatus.ON_SALE);
         return itemRepository.save(item);
     }
     public CartItem saveCart() {

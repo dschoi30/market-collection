@@ -52,4 +52,10 @@ public class Review extends BaseTimeEntity {
                 .createdDate(review.getCreatedDate())
                 .build();
     }
+
+    public void addLikes() {
+        likes++;
+    }
+
+    public void deleteLikes() { likes--; }
 }

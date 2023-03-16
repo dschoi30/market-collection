@@ -26,6 +26,9 @@
         .review-info {
             color: #808080;
         }
+        .btn-no-padding {
+            padding: 0 5px;
+        }
     </style>
 </th:block>
 
@@ -102,7 +105,6 @@
         const itemId = [[${item.id}]];
         console.log(itemId);
 
-
         const reviewList = document.querySelector('.review-list');
         const reviewPage = document.querySelector('.review-page');
 
@@ -126,10 +128,10 @@
                             <td style="width: 80%">
                                 <div class="review-info">${dto.itemName}</div>
                                 <p>${dto.content}</p>
-                                <span class="review-info">${dto.createdDate}</span>
+                                <span class="review-info align-middle">${dto.createdDate}</span>
                                 <span class="review-info text-end">
-                                    <button class="btn btn-outline-secondary" th:value="${dto.id}"
-                                    onclick="recommendReview(this.value)">도움 돼요 ${dto.likes}</button>
+                                    <button class="btn btn-outline-secondary btn-no-padding"
+                                    onclick="updateLikes(${dto.id}, ${dto.itemId})">도움 돼요 <span class="likes">${dto.likes}</span></button>
                                 </span>
                             </td>
                         </tr>
@@ -149,7 +151,7 @@
             }
 
             for(let i = data.start; i <= data.end; i++){
-                pageStr +=`<li class="page-item ${i === data.page?"active":""} "><a class="page-link" data-page="${i}">${i}</a></li>`
+                pageStr +=`<li class="page-item ${i == data.page?"active":""} "><a class="page-link" data-page="${i}">${i}</a></li>`
             }
 
             if(data.next) {
@@ -158,7 +160,7 @@
             reviewPage.innerHTML = pageStr
         }
 
-        function printReplies(page,size,goLast){
+        function printReviews(page,size,goLast){
 
             getReviewList({itemId, page, size, goLast}).then(
                 data => {
@@ -170,11 +172,19 @@
             })
         }
 
-        printReplies(1,10, true)
+        printReviews(1,10, true)
 
-        function recommendReview(data) {
-
+        function updateLikes(reviewId, itemId) {
+            getLikes(reviewId, itemId).then(
+                data => {
+                    const likes = document.querySelector('.likes');
+                    likes.innerHTML = data;
+                }
+            ).catch(e => {
+                alert(e.message);
+            })
         }
+
     </script>
 </th:block>
 

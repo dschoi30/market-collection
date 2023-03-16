@@ -11,3 +11,11 @@ async function getReviewList({itemId, page, size, goLast}) {
 
     return result.data;
 }
+
+async function getLikes(reviewId, itemId) {
+    const result = await axios.patch(`/reviews/${reviewId}/likes`, {
+        itemId: itemId
+    })
+
+    return result.data;
+}
