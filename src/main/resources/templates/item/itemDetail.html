@@ -118,10 +118,9 @@
                     str += `<table>
                         <tr class="list-group-item d-flex replyItem">
                             <td style="width: 20%">
-                                <input type="hidden" data-id="${dto.itemId}">
-                                <input type="hidden" data-id="${dto.id}">
+                                <input type="hidden" data-itemId="${dto.itemId}">
                                 <div>
-                                    <span class="badge text-bg-light">${dto.memberGrade}</span>
+                                    <span class="badge text-bg-light" style="width: 50px;">${dto.memberGrade}</span>
                                     <span>${dto.memberName}</span>
                                 </div>
                             </td>
@@ -160,9 +159,9 @@
             reviewPage.innerHTML = pageStr
         }
 
-        function printReviews(page,size,goLast){
+        function printReviews(page,size){
 
-            getReviewList({itemId, page, size, goLast}).then(
+            getReviewList({itemId, page, size}).then(
                 data => {
                     printList(data.dtoList) //목록 처리
                     printPages(data) //페이지 처리
@@ -172,7 +171,28 @@
             })
         }
 
-        printReviews(1,10, true)
+        printReviews(1,10)
+
+        let page = 1
+        let size = 10
+
+        reviewPage.addEventListener("click", function (e){
+
+            e.preventDefault()
+            e.stopPropagation()
+
+            const target = e.target
+
+            if(!target || target.tagName != 'A'){
+                return
+            }
+
+            const pageNum = target.getAttribute("data-page")
+            page = pageNum
+            console.log(page);
+            printReviews(page, size, false)
+
+        },false)
 
         function updateLikes(reviewId, itemId) {
             getLikes(reviewId, itemId).then(
