@@ -1,18 +1,17 @@
 package com.marketcollection.common;
 
+import com.marketcollection.domain.common.Address;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.repository.ItemRepository;
-import com.marketcollection.domain.member.Member;
-import com.marketcollection.domain.member.MemberStatus;
-import com.marketcollection.domain.member.Role;
-import com.marketcollection.domain.member.SocialType;
+import com.marketcollection.domain.member.*;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderItem;
 import com.marketcollection.domain.order.OrderStatus;
+import com.marketcollection.domain.review.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -66,9 +65,9 @@ public class InitDB {
         }
 
         public void dbInit1() {
-            StopWatch stopWatch = new StopWatch();
+/*            StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            List<Item> items = IntStream.range(1, 10000)
+            List<Item> items = IntStream.range(1, 100000)
                     .parallel()
                     .mapToObj(i -> Item.builder()
                             .itemName("향기가득 샤인머스캣_" + i)
@@ -79,13 +78,14 @@ public class InitDB {
                             .category(Category.SEAFOOD)
                             .repImageUrl("/image/item/grape1.jpg")
                             .salesCount((int) (Math.random() * 10000))
+                            .reviewCount((int) (Math.random() * 10000))
                             .hit((int) (Math.random() * 10000))
                             .itemSaleStatus(ItemSaleStatus.ON_SALE)
                             .build())
                     .collect(Collectors.toList());
             initDBRepository.bulkItemInsert(items);
             stopWatch.stop();
-            System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());
+            System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());*/
 
             for(int i = 1; i <= 100; i++) {
 
@@ -111,13 +111,14 @@ public class InitDB {
                     em.persist(itemImage);
                 }
 
-/*                Member member = Member.builder()
+                Member member = Member.builder()
                         .socialType(SocialType.NAVER)
                         .memberStatus(MemberStatus.ACTIVE)
                         .memberName("tester_" + i)
                         .email("tester" + i + "@naver.com")
-                        .address(new BaseEntity.Address())
+                        .address(new Address())
                         .role(Role.USER)
+                        .grade(Grade.FRIENDS)
                         .build();
                 em.persist(member);
 
@@ -130,13 +131,22 @@ public class InitDB {
 
                 Order order = Order.builder()
                         .member(member)
-                        .address(new BaseEntity.Address())
+                        .address(new Address())
                         .orderItems(List.of(orderItem))
                         .orderStatus(OrderStatus.ORDERED)
                         .build();
                 orderItem.setOrder(order);
 
-                em.persist(order);*/
+                em.persist(order);
+
+                for(int j = 0; j < 11; j++) {
+                    Review review = Review.builder()
+                            .item(item)
+                            .member(member)
+                            .content("너무 좋아요, 또 사고 싶어요")
+                            .build();
+                    em.persist(review);
+                }
             }
         }
     }

@@ -49,7 +49,7 @@ class OrderServiceTest {
     }
     public Item saveItem() {
         Item item = new Item("test1", 10000, 9000, 10000, "content",
-                Category.FRUIT_RICE, "", 0, 0, ItemSaleStatus.ON_SALE);
+                Category.FRUIT_RICE, "", 0, 0, 0, ItemSaleStatus.ON_SALE);
         return itemRepository.save(item);
     }
     public Order saveOrder() {
@@ -62,7 +62,7 @@ class OrderServiceTest {
         return orderRepository.save(order);
     }
 
-    @Disabled
+/*    @Disabled
     @DisplayName("주문 테스트")
     @Test
     public void order() {
@@ -72,7 +72,6 @@ class OrderServiceTest {
 
         //when
         OrderDto orderDto = new OrderDto();
-        double pointSavingRate = orderService.getPointSavingRate(member);
         orderDto.setMemberInfo(member);
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
         OrderItemDto orderItemDto = new OrderItemDto(item, 1, pointSavingRate);
@@ -84,7 +83,7 @@ class OrderServiceTest {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
         String itemName = order.getOrderItems().get(0).getItem().getItemName();
         assertThat(itemName).isEqualTo(item.getItemName());
-    }
+    }*/
 
     @DisplayName("관리자 주문 관리 목록 조회 테스트")
     @Test
@@ -113,7 +112,6 @@ class OrderServiceTest {
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELED);
     }
 
-    @Disabled // 임시
     @DisplayName("주문자 유효성 검사 테스트")
     @Test
     public void validateOrder() {

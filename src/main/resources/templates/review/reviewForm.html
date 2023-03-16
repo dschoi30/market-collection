@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="css">
+    <style>
+        .mgb-15 {
+            margin-bottom: 15px;
+        }
+        .mgb-30 {
+            margin-bottom: 30px;
+        }
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</th:block>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        function saveReview() {
+            const url = "/review"
+            const paramData = {
+                itemId: $('#itemId').val(),
+                content: $('#content').val()
+            }
+            const param = JSON.stringify(paramData);
+            console.log(param);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: "application/json",
+                data: param,
+                dataType: "json",
+                cache: false,
+                success: function () {
+                    alert("상품 리뷰가 등록되었습니다.");
+                    window.location.href = '/orders';
+                },
+                error: function (jqXHR, status, error) {
+                    alert(jqXHR.responseText);
+                }
+            });
+        }
+    </script>
+</th:block>
+
+<div layout:fragment="content">
+
+    <form role="form" method="post" enctype="multipart/form-data" th:object="${review}">
+
+        <p class="h2 mgb-30">
+            리뷰 등록
+        </p>
+
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{itemId}">
+
+        <div class="card d-flex mb-3">
+            <div class="ms-3 mt-3 mb-3">
+                <img th:src="${review.repImageUrl}" class = "rounded thumbnail" th:alt="${review.itemName}">
+                <span th:text="${review.itemName}"></span>
+            </div>
+        </div>
+
+        <div class="input-group mgb-15">
+            <div class="input-group-prepend">
+                <span class="input-group-text">내용</span>
+            </div>
+            <textarea class="form-control" aria-label="With textarea" th:field="*{content}"></textarea>
+        </div>
+        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError">Incorrect data</p>
+
+    </form>
+
+    <button class="btn btn-primary" th:onclick="saveReview()">저장</button>
+</div>
+
+</html>

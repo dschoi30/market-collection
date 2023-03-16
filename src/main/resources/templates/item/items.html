@@ -24,6 +24,9 @@
             right: 3%;
             border: 1px solid #c1c3c5;
         }
+        .review-count {
+            color: #808080;
+        }
     </style>
 </th:block>
 <th:block layout:fragment="script">
@@ -49,7 +52,8 @@
                         <img th:src="${item.repImageUrl}" class="card-img-top" th:alt="${item.itemName}" height="250">
                         <div class="card-body">
                             <h5 class="card-title">[[${item.itemName}]]</h5>
-                            <h5 class="card-title text-danger">[[${#numbers.formatInteger(item.salePrice, 1, 'COMMA')}]]원</h5>
+                            <h5 class="card-title fw-bold">[[${#numbers.formatInteger(item.salePrice, 1, 'COMMA')}]]원</h5>
+                            <h6 class="card-title review-count">후기 [[${item.reviewCount}]]</h6>
                         </div>
                     </a>
                 </div>

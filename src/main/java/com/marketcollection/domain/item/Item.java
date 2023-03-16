@@ -1,7 +1,9 @@
 package com.marketcollection.domain.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.common.BaseEntity;
+import com.marketcollection.domain.common.BaseTimeEntity;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.order.exception.OutOfStockException;
 import lombok.Builder;
@@ -38,6 +40,7 @@ public class Item extends BaseEntity {
 
     private String repImageUrl;
     private int salesCount;
+    private int reviewCount;
     private int hit;
 
     @Enumerated(EnumType.STRING)
@@ -48,7 +51,8 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
     @Builder
-    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description, Category category, String repImageUrl, int salesCount, int hit, ItemSaleStatus itemSaleStatus) {
+    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description,
+                Category category, String repImageUrl, int salesCount, int reviewCount, int hit, ItemSaleStatus itemSaleStatus) {
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
@@ -57,6 +61,7 @@ public class Item extends BaseEntity {
         this.category = category;
         this.repImageUrl = repImageUrl;
         this.salesCount = salesCount;
+        this.reviewCount = reviewCount;
         this.hit = hit;
         this.itemSaleStatus = itemSaleStatus;
     }
@@ -78,7 +83,7 @@ public class Item extends BaseEntity {
     public void deductStock(int count) {
         int restStock = this.stockQuantity - count;
         if(restStock < 0) {
-            throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
+            throw new OutOfStockException(ErrorCode.OUT_OF_STOCK);
         }
         this.stockQuantity = restStock;
     }
@@ -86,7 +91,7 @@ public class Item extends BaseEntity {
     public void checkStock(int count) {
         int restStock = this.stockQuantity - count;
         if(restStock < 0) {
-            throw new OutOfStockException("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockQuantity + ")");
+            throw new OutOfStockException(ErrorCode.OUT_OF_STOCK);
         }
     }
 
@@ -102,4 +107,5 @@ public class Item extends BaseEntity {
         this.repImageUrl = imageUrl;
     }
 
+    public void addReviewCount() { this.reviewCount++; }
 }

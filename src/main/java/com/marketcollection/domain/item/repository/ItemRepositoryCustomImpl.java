@@ -101,7 +101,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                                 item.itemName,
                                 item.originalPrice,
                                 item.salePrice,
-                                item.repImageUrl
+                                item.repImageUrl,
+                                item.reviewCount
                         ))
                 .from(item)
                 .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE))
@@ -158,7 +159,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                         item.itemName,
                         item.originalPrice,
                         item.salePrice,
-                        item.repImageUrl
+                        item.repImageUrl,
+                        item.reviewCount
                 ))
                 .from(item)
                 .where(item.id.in(itemIds))
