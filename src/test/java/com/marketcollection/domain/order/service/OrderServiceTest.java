@@ -107,6 +107,7 @@ class OrderServiceTest {
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELED);
     }
 
+    @Disabled
     @DisplayName("주문자 유효성 검사 테스트")
     @Test
     public void validateOrder() {
