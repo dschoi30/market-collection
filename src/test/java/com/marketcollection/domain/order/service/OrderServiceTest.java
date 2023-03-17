@@ -11,10 +11,7 @@ import com.marketcollection.domain.member.repository.MemberRepository;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderItem;
 import com.marketcollection.domain.order.OrderStatus;
-import com.marketcollection.domain.order.dto.AdminOrderDto;
-import com.marketcollection.domain.order.dto.OrderDto;
-import com.marketcollection.domain.order.dto.OrderItemDto;
-import com.marketcollection.domain.order.dto.OrderSearchDto;
+import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.repository.OrderRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -62,7 +59,6 @@ class OrderServiceTest {
         return orderRepository.save(order);
     }
 
-/*    @Disabled
     @DisplayName("주문 테스트")
     @Test
     public void order() {
@@ -70,20 +66,19 @@ class OrderServiceTest {
         Member member = saveMember();
         Item item = saveItem();
 
-        //when
-        OrderDto orderDto = new OrderDto();
-        orderDto.setMemberInfo(member);
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
-        OrderItemDto orderItemDto = new OrderItemDto(item, 1, pointSavingRate);
+        OrderItemDto orderItemDto = new OrderItemDto(item, 1, 0.01);
         orderItemDtos.add(orderItemDto);
-//        orderDto.setOrderItemDtos(orderItemDtos);
+        OrderDto orderDto = new OrderDto(member.getMemberName(), "01012341234", 12345, "서울시", "강남", 0, 10000, 100, 0, 10000, orderItemDtos, "Y");
+
+        //when
         Long orderId = orderService.order(member.getEmail(), orderDto);
 
         //then
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
         String itemName = order.getOrderItems().get(0).getItem().getItemName();
         assertThat(itemName).isEqualTo(item.getItemName());
-    }*/
+    }
 
     @DisplayName("관리자 주문 관리 목록 조회 테스트")
     @Test

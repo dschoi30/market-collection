@@ -125,7 +125,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
         Member savedMember = order.getMember();
 
-        return StringUtils.equals(member, savedMember);
+        return StringUtils.equals(member.getEmail(), savedMember.getEmail());
     }
 
     // 주문 취소
