@@ -1,10 +1,7 @@
 package com.marketcollection.domain.order.dto;
 
 import com.marketcollection.domain.member.Member;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ToString
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 public class OrderDto {
