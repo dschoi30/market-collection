@@ -23,7 +23,7 @@ spring:
     store-type: jdbc
     jdbc.initialize-schema: always
 
-  devtools.livereload.enabled: true
+  devtools.livereload.enabled: false
   thymeleaf.cache: false
 
 logging.level:
