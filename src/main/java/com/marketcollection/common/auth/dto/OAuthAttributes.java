@@ -35,7 +35,7 @@ public class OAuthAttributes {
             return ofKakao("id", attributes);
         }
 
-        return ofGoogle("id", attributes);
+        return ofGoogle(userNameAttributeName, attributes);
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
