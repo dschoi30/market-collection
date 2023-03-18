@@ -39,6 +39,7 @@
                 <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
                     <a href="/logout">로그아웃</a>
                 </span>
+                <intercept-url pattern="/favicon.ico" access="ROLE_ANONYMOUS" />
             </div>
         </div>
     </div>
