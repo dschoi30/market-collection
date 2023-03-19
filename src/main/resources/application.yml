@@ -4,12 +4,12 @@ spring:
     include: oauth
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/marketcollection?serverTimezone=Asia/Seoul
-    username: mc_local
-    password: mc123
+    url: ${LOCAL_DB_URL}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
@@ -23,7 +23,7 @@ spring:
     store-type: jdbc
     jdbc.initialize-schema: always
 
-  devtools.livereload.enabled: false
+  devtools.livereload.enabled: true
   thymeleaf.cache: false
 
 logging.level:
@@ -31,3 +31,10 @@ logging.level:
 
 uploadPath: 'file:///D:/develop/resources/market-collection/'
 itemImageLocation: 'D:/develop/resources/market-collection/item'
+
+cloud:
+  aws:
+    s3:
+      bucket: market-collection-s3
+    region:
+      static: ap-northeast-2

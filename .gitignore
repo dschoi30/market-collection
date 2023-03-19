@@ -4,7 +4,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-application-oauth.yaml
+application-oauth.yml
+aws.yml
+**/src/test/resources/aws.yml
 
 ### STS ###
 .apt_generated
