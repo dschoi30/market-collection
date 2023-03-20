@@ -1,29 +1,36 @@
 # 마켓컬렉션(Market-collection)
 
-### 온라인 식품 쇼핑몰 '마켓컬리' 클론 코딩 프로젝트   
+### 온라인 식품 쇼핑몰 '마켓컬리' 클론 코딩 프로젝트
 마켓컬리의 주요 기능들(소셜 로그인, 회원 등급제, 적립금, 최근 본 상품 등)을 스스로 고민하고 구현한 1인 개발 프로젝트입니다.
-
-![image](https://user-images.githubusercontent.com/97089961/224226422-09f12046-e980-4e07-acfa-e366f2ae5157.png)
+##
+![image](https://user-images.githubusercontent.com/97089961/224226422-09f12046-e980-4e07-acfa-e366f2ae5157.png)   
 ##
 ![image](https://user-images.githubusercontent.com/97089961/224222870-ac587f80-72df-4328-8133-383dab5851e6.png)
 ##
 ![image](https://user-images.githubusercontent.com/97089961/224226437-c837db5f-00ef-4c88-8fd9-cfc5125d6cea.png)
 
-
 ## 개발 목표
-스프링 부트 및 JPA 실습을 통한 심화 이해
+> 객체 지향적인 코드 설계 및 구현   
+> 점진적인 트래픽 증가를 가정한 분산 서버 구축 및 성능 최적화
 
 ## 기술 스택
 
-### BACKEND
-> Java,
+### Backend
+> Java
 > Spring Boot, Spring MVC, Spring Security, Spring Data JPA, Junit5   
 > MySql
 
-### FRONTEND
+### Frontend
 > HTML5, CSS3, JavaScript(JQuery), Thymeleaf
-### TOOL
+
+### DevOps
+> AWS EC2, RDS, S3
+
+### Tool
 > Intellij, Git
+
+## ERD 설계
+![market-collection - Database ER diagram (crow's foot)](https://user-images.githubusercontent.com/97089961/226277171-1de32a18-2665-49aa-b832-6e825ab8d6f8.png)
 
 ## 기능 정의
 
