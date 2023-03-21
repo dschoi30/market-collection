@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -18,7 +19,8 @@ public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
 
-    public String bucket = "market-collection-s3";
+    @Value("${cloud.aws.s3.bucket}")
+    public String bucket;
 
     public String uploadFile(String filePath) throws IOException {
 

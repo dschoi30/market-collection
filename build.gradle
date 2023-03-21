@@ -42,7 +42,7 @@ dependencies {
 	implementation 'org.modelmapper:modelmapper:3.1.1'
 	implementation 'net.coobird:thumbnailator:0.4.8'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
+//	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
