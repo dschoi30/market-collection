@@ -1,6 +1,7 @@
 spring:
   profiles:
     active: test
+    include: aws
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test
@@ -31,5 +32,13 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 
+
 uploadPath: 'file:///D:/develop/resources/market-collection/'
 itemImageLocation: 'D:/develop/resources/market-collection/item'
+
+cloud:
+  aws:
+    s3:
+      bucket: market-collection-s3
+    region:
+      static: ap-northeast-2

@@ -43,13 +43,13 @@ public class ItemService {
 
         for(int i = 0; i < itemImageFiles.size(); i++) {
 
-            if(i == 0) { // 업로드 파일 중 첫 번째 이미지 썸네일 저장
+/*            if(i == 0) { // 업로드 파일 중 첫 번째 이미지 썸네일 저장
                 ItemImage itemImage = itemImageService.saveThumbnail(itemImageDto, itemImageFiles.get(i));
                 itemImage.setRepImage();
                 item.addRepImageUrl(itemImage.getItemImageUrl());
-            } else {
+            } else {*/
                 itemImageService.save(itemImageDto, itemImageFiles.get(i));
-            }
+//            }
         }
 
         return item.getId();
@@ -180,11 +180,8 @@ public class ItemService {
     // 상품 목록 조회
     @Transactional(readOnly = true)
     public PageCursor<Item> getItemCursorList(Long cursorItemId, Pageable pageable) {
-        final List<Item> items = findByCursorSize(cursorItemId, pageable);
-        for (Item item : items) {
-            
-        }
-        final Long lastItemIdOfList = items.isEmpty() ? null : items.get(items.size() - 1).getId(); // 목록의 마지막 상품 ID 확인
+        List<Item> items = findByCursorSize(cursorItemId, pageable);
+        Long lastItemIdOfList = items.isEmpty() ? null : items.get(items.size() - 1).getId(); // 목록의 마지막 상품 ID 확인
         return new PageCursor<>(items, hasNext(lastItemIdOfList));
     }
 

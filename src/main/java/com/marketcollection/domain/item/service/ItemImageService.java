@@ -1,11 +1,11 @@
 package com.marketcollection.domain.item.service;
 
-import com.marketcollection.domain.common.FileService;
+import com.marketcollection.common.unit.FileService;
+import com.marketcollection.domain.common.LocalFileService;
 import com.marketcollection.domain.item.dto.ItemImageDto;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.repository.ItemImageRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,9 +18,7 @@ import javax.persistence.EntityNotFoundException;
 @Service
 public class ItemImageService {
 
-    @Value("${itemImageLocation}")
-    private String itemImageLocation;
-    private final FileService fileService;
+    private final LocalFileService localFileService;
     public final ItemImageRepository itemImageRepository;
 
     // 상품 이미지 저장
@@ -30,8 +28,12 @@ public class ItemImageService {
         String itemImageUrl = "";
 
         if(!StringUtils.isEmpty(originalFilename)) {
-            renamedFileName = fileService.uploadFile(itemImageLocation, originalFilename, multipartFile);
-            itemImageUrl = "/image/item/" + renamedFileName;
+            renamedFileName = localFileService.uploadFile(originalFilename, multipartFile);
+            if (renamedFileName.startsWith("http")) {
+                itemImageUrl = renamedFileName;
+            } else {
+                itemImageUrl = "/image/item/" + renamedFileName;
+            }
         }
 
         itemImageDto.createItemImage(originalFilename, renamedFileName, itemImageUrl, false);
@@ -46,10 +48,10 @@ public class ItemImageService {
         String renamedFileName = "";
         String itemImageUrl = "";
 
-        if(!StringUtils.isEmpty(originalFilename)) {
-            renamedFileName = fileService.createThumbnailImage(itemImageLocation, originalFilename, multipartFile);
+/*        if(!StringUtils.isEmpty(originalFilename)) {
+            renamedFileName = localFileService.createThumbnailImage(originalFilename, multipartFile);
             itemImageUrl = "/image/item/" + renamedFileName;
-        }
+        }*/
 
         itemImageDto.createItemImage(originalFilename, renamedFileName, itemImageUrl, true);
         ItemImage itemImage = itemImageDto.toEntity();
@@ -63,16 +65,15 @@ public class ItemImageService {
         if(!multipartFile.isEmpty()) {
             ItemImage itemImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
 
-            if(StringUtils.isEmpty(itemImage.getRenamedFileName())) {
-                fileService.deleteFile(itemImageLocation + "/" + itemImage.getRenamedFileName());
+/*            if(StringUtils.isEmpty(itemImage.getRenamedFileName())) {
+                localFileService.deleteFile(itemImageLocation + "/" + itemImage.getRenamedFileName());
             }
 
             String originalFileName = multipartFile.getOriginalFilename();
-            String renamedFileName = fileService.uploadFile(itemImageLocation, originalFileName, multipartFile);
+            String renamedFileName = localFileService.uploadFile(originalFileName, multipartFile);
             String itemImageUrl ="/image/item/" + renamedFileName;
-            itemImage.updateItemIamge(originalFileName, renamedFileName, itemImageUrl);
+            itemImage.updateItemIamge(originalFileName, renamedFileName, itemImageUrl);*/
         }
-
     }
 
     // 썸네일 이미지 수정
@@ -85,11 +86,11 @@ public class ItemImageService {
             thumbnailImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
 
             if (!StringUtils.isEmpty(thumbnailImage.getRenamedFileName())) {
-                fileService.deleteFile(itemImageLocation + "/" + thumbnailImage.getRenamedFileName());
+//                localFileService.deleteFile(thumbnailImage.getRenamedFileName());
             }
 
             originalFileName = multipartFile.getOriginalFilename();
-            renamedFileName = fileService.createThumbnailImage(itemImageLocation, originalFileName, multipartFile);
+//            renamedFileName = localFileService.createThumbnailImage(originalFileName, multipartFile);
             itemImageUrl = "/image/item/" + renamedFileName;
             thumbnailImage.updateItemIamge(originalFileName, renamedFileName, itemImageUrl);
         }
