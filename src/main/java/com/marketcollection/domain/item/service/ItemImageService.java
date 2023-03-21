@@ -1,15 +1,15 @@
 package com.marketcollection.domain.item.service;
 
-import com.marketcollection.common.unit.FileService;
+import com.marketcollection.common.unit.S3Uploader;
 import com.marketcollection.domain.common.LocalFileService;
 import com.marketcollection.domain.item.dto.ItemImageDto;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.repository.ItemImageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -18,42 +18,20 @@ import javax.persistence.EntityNotFoundException;
 @Service
 public class ItemImageService {
 
+    private final S3Uploader s3Uploader;
     private final LocalFileService localFileService;
-    public final ItemImageRepository itemImageRepository;
+    private final ItemImageRepository itemImageRepository;
+
+    @Value("${itemImageLocation}")
+    private String uploadPath;
 
     // 상품 이미지 저장
-    public void save(ItemImageDto itemImageDto, MultipartFile multipartFile) throws Exception {
-        String originalFilename = multipartFile.getOriginalFilename();
-        String renamedFileName = "";
-        String itemImageUrl = "";
+    public ItemImage save(ItemImageDto itemImageDto, MultipartFile multipartFile, Integer imageSize) throws Exception {
+        String originalFileName = multipartFile.getOriginalFilename();
+        String renamedFileName = localFileService.uploadFile(uploadPath, originalFileName, multipartFile, imageSize);
+        String uploadFilePath = s3Uploader.uploadFile(uploadPath + "/" + renamedFileName);
 
-        if(!StringUtils.isEmpty(originalFilename)) {
-            renamedFileName = localFileService.uploadFile(originalFilename, multipartFile);
-            if (renamedFileName.startsWith("http")) {
-                itemImageUrl = renamedFileName;
-            } else {
-                itemImageUrl = "/image/item/" + renamedFileName;
-            }
-        }
-
-        itemImageDto.createItemImage(originalFilename, renamedFileName, itemImageUrl, false);
-        ItemImage itemImage = itemImageDto.toEntity();
-        itemImageRepository.save(itemImage);
-    }
-
-    // 썸네일 이미지 저장
-    public ItemImage saveThumbnail(ItemImageDto itemImageDto, MultipartFile multipartFile) throws Exception {
-
-        String originalFilename = multipartFile.getOriginalFilename();
-        String renamedFileName = "";
-        String itemImageUrl = "";
-
-/*        if(!StringUtils.isEmpty(originalFilename)) {
-            renamedFileName = localFileService.createThumbnailImage(originalFilename, multipartFile);
-            itemImageUrl = "/image/item/" + renamedFileName;
-        }*/
-
-        itemImageDto.createItemImage(originalFilename, renamedFileName, itemImageUrl, true);
+        itemImageDto.createItemImage(originalFileName, renamedFileName, uploadFilePath);
         ItemImage itemImage = itemImageDto.toEntity();
         itemImageRepository.save(itemImage);
 
@@ -61,39 +39,16 @@ public class ItemImageService {
     }
 
     // 상품 이미지 수정
-    public void updateItemImage(Long itemImageId, MultipartFile multipartFile) throws Exception {
-        if(!multipartFile.isEmpty()) {
-            ItemImage itemImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
+    public ItemImage updateItemImage(Long itemImageId, MultipartFile multipartFile, Integer imageSize) throws Exception {
+        ItemImage itemImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
+        s3Uploader.removeS3Files(itemImage.getRenamedFileName());
 
-/*            if(StringUtils.isEmpty(itemImage.getRenamedFileName())) {
-                localFileService.deleteFile(itemImageLocation + "/" + itemImage.getRenamedFileName());
-            }
+        String originalFileName = multipartFile.getOriginalFilename();
+        String renamedFileName = localFileService.uploadFile(uploadPath, originalFileName, multipartFile, imageSize);
+        String uploadFilePath = s3Uploader.uploadFile(uploadPath + "/" + renamedFileName);
 
-            String originalFileName = multipartFile.getOriginalFilename();
-            String renamedFileName = localFileService.uploadFile(originalFileName, multipartFile);
-            String itemImageUrl ="/image/item/" + renamedFileName;
-            itemImage.updateItemIamge(originalFileName, renamedFileName, itemImageUrl);*/
-        }
-    }
+        itemImage.updateItemIamge(originalFileName, renamedFileName, uploadFilePath);
 
-    // 썸네일 이미지 수정
-    public ItemImage updateThumbnailImage(Long itemImageId, MultipartFile multipartFile) throws Exception {
-        String originalFileName = "";
-        String renamedFileName = "";
-        String itemImageUrl = "";
-        ItemImage thumbnailImage = null;
-        if (!multipartFile.isEmpty()) {
-            thumbnailImage = itemImageRepository.findById(itemImageId).orElseThrow(EntityNotFoundException::new);
-
-            if (!StringUtils.isEmpty(thumbnailImage.getRenamedFileName())) {
-//                localFileService.deleteFile(thumbnailImage.getRenamedFileName());
-            }
-
-            originalFileName = multipartFile.getOriginalFilename();
-//            renamedFileName = localFileService.createThumbnailImage(originalFileName, multipartFile);
-            itemImageUrl = "/image/item/" + renamedFileName;
-            thumbnailImage.updateItemIamge(originalFileName, renamedFileName, itemImageUrl);
-        }
-        return thumbnailImage;
+        return itemImage;
     }
 }

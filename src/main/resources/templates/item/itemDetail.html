@@ -259,7 +259,7 @@
             <hr class="my-4">
             <h6 th:text="${item.description}"></h6>
             <div th:each="itemImage : ${item.itemImageDtos}" class="text-center">
-                <img th:if="${not #strings.isEmpty(itemImage.itemImageUrl)}" th:src="${itemImage.itemImageUrl}" class="wd100 mgb-30">
+                <img th:if="${not #strings.isEmpty(itemImage.itemImageUrl)}" th:src="${itemImage.itemImageUrl}" class="mgb-30">
             </div>
         </div>
         <div class="mb-4">

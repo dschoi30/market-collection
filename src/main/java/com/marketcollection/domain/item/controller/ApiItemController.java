@@ -1,6 +1,5 @@
 package com.marketcollection.domain.item.controller;
 
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.item.service.ItemService;
 import lombok.RequiredArgsConstructor;

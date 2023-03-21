@@ -23,11 +23,10 @@ public class ItemImageDto {
     private String itemImageUrl;
     private boolean isRepImage;
 
-    public void createItemImage(String originalFilename, String renamedFileName, String itemImageUrl, boolean isRepImage) {
+    public void createItemImage(String originalFilename, String renamedFileName, String itemImageUrl) {
         this.originalFileName = originalFilename;
         this.renamedFileName = renamedFileName;
         this.itemImageUrl = itemImageUrl;
-        this.isRepImage = isRepImage;
     }
 
     public ItemImage toEntity() {

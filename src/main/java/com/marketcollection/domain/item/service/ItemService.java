@@ -1,5 +1,7 @@
 package com.marketcollection.domain.item.service;
 
+import com.marketcollection.common.unit.S3Uploader;
+import com.marketcollection.domain.common.LocalFileService;
 import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.domain.item.Item;
@@ -8,19 +10,24 @@ import com.marketcollection.domain.item.repository.ItemImageRepository;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,6 +40,9 @@ public class ItemService {
     private final ItemImageService itemImageService;
     private final ItemImageRepository itemImageRepository;
 
+    public static final Integer SMALL_SIZE = 500;
+    public static final Integer REGULAR_SIZE = 800;
+
     // 상품 저장
     public Long save(ItemFormDto itemFormDto, List<MultipartFile> itemImageFiles) throws Exception {
         Item item = itemFormDto.toEntity();
@@ -43,13 +53,13 @@ public class ItemService {
 
         for(int i = 0; i < itemImageFiles.size(); i++) {
 
-/*            if(i == 0) { // 업로드 파일 중 첫 번째 이미지 썸네일 저장
-                ItemImage itemImage = itemImageService.saveThumbnail(itemImageDto, itemImageFiles.get(i));
+            if(i == 0) { // 업로드 파일 중 첫 번째 이미지 썸네일 저장
+                ItemImage itemImage = itemImageService.save(itemImageDto, itemImageFiles.get(i), SMALL_SIZE);
                 itemImage.setRepImage();
                 item.addRepImageUrl(itemImage.getItemImageUrl());
-            } else {*/
-                itemImageService.save(itemImageDto, itemImageFiles.get(i));
-//            }
+            } else {
+                itemImageService.save(itemImageDto, itemImageFiles.get(i), REGULAR_SIZE);
+            }
         }
 
         return item.getId();
@@ -167,10 +177,10 @@ public class ItemService {
         if(itemImageFiles != null) {
             for(int i = 0; i < itemImageFiles.size(); i++) {
                 if(i == 0) {
-                    ItemImage itemImage = itemImageService.updateThumbnailImage(itemImageIds.get(i), itemImageFiles.get(i));
+                    ItemImage itemImage = itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i), SMALL_SIZE);
                     item.addRepImageUrl(itemImage.getItemImageUrl());
                 } else {
-                    itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i));
+                    itemImageService.updateItemImage(itemImageIds.get(i), itemImageFiles.get(i), REGULAR_SIZE);
                 }
             }
         }
