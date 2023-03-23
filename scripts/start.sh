@@ -7,9 +7,6 @@ source ${ABSDIR}/profile.sh
 REPOSITORY=/home/ec2-user/app/step3
 PROJECT_NAME=market-collection
 
-cd ~$REPOSITORY/$PROJECT_NAME/zip
-./graldew build
-
 echo "> Build 파일 복사"
 
 cp $REPOSITORY/zip/build/libs/*.jar $REPOSITORY/
