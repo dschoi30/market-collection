@@ -35,7 +35,7 @@ public class InitDB {
 
     private final InitService initService;
 
-//    @PostConstruct
+    @PostConstruct
     public void init() {
             initService.dbInit1();
     }
@@ -87,7 +87,7 @@ public class InitDB {
             stopWatch.stop();
             System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());*/
 
-            for(int i = 1; i <= 100; i++) {
+            for(int i = 1; i <= 10; i++) {
 
                 Item item = Item.builder()
                         .itemName("향기가득 샤인머스캣_" + i)
@@ -95,7 +95,7 @@ public class InitDB {
                         .salePrice((int)(Math.random() * 10000) * 10)
                         .stockQuantity(10000)
                         .description("너무 맛있어요")
-                        .category(Category.FRUIT_RICE)
+                        .categoryId(1L)
                         .repImageUrl("/image/item/grape1.jpg")
 //                        .salesCount((int)(Math.random() * 10000))
 //                        .hit((int)(Math.random() * 10000))
@@ -110,7 +110,27 @@ public class InitDB {
                     ItemImage itemImage = new ItemImage(item, "grape2", "grape2", "/image/item/grape2.jpg", false);
                     em.persist(itemImage);
                 }
+                Item item2 = Item.builder()
+                        .itemName("향기가득 샤인머스캣_" + i)
+                        .originalPrice((int)(Math.random() * 10000) * 10)
+                        .salePrice((int)(Math.random() * 10000) * 10)
+                        .stockQuantity(10000)
+                        .description("너무 맛있어요")
+                        .categoryId(2L)
+                        .repImageUrl("/image/item/grape1.jpg")
+//                        .salesCount((int)(Math.random() * 10000))
+//                        .hit((int)(Math.random() * 10000))
+                        .itemSaleStatus(ItemSaleStatus.ON_SALE)
+                        .build();
+                em.persist(item2);
 
+                ItemImage repImage2 = new ItemImage(item2, "grape1", "grape1", "/image/item/grape1.jpg", true);
+                em.persist(repImage2);
+
+                for(int j = 0; j < 3; j++) {
+                    ItemImage itemImage2 = new ItemImage(item2, "grape2", "grape2", "/image/item/grape2.jpg", false);
+                    em.persist(itemImage2);
+                }
                 Member member = Member.builder()
                         .socialType(SocialType.NAVER)
                         .memberStatus(MemberStatus.ACTIVE)

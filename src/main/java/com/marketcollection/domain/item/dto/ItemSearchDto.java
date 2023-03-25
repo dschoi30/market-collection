@@ -12,4 +12,5 @@ public class ItemSearchDto {
     private String searchBy; // 상품명, 등록자
     private String searchQuery = ""; // 검색어
     private String orderBy; // 상품번호, 카테고리, 상품명, 조회수, 판매량, 판매상태, 등록자, 등록일
+    private Long categoryId;
 }

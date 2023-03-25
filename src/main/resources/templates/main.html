@@ -81,6 +81,21 @@
             </div>
         </div>
     </div>
+    <div class="categories">
+        <!--  LEVEL 1  -->
+        <div class="level">
+            <div th:each="category, idx : ${itemCategoryDto.subCategories}" th:class="'level1_' + ${idx.index}">
+                <i th:if="${category.categoryName} eq '패션'" class="fas fa-tshirt">패션</i>
+                <i th:if="${category.categoryName} eq '가전/디지털'" class="fas fa-laptop-house">가전/디지털</i>
+                <i th:if="${category.categoryName} eq '도서'" class="fas fa-book">도서</i>
+                <i th:if="${category.categoryName} eq '식품'" class="fas fa-hamburger">식품</i>
+                <span th:text="${category.categoryName}"></span>
+            </div>
+        </div>
+
+        <a th:href="@{'/' + '?categoryId=1'}">카테고리</a>
+    </div>
+
 
     <div th:with="start=${(items.number / maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
         <ul class="pagination justify-content-center">

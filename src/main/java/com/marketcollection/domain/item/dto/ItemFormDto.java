@@ -30,7 +30,7 @@ public class ItemFormDto {
     private String description;
 
     @NotNull(message = "카테고리는 필수 입력 값입니다.")
-    private Category category;
+    private Long categoryId;
 
     private String repImageUrl;
 
@@ -45,7 +45,7 @@ public class ItemFormDto {
                 .salePrice(salePrice)
                 .stockQuantity(stockQuantity)
                 .description(description)
-                .category(category)
+                .categoryId(categoryId)
                 .itemSaleStatus(itemSaleStatus)
                 .build();
     }
