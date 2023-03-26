@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<style>
+
+</style>
+
+<body th:fragment="category" class="category">
+
+    <!--  LEVEL 1  -->
+    <div class="level">
+      <div th:each="category, idx : ${itemCategoryDto.subCategories}" th:class="'level1_' + ${idx.index}">
+        <span th:text="${category.categoryName}"></span>
+      </div>
+    </div>
+    <div class="level2">
+      <div th:with="start=0, end=${itemCategoryDto.subCategories.size()}">
+        <div th:each="number: ${#numbers.sequence(start, end)}">
+          <div th:each="category, idx : ${itemCategoryDto.subCategories.get(number).subCategories}" th:class="'level2_' + ${idx.index}">
+            <a th:href="@{'/' + '?categoryId=' + ${category.id}}"><span th:text="${category.categoryName}"></span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>

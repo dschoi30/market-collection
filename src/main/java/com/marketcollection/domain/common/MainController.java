@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,16 +36,19 @@ public class MainController {
             model.addAttribute("userName", user.getUserName());
             model.addAttribute("grade", user.getGrade().getTitle());
         }
+
         itemSearchDto.setCategoryId(categoryId);
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
         Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
         List<ItemListDto> recentItems = itemService.getRecentViewList(request);
-        ItemCategoryDto itemCategoryDto = categoryService.createRootCategory();
-        model.addAttribute("items", items);
+
         model.addAttribute("itemCategoryDto", itemCategoryDto);
-        model.addAttribute("recentItems", recentItems);
         model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("items", items);
         model.addAttribute("maxPage", 10);
+        model.addAttribute("recentItems", recentItems);
 
         return "main";
     }

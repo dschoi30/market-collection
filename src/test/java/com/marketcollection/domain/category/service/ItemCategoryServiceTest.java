@@ -70,7 +70,7 @@ class ItemCategoryServiceTest {
                 .willReturn(itemCategoryEntities);
 
         //when
-        ItemCategoryDto categoryRoot = categoryService.createRootCategory();
+        ItemCategoryDto categoryRoot = categoryService.createCategoryRoot();
 
         //then
         verify(categoryRepository, atLeastOnce()).findAll();
@@ -85,22 +85,19 @@ class ItemCategoryServiceTest {
     }
 
     private List<ItemCategory> createCategoryEntities() {
-        ItemCategory sub1 = new ItemCategory("SUB1", 0l);
-        ItemCategory sub2 = new ItemCategory("SUB2", 0l);
-        ItemCategory sub11 = new ItemCategory("SUB1-1", 1l);
-        ItemCategory sub12 = new ItemCategory("SUB1-2", 1l);
-        ItemCategory sub21 = new ItemCategory("SUB2-1", 2l);
-        ItemCategory sub22 = new ItemCategory("SUB2-2", 2l);
-        ReflectionTestUtils.setField(sub1, "id", 1l);
-        ReflectionTestUtils.setField(sub2, "id", 2l);
-        ReflectionTestUtils.setField(sub11, "id", 3l);
-        ReflectionTestUtils.setField(sub12, "id", 4l);
-        ReflectionTestUtils.setField(sub21, "id", 5l);
-        ReflectionTestUtils.setField(sub22, "id", 6l);
+        ItemCategory sub1 = new ItemCategory("SUB1", 0L);
+        ItemCategory sub2 = new ItemCategory("SUB2", 0L);
+        ItemCategory sub11 = new ItemCategory("SUB1-1", 1L);
+        ItemCategory sub12 = new ItemCategory("SUB1-2", 1L);
+        ItemCategory sub21 = new ItemCategory("SUB2-1", 2L);
+        ItemCategory sub22 = new ItemCategory("SUB2-2", 2L);
+        ReflectionTestUtils.setField(sub1, "id", 1L);
+        ReflectionTestUtils.setField(sub2, "id", 2L);
+        ReflectionTestUtils.setField(sub11, "id", 3L);
+        ReflectionTestUtils.setField(sub12, "id", 4L);
+        ReflectionTestUtils.setField(sub21, "id", 5L);
+        ReflectionTestUtils.setField(sub22, "id", 6L);
 
-        List<ItemCategory> itemCategoryEntities = List.of(
-                sub1, sub2, sub11, sub12, sub21, sub22
-        );
-        return itemCategoryEntities;
+        return List.of(sub1, sub2, sub11, sub12, sub21, sub22);
     }
 }

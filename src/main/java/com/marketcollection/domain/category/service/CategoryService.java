@@ -18,11 +18,10 @@ import static java.util.stream.Collectors.groupingBy;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-    public ItemCategoryDto createRootCategory() {
+    // 카테고리 루트 생성
+    public ItemCategoryDto createCategoryRoot() {
         List<ItemCategory> categories = categoryRepository.findAll();
-        categories.forEach(System.out::println);
-        Map<Long, List<ItemCategoryDto>> subCategoriesMap = categories
-                .stream()
+        Map<Long, List<ItemCategoryDto>> subCategoriesMap = categories.stream()
                 .map(c -> new ItemCategoryDto(c.getId(), c.getCategoryName(), c.getParentId()))
                 .collect(groupingBy(ItemCategoryDto::getParentId));
 
@@ -32,16 +31,12 @@ public class CategoryService {
         return rootItemCategoryDto;
     }
 
+    // 하위 카테고리 생성
     private void addSubCategories(ItemCategoryDto parentItemCategoryDto, Map<Long, List<ItemCategoryDto>> subCategoriesMap) {
         List<ItemCategoryDto> subCategories = subCategoriesMap.get(parentItemCategoryDto.getId());
-        if(subCategories == null) {
-            return;
-        }
-        parentItemCategoryDto.setSubCategories(subCategories);
+        if(subCategories == null) return;
 
-        subCategories.stream()
-                .forEach(s -> {
-                    addSubCategories(s, subCategoriesMap);
-                });
+        parentItemCategoryDto.setSubCategories(subCategories);
+        subCategories.stream().forEach(s -> { addSubCategories(s, subCategoriesMap); });
     }
 }

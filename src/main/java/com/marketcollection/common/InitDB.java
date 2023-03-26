@@ -35,7 +35,7 @@ public class InitDB {
 
     private final InitService initService;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
             initService.dbInit1();
     }
@@ -95,7 +95,7 @@ public class InitDB {
                         .salePrice((int)(Math.random() * 10000) * 10)
                         .stockQuantity(10000)
                         .description("너무 맛있어요")
-                        .categoryId(1L)
+                        .categoryId(14L)
                         .repImageUrl("/image/item/grape1.jpg")
 //                        .salesCount((int)(Math.random() * 10000))
 //                        .hit((int)(Math.random() * 10000))
@@ -116,7 +116,7 @@ public class InitDB {
                         .salePrice((int)(Math.random() * 10000) * 10)
                         .stockQuantity(10000)
                         .description("너무 맛있어요")
-                        .categoryId(2L)
+                        .categoryId(22L)
                         .repImageUrl("/image/item/grape1.jpg")
 //                        .salesCount((int)(Math.random() * 10000))
 //                        .hit((int)(Math.random() * 10000))

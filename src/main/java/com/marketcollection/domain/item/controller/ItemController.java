@@ -36,10 +36,6 @@ public class ItemController {
         }
     }
 
-    @ModelAttribute("categories")
-    public Category[] categories() { return Category.values();
-    }
-
     // 상품 등록 페이지
     @GetMapping("/admin/item/new")
     public String saveItem(Model model) {
