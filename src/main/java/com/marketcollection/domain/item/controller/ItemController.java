@@ -1,6 +1,8 @@
 package com.marketcollection.domain.item.controller;
 
 import com.marketcollection.common.auth.LoginUser;
+import com.marketcollection.domain.category.dto.ItemCategoryDto;
+import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
@@ -27,6 +29,7 @@ import java.util.Optional;
 public class ItemController {
 
     private final ItemService itemService;
+    private final CategoryService categoryService;
 
     // 헤더에 회원 정보 출력
     @ModelAttribute
@@ -34,10 +37,6 @@ public class ItemController {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
         }
-    }
-
-    @ModelAttribute("categories")
-    public Category[] categories() { return Category.values();
     }
 
     // 상품 등록 페이지
@@ -99,5 +98,30 @@ public class ItemController {
         model.addAttribute("items", itemCursorList);
         model.addAttribute("recentItems", recentItems);
         return "item/items";
+    }
+
+    @GetMapping("/categories/{categoryId}")
+    public String categoryItemPage(Model model, @LoginUser SessionUser user, ItemSearchDto itemSearchDto,
+                                   @PathVariable("categoryId") Long categoryId,
+                                   Optional<Integer> page, HttpServletRequest request) {
+        if(user != null) {
+            model.addAttribute("userName", user.getUserName());
+            model.addAttribute("grade", user.getGrade().getTitle());
+        }
+
+        itemSearchDto.setCategoryId(categoryId);
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
+        Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
+        List<ItemListDto> recentItems = itemService.getRecentViewList(request);
+
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+        model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("items", items);
+        model.addAttribute("maxPage", 10);
+        model.addAttribute("recentItems", recentItems);
+
+        return "item/categoryItems";
     }
 }

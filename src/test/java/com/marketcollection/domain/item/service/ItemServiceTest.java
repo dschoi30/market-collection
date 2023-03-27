@@ -56,7 +56,7 @@ class ItemServiceTest {
         itemFormDto.setSalePrice(90);
         itemFormDto.setStockQuantity(100);
         itemFormDto.setDescription("description");
-        itemFormDto.setCategory(Category.FRUIT_RICE);
+        itemFormDto.setCategoryId(1L);
         itemFormDto.setItemSaleStatus(ItemSaleStatus.ON_SALE);
 
         List<MultipartFile> multipartFiles = createItemImageFiles();

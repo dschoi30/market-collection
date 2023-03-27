@@ -3,42 +3,54 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <header th:fragment="header">
-    <div class="row">
-        <div class="col">
+    <div class="row" style="margin: 10px 200px;">
+        <div class="col" style="padding: 0;">
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-                <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
-                <span class="fs-4">마켓컬렉션</span>
+                <span class="fs-4">
+                    마켓컬렉션
+                </span>
             </a>
         </div>
-        <div class="col col-md-3 position-relative">
+        <div class="col col-md-4 position-relative">
             <form class="form-inline" th:action="@{/}" method="get">
-                <input name="searchQuery" class="form-control" type="search" placeholder="검색어를 입력해주세요" aria-label="Search">
-                <button class="btn btn-outline-success position-absolute top-0 end-0" type="submit">검색</button>
+                <input name="searchQuery" class="form-control" type="search" placeholder="검색어를 입력해주세요"
+                       aria-label="Search" style="border: 1px solid #c1c3c5; height: 42px;">
+                <button class="btn btn-custom position-absolute top-0 end-0" type="submit" style="margin-right: 10px;">
+                    검색
+                </button>
             </form>
         </div>
         <div class="col">
-            <div class="grid text-center">
+            <div class="grid text-end">
                 <span sec:authorize="isAnonymous()">
                     <a href="/member/login" class="nav-link">로그인</a>
                 </span>
                 <span class="badge text-bg-light" sec:authorize="isAuthenticated()">
                     [[${grade}]]
                 </span>
-                 <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
-                    [[${userName}]]님
-                </span>
-                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
-                    <a href="/admin/orders">관리자페이지</a>
-                </span>
-                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
-                    <a href="/cart">장바구니</a>
-                </span>
-                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
-                    <a href="/orders">주문내역</a>
-                </span>
-                <span class=".g-col-6 .g-col-md-4" sec:authorize="isAuthenticated()">
-                    <a href="/logout">로그아웃</a>
-                </span>
+                <div class="btn-group" sec:authorize="isAuthenticated()">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; color: black; border: none; padding: 0;">
+                        <span class=".g-col-6 .g-col-md-4">
+                            [[${userName}]]님
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class=".g-col-6 .g-col-md-4">
+                            <a href="/admin/orders">관리자페이지</a>
+                        </li>
+                        <li class=".g-col-6 .g-col-md-4">
+                            <a href="/cart">장바구니</a>
+                        </li>
+                        <li class=".g-col-6 .g-col-md-4">
+                            <a href="/orders">주문내역</a>
+                        </li>
+                        <li class=".g-col-6 .g-col-md-4">
+                            <a href="/logout">로그아웃</a>
+                        </li>
+                    </ul>
+                </div>
                 <intercept-url pattern="/favicon.ico" access="ROLE_ANONYMOUS" />
             </div>
         </div>

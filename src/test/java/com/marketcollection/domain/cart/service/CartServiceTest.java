@@ -42,7 +42,7 @@ class CartServiceTest {
     }
     public Item saveItem() {
         Item item = new Item("test1", 10000, 9000, 10000, "content",
-                Category.FRUIT_RICE, "", 0, 0, 0, ItemSaleStatus.ON_SALE);
+                1L, "", 0, 0, 0, ItemSaleStatus.ON_SALE);
         return itemRepository.save(item);
     }
     public CartItem saveCart() {

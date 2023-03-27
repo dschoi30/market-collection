@@ -8,6 +8,7 @@ import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.QItem;
 import com.marketcollection.domain.item.dto.QItemListDto;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -68,12 +70,14 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return StringUtils.isEmpty(searchQuery) ? null : item.itemName.like("%" + searchQuery + "%");
     }
 
+    private Predicate categoryIdEq(Long categoryId) {
+        return ObjectUtils.isEmpty(categoryId) ? null : item.categoryId.eq(categoryId);
+    }
+
     private OrderSpecifier orderSpecifier(ItemSearchDto itemSearchDto) {
 
         if (Objects.equals(itemSearchDto.getOrderBy(), "id"))
             return item.id.desc();
-        if (Objects.equals(itemSearchDto.getOrderBy(), "categoryId"))
-            return item.category.asc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "itemName"))
             return item.itemName.asc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "hit"))
@@ -86,7 +90,10 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             return item.createdBy.asc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "createdDate"))
             return item.createdDate.desc();
-
+        if (Objects.equals(itemSearchDto.getOrderBy(), "salePriceAsc"))
+            return item.salePrice.asc();
+        if (Objects.equals(itemSearchDto.getOrderBy(), "salePriceDesc"))
+            return item.salePrice.desc();
         return item.id.desc();
     }
 
@@ -107,7 +114,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .from(item)
                 .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE))
                 .where(itemNameLike(itemSearchDto.getSearchQuery()))
-                .orderBy(item.id.desc())
+                .where(categoryIdEq(itemSearchDto.getCategoryId()))
+                .orderBy(orderSpecifier(itemSearchDto))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -117,6 +125,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .from(item)
                 .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE))
                 .where(itemNameLike(itemSearchDto.getSearchQuery()))
+                .where(categoryIdEq(itemSearchDto.getCategoryId()))
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total);

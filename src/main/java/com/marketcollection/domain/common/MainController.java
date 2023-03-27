@@ -2,6 +2,8 @@ package com.marketcollection.domain.common;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
+import com.marketcollection.domain.category.dto.ItemCategoryDto;
+import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.item.dto.ItemListDto;
 import com.marketcollection.domain.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.service.ItemService;
@@ -12,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -22,6 +26,7 @@ import java.util.Optional;
 public class MainController {
 
     private final ItemService itemService;
+    private final CategoryService categoryService;
 
     @GetMapping("/")
     public String mainPage(Model model, @LoginUser SessionUser user, ItemSearchDto itemSearchDto,
@@ -31,13 +36,17 @@ public class MainController {
             model.addAttribute("grade", user.getGrade().getTitle());
         }
 
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
         Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
         List<ItemListDto> recentItems = itemService.getRecentViewList(request);
-        model.addAttribute("items", items);
-        model.addAttribute("recentItems", recentItems);
+
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
         model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("items", items);
         model.addAttribute("maxPage", 10);
+        model.addAttribute("recentItems", recentItems);
 
         return "main";
     }

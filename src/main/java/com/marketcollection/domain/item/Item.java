@@ -19,7 +19,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-@Table(indexes = {@Index(name = "idx_item_category", columnList = "category")})
+@Table(indexes = {@Index(name = "idx_item_category", columnList = "categoryId")})
 @Entity
 public class Item extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +35,7 @@ public class Item extends BaseEntity {
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
+    private Long categoryId;
 
     private String repImageUrl;
     private int salesCount;
@@ -52,13 +51,13 @@ public class Item extends BaseEntity {
 
     @Builder
     public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description,
-                Category category, String repImageUrl, int salesCount, int reviewCount, int hit, ItemSaleStatus itemSaleStatus) {
+                Long categoryId, String repImageUrl, int salesCount, int reviewCount, int hit, ItemSaleStatus itemSaleStatus) {
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
         this.stockQuantity = stockQuantity;
         this.description = description;
-        this.category = category;
+        this.categoryId = categoryId;
         this.repImageUrl = repImageUrl;
         this.salesCount = salesCount;
         this.reviewCount = reviewCount;
@@ -72,7 +71,7 @@ public class Item extends BaseEntity {
         this.salePrice = itemFormDto.getSalePrice();
         this.stockQuantity = itemFormDto.getStockQuantity();
         this.description = itemFormDto.getDescription();
-        this.category = itemFormDto.getCategory();
+        this.categoryId = itemFormDto.getCategoryId();
         this.itemSaleStatus = itemFormDto.getItemSaleStatus();
     }
 
