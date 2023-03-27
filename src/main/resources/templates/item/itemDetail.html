@@ -29,6 +29,25 @@
         .btn-no-padding {
             padding: 0 5px;
         }
+        .pagination > li > a:focus,
+        .pagination > li > a:hover,
+        .pagination > li > span:focus,
+        .pagination > li > span:hover {
+            color: black;
+            background-color: #f1f3f5;
+            border-color: #ddd;
+        }
+        .pagination > .active > a {
+            color: white;
+            background-color: #f1f3f5;
+            border: 1px solid #dddddd;
+        }
+        .pagination > .active > a:hover {
+            background-color: #f1f3f5;
+        }
+        .pagination > .disabled > a {
+            background-color: white;
+        }
     </style>
 </th:block>
 
@@ -103,7 +122,6 @@
         }
 
         const itemId = [[${item.id}]];
-        console.log(itemId);
 
         const reviewList = document.querySelector('.review-list');
         const reviewPage = document.querySelector('.review-page');
@@ -141,21 +159,24 @@
         }
 
         function printPages(data){ //페이지 목록 출력
-
-            //pagination
             let pageStr = '';
+                pageStr += `<div th:with="start=${(data.number / data.end)*data.end + 1}, end=(${(data.page = 0) ? 1 : (data.start + (data.end - 1) < data.end ? data.start + (data.end - 1) : data.end)})" >`
+                pageStr += `<ul class="pagination justify-content-center">`
 
-            if(data.prev) {
-                pageStr +=`<li class="page-item"><a class="page-link" data-page="${data.start-1}">PREV</a></li>`
-            }
+                pageStr += `<li class="page-item disabled">`
+                pageStr += `<a class="page-link text-black" id="start" data-page="${data.page}">&lt</a>`
+                pageStr += `</li>`
 
             for(let i = data.start; i <= data.end; i++){
-                pageStr +=`<li class="page-item ${i == data.page?"active":""} "><a class="page-link" data-page="${i}">${i}</a></li>`
+                pageStr +=`<li class="page-item ${i === data.page?"active":""} "><a class="page-link text-black" data-page="${i}">${i}</a></li>`
             }
 
-            if(data.next) {
-                pageStr +=`<li class="page-item"><a class="page-link" data-page="${data.end +1}">NEXT</a></li>`
-            }
+                pageStr += `<li class="page-item">`
+                pageStr += `<a class="page-link text-black ${data.page === data.end?"disabled":""}" data-page="${data.page + 2}">&gt</a>`
+                pageStr += `</li>`
+
+                pageStr += `</ul>`
+                pageStr += `</div>`
             reviewPage.innerHTML = pageStr
         }
 
@@ -189,7 +210,7 @@
 
             const pageNum = target.getAttribute("data-page")
             page = pageNum
-            console.log(page);
+            console.log("page=" + page);
             printReviews(page, size, false)
 
         },false)

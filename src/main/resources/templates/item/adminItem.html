@@ -12,6 +12,25 @@
       display: inline-block;
       width: auto;
     }
+    .pagination > li > a:focus,
+    .pagination > li > a:hover,
+    .pagination > li > span:focus,
+    .pagination > li > span:hover {
+      color: black;
+      background-color: #f1f3f5;
+      border-color: #ddd;
+    }
+    .pagination > .active > a {
+      color: white;
+      background-color: #f1f3f5;
+      border: 1px solid #dddddd;
+    }
+    .pagination > .active > a:hover {
+      background-color: #f1f3f5;
+    }
+    .pagination > .disabled > a {
+      background-color: white;
+    }
   </style>
 </th:block>
 
@@ -47,7 +66,6 @@
       <select th:field="*{orderBy}" class="form-select search-bar">
         <option value="">정렬기준</option>
         <option value="id">상품번호</option>
-        <option value="category">카테고리</option>
         <option value="itemName">상품명</option>
         <option value="hit">조회수</option>
         <option value="salesCount">판매량</option>
@@ -92,7 +110,7 @@
       <tbody>
       <tr th:each="item, status: ${items.getContent()}" th:object="${items}">
         <td th:text="${item.id}"></td>
-        <td th:text="${item.category.title}"></td>
+        <td th:text="${item.categoryId}"></td>
         <td><a th:href="'/admin/item/' + ${item.id}" th:text="${item.itemName}" class="text-dark" style="text-decoration-line: none;"></a></td>
         <td th:text="${#numbers.formatInteger(item.hit, 1, 'COMMA')}"></td>
         <td th:text="${#numbers.formatInteger(item.salesCount, 1, 'COMMA')}"></td>
@@ -109,19 +127,19 @@
       <ul class="pagination justify-content-center">
 
         <li class="page-item" th:classappend="${items.first} ? 'disabled'">
-          <a th:onclick="'javascript:page(' + ${items.number - 1} + ')'" aria-label="Previous" class="page-link">
+          <a th:onclick="'javascript:page(' + ${items.number - 1} + ')'" aria-label="Previous" class="page-link text-black">
             <span aria-hidden="true">&lt</span>
           </a>
         </li>
 
         <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq (page - 1)} ? 'active' : ''">
-          <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">
+          <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link text-black">
             [[${page}]]
           </a>
         </li>
 
         <li class="page-item" th:classappend="${items.last}?'disabled'">
-          <a th:onclick="'javascript:page(' + ${items.number + 1} + ')'" aria-label='Next' class="page-link">
+          <a th:onclick="'javascript:page(' + ${items.number + 1} + ')'" aria-label='Next' class="page-link text-black">
             <span aria-hidden='true'>&gt</span>
           </a>
         </li>

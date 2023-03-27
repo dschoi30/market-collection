@@ -90,7 +90,10 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             return item.createdBy.asc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "createdDate"))
             return item.createdDate.desc();
-
+        if (Objects.equals(itemSearchDto.getOrderBy(), "salePriceAsc"))
+            return item.salePrice.asc();
+        if (Objects.equals(itemSearchDto.getOrderBy(), "salePriceDesc"))
+            return item.salePrice.desc();
         return item.id.desc();
     }
 
@@ -112,7 +115,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE))
                 .where(itemNameLike(itemSearchDto.getSearchQuery()))
                 .where(categoryIdEq(itemSearchDto.getCategoryId()))
-                .orderBy(item.id.desc())
+                .orderBy(orderSpecifier(itemSearchDto))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

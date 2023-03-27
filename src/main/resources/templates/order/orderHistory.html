@@ -19,6 +19,25 @@
     .btn-no-padding {
       padding: 0 5px;
     }
+    .pagination > li > a:focus,
+    .pagination > li > a:hover,
+    .pagination > li > span:focus,
+    .pagination > li > span:hover {
+      color: black;
+      background-color: #f1f3f5;
+      border-color: #ddd;
+    }
+    .pagination > .active > a {
+      color: white;
+      background-color: #f1f3f5;
+      border: 1px solid #dddddd;
+    }
+    .pagination > .active > a:hover {
+      background-color: #f1f3f5;
+    }
+    .pagination > .disabled > a {
+      background-color: white;
+    }
   </style>
 </th:block>
 
@@ -109,15 +128,15 @@
     end=(${(orders.totalPages == 0) ? 1 : (start + (maxPage - 1) < orders.totalPages ? start + (maxPage - 1) : orders.totalPages)})">
       <ul class="pagination justify-content-center">
         <li class="page-item" th:classappend="${orders.number eq 0} ? 'disabled' : ''">
-          <a th:href="@{'/orders/' + ${orders.number - 1}}" aria-label='Previous' class="page-link">
+          <a th:href="@{'/orders/' + ${orders.number - 1}}" aria-label='Previous' class="page-link text-black">
             <span aria-hidden='true'>&lt</span>
           </a>
         </li>
         <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${orders.number eq page - 1} ? 'active' : ''">
-          <a th:href="@{'/orders/' + ${page - 1}}" th:inline="text" class="page-link">[[${page}]]</a>
+          <a th:href="@{'/orders/' + ${page - 1}}" th:inline="text" class="page-link text-black">[[${page}]]</a>
         </li>
         <li class="page-item" th:classappend="${orders.number + 1 ge orders.totalPages} ? 'disabled' : ''">
-          <a th:href="@{'/orders/' + ${orders.number + 1}}" aria-label='Next' class="page-link">
+          <a th:href="@{'/orders/' + ${orders.number + 1}}" aria-label='Next' class="page-link text-black">
             <span aria-hidden='true'>&gt</span>
           </a>
         </li>

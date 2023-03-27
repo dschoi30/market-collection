@@ -61,7 +61,6 @@ public class ReviewController {
     @GetMapping("/reviews/{itemId}")
     public @ResponseBody PageResponseDto<ReviewDto> getReivewList(@PathVariable("itemId") Long itemId,
                                                                     PageRequestDto pageRequestDto) {
-        System.out.println("page=" + pageRequestDto.getPage());
         return reviewService.getReviewList(itemId, pageRequestDto);
     }
 

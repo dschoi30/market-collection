@@ -30,14 +30,12 @@ public class MainController {
 
     @GetMapping("/")
     public String mainPage(Model model, @LoginUser SessionUser user, ItemSearchDto itemSearchDto,
-                           @RequestParam(required = false) Long categoryId,
                            Optional<Integer> page, HttpServletRequest request) {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
             model.addAttribute("grade", user.getGrade().getTitle());
         }
 
-        itemSearchDto.setCategoryId(categoryId);
         ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
 
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
