@@ -15,7 +15,7 @@ var item = {
         const formData = new FormData();
         const data = {
             itemSaleStatus: $('#itemSaleStatus').val(),
-            category: $('#category').val(),
+            categoryId: $('#categoryId').val(),
             itemName: $('#itemName').val(),
             originalPrice: $('#originalPrice').val(),
             salePrice: $('#salePrice').val(),
@@ -64,7 +64,7 @@ var item = {
         const data = {
             id: $('#id').val(),
             itemSaleStatus: $('#itemSaleStatus').val(),
-            category: $('#category').val(),
+            categoryId: $('#categoryId').val(),
             itemName: $('#itemName').val(),
             originalPrice: $('#originalPrice').val(),
             salePrice: $('#salePrice').val(),
