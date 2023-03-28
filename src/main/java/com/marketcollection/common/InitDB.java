@@ -1,8 +1,6 @@
 package com.marketcollection.common;
 
 import com.marketcollection.domain.common.Address;
-import com.marketcollection.domain.common.BaseEntity;
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
 import com.marketcollection.domain.item.ItemSaleStatus;
@@ -20,13 +18,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StopWatch;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Profile("local")
 @RequiredArgsConstructor
@@ -65,27 +59,27 @@ public class InitDB {
         }
 
         public void dbInit1() {
-            StopWatch stopWatch = new StopWatch();
-            stopWatch.start();
-            List<Item> items = IntStream.range(1, 100000)
-                    .parallel()
-                    .mapToObj(i -> Item.builder()
-                            .itemName("향기가득 샤인머스캣_" + i)
-                            .originalPrice((int) (Math.random() * 10000) * 10)
-                            .salePrice((int) (Math.random() * 10000) * 10)
-                            .stockQuantity(10000)
-                            .description("너무 맛있어요")
-                            .categoryId(24L)
-                            .repImageUrl("/image/item/grape1.jpg")
-                            .salesCount((int) (Math.random() * 10000))
-                            .reviewCount((int) (Math.random() * 10000))
-                            .hit((int) (Math.random() * 10000))
-                            .itemSaleStatus(ItemSaleStatus.ON_SALE)
-                            .build())
-                    .collect(Collectors.toList());
-            initDBRepository.bulkItemInsert(items);
-            stopWatch.stop();
-            System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());
+//            StopWatch stopWatch = new StopWatch();
+//            stopWatch.start();
+//            List<Item> items = IntStream.range(1, 1000000)
+//                    .parallel()
+//                    .mapToObj(i -> Item.builder()
+//                            .itemName("향기가득 샤인머스캣_" + i)
+//                            .originalPrice((int) (Math.random() * 10000) * 10)
+//                            .salePrice((int) (Math.random() * 10000) * 10)
+//                            .stockQuantity(10000)
+//                            .description("너무 맛있어요")
+//                            .categoryId(24L)
+//                            .repImageUrl("/image/item/grape1.jpg")
+//                            .salesCount((int) (Math.random() * 10000))
+//                            .reviewCount((int) (Math.random() * 10000))
+//                            .hit((int) (Math.random() * 10000))
+//                            .itemSaleStatus(ItemSaleStatus.ON_SALE)
+//                            .build())
+//                    .collect(Collectors.toList());
+//            initDBRepository.bulkItemInsert(items);
+//            stopWatch.stop();
+//            System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());
 
             for(int i = 1; i <= 10; i++) {
 

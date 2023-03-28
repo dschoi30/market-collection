@@ -1,7 +1,6 @@
 package com.marketcollection.domain.review.repository;
 
 import com.marketcollection.domain.common.Address;
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.dto.ItemFormDto;

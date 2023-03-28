@@ -6,8 +6,6 @@ import com.marketcollection.domain.cart.dto.CartRequestDto;
 import com.marketcollection.domain.cart.repository.CartItemRepository;
 import com.marketcollection.domain.cart.repository.CartRepository;
 import com.marketcollection.domain.common.Address;
-import com.marketcollection.domain.common.BaseEntity;
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.repository.ItemRepository;

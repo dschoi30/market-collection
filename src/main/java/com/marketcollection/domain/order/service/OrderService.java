@@ -78,15 +78,12 @@ public class OrderService {
 
         Order order = Order.createOrder(member, orderItems, orderDto);
 
-        for (OrderItem orderItem : orderItems) {
-            orderItem.setOrder(order);
-        }
+        orderItems.forEach(oi -> oi.setOrder(order));
         orderRepository.save(order);
 
         // 포인트 입출 내역 등록
-        for (OrderItem orderItem : orderItems) {
-            pointService.createOrderPoint(member, orderItem);
-        }
+        orderItems.forEach(oi -> pointService.createOrderPoint(member, oi));
+
         if (orderDto.getUsingPoint() > 0) {
             pointService.createUsingPoint(member, orderDto);
         }

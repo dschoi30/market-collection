@@ -4,7 +4,6 @@ import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.domain.category.dto.ItemCategoryDto;
 import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.common.PageCursor;
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.common.auth.dto.SessionUser;
@@ -112,17 +111,19 @@ public class ItemController {
 
         itemSearchDto.setCategoryId(categoryId);
         ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        String categoryName = itemCategoryDto.findCategoryName(categoryId);
 
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
         Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
         List<ItemListDto> recentItems = itemService.getRecentViewList(request);
 
+        model.addAttribute("categoryName", categoryName);
         model.addAttribute("itemCategoryDto", itemCategoryDto);
         model.addAttribute("itemSearchDto", itemSearchDto);
         model.addAttribute("items", items);
         model.addAttribute("maxPage", 10);
         model.addAttribute("recentItems", recentItems);
 
-        return "item/categoryItems";
+        return "item/categoryItem";
     }
 }

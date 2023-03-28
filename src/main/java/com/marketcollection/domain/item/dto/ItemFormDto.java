@@ -1,6 +1,5 @@
 package com.marketcollection.domain.item.dto;
 
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import lombok.Getter;

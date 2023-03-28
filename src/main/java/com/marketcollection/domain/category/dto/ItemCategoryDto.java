@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Getter
@@ -19,5 +20,19 @@ public class ItemCategoryDto {
         this.id = id;
         this.categoryName = categoryName;
         this.parentId = parentId;
+    }
+
+    public String findCategoryName(Long id) {
+
+        for (ItemCategoryDto level1 : subCategories) {
+            List<ItemCategoryDto> level2 = level1.getSubCategories();
+
+            for (ItemCategoryDto itemCategoryDto : level2) {
+                if (Objects.equals(itemCategoryDto.getId(), id)) {
+                    return itemCategoryDto.getCategoryName();
+                }
+            }
+        }
+        return "";
     }
 }

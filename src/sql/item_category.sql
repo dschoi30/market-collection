@@ -9,7 +9,7 @@ insert into item_category(category_name, parent_id) values ('샐러드 · 간편
 insert into item_category(category_name, parent_id) values ('면 · 양념 · 오일', 0);
 insert into item_category(category_name, parent_id) values ('생수 · 음료 · 우유 · 커피', 0);
 insert into item_category(category_name, parent_id) values ('간식 · 과자 · 떡', 0);
-insert into item_category(category_name, parent_id) values ('배이커리 · 치즈 · 델리', 0);
+insert into item_category(category_name, parent_id) values ('베이커리 · 치즈 · 델리', 0);
 insert into item_category(category_name, parent_id) values ('건강식품', 0);
 insert into item_category(category_name, parent_id) values ('와인', 0);
 insert into item_category(category_name, parent_id) values ('전통주', 0);

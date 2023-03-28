@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="css">
+    <style>
+        .mgt-5 {
+            margin-top: 5px;
+        }
+        .mgb-10 {
+            margin-bottom: 10px;
+        }
+        .mgb-30 {
+            margin-bottom: 30px;
+        }
+        .mgl-10 {
+            margin-left: 10px;
+        }
+        .thumbnail {
+            width: 50px;
+            height: 50px;
+        }
+        .recent-view {
+            overflow: hidden;
+            width: 120px;
+            height: 100px;
+            position: fixed;
+            top: 40%;
+            right: 3%;
+            border: 1px solid #c1c3c5;
+        }
+        .card {
+            height: 380px;
+        }
+        .text-gray {
+            color: #808080;
+        }
+        .menu {
+            border-bottom: 1px solid #c1c3c5;
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 50px;
+            margin-bottom: 30px;
+        }
+        .category {
+            display: flex;
+            width: 120px;
+            height: 100%;
+            align-items: center;
+        }
+        .category:hover {
+            cursor: pointer;
+        }
+        .level1 {
+            z-index: 1;
+            display: none;
+            position: absolute;
+            top: 50px;
+            width: 200px;
+            height: 400px;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .level2 {
+            z-index: 1;
+            display: none;
+            position: absolute;
+            top: 50px;
+            left: 200px;
+            width: 220px;
+            height: 400px;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .gnb-menu {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0;
+            margin-right: 120px;
+            width: 100%;
+            height: 100%;
+            list-style: none;
+            align-items: center;
+        }
+        .gnb-menu > li {
+            width: 16%;
+            text-align: center;
+        }
+        .pagination > li > a:focus,
+        .pagination > li > a:hover,
+        .pagination > li > span:focus,
+        .pagination > li > span:hover {
+            color: black;
+            background-color: #f1f3f5;
+            border-color: #ddd;
+        }
+        .pagination > .active > a {
+            color: white;
+            background-color: #f1f3f5;
+            border: 1px solid #dddddd;
+        }
+        .pagination > .active > a:hover {
+            background-color: #f1f3f5;
+        }
+        .pagination > .disabled > a {
+            background-color: white;
+        }
+        .categoryName {
+            padding-left: 5px;
+        }
+        .categoryName:hover {
+            background-color: #f1f3f5;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(".category").mouseover(function() {
+            $(".level1").css("display", "block");
+        });
+        $(".level1").mouseover(function() {
+            $(".level2").css("display", "block");
+        });
+        $(".level2").mouseleave(function() {
+            $(".level2").css("display", "none");
+            $(".level1").css("display", "none");
+        });
+
+        $(".level1_0").mouseover(function() {
+            $(".level2_1").css("display", "block");
+        });
+        $(".level1_0").mouseleave(function() {
+            $(".level2_1").css("display", "none");
+        });
+        $(".level2_1").mouseover(function() {
+            $(".level2_1").css("display", "block");
+        });
+        $(".level2_1").mouseleave(function() {
+            $(".level2_1").css("display", "none");
+        });
+
+        $(".level1_1").mouseover(function() {
+            $(".level2_2").css("display", "block");
+        });
+        $(".level1_1").mouseleave(function() {
+            $(".level2_2").css("display", "none");
+        });
+        $(".level2_2").mouseover(function() {
+            $(".level2_2").css("display", "block");
+        });
+        $(".level2_2").mouseleave(function() {
+            $(".level2_2").css("display", "none");
+        });
+
+        $(".level1_2").mouseover(function() {
+            $(".level2_3").css("display", "block");
+        });
+        $(".level1_2").mouseleave(function() {
+            $(".level2_3").css("display", "none");
+        });
+        $(".level2_3").mouseover(function() {
+            $(".level2_3").css("display", "block");
+        });
+        $(".level2_3").mouseleave(function() {
+            $(".level2_3").css("display", "none");
+        });
+
+        $(".level1_3").mouseover(function() {
+            $(".level2_4").css("display", "block");
+        });
+        $(".level1_3").mouseleave(function() {
+            $(".level2_4").css("display", "none");
+        });
+        $(".level2_4").mouseover(function() {
+            $(".level2_4").css("display", "block");
+        });
+        $(".level2_4").mouseleave(function() {
+            $(".level2_4").css("display", "none");
+        });
+
+        $(".level1_4").mouseover(function() {
+            $(".level2_5").css("display", "block");
+        });
+        $(".level1_4").mouseleave(function() {
+            $(".level2_5").css("display", "none");
+        });
+        $(".level2_5").mouseover(function() {
+            $(".level2_5").css("display", "block");
+        });
+        $(".level2_5").mouseleave(function() {
+            $(".level2_5").css("display", "none");
+        });
+
+        $(".level1_5").mouseover(function() {
+            $(".level2_6").css("display", "block");
+        });
+        $(".level1_5").mouseleave(function() {
+            $(".level2_6").css("display", "none");
+        });
+        $(".level2_6").mouseover(function() {
+            $(".level2_6").css("display", "block");
+        });
+        $(".level2_6").mouseleave(function() {
+            $(".level2_6").css("display", "none");
+        });
+
+        $(".level1_6").mouseover(function() {
+            $(".level2_7").css("display", "block");
+        });
+        $(".level1_6").mouseleave(function() {
+            $(".level2_7").css("display", "none");
+        });
+        $(".level2_7").mouseover(function() {
+            $(".level2_7").css("display", "block");
+        });
+        $(".level2_7").mouseleave(function() {
+            $(".level2_7").css("display", "none");
+        });
+
+        $(".level1_7").mouseover(function() {
+            $(".level2_8").css("display", "block");
+        });
+        $(".level1_7").mouseleave(function() {
+            $(".level2_8").css("display", "none");
+        });
+        $(".level2_8").mouseover(function() {
+            $(".level2_8").css("display", "block");
+        });
+        $(".level2_8").mouseleave(function() {
+            $(".level2_8").css("display", "none");
+        });
+
+        $(".level1_8").mouseover(function() {
+            $(".level2_9").css("display", "block");
+        });
+        $(".level1_8").mouseleave(function() {
+            $(".level2_9").css("display", "none");
+        });
+        $(".level2_9").mouseover(function() {
+            $(".level2_9").css("display", "block");
+        });
+        $(".level2_9").mouseleave(function() {
+            $(".level2_9").css("display", "none");
+        });
+
+        $(".level1_9").mouseover(function() {
+            $(".level2_10").css("display", "block");
+        });
+        $(".level1_9").mouseleave(function() {
+            $(".level2_10").css("display", "none");
+        });
+        $(".level2_10").mouseover(function() {
+            $(".level2_10").css("display", "block");
+        });
+        $(".level2_10").mouseleave(function() {
+            $(".level2_10").css("display", "none");
+        });
+    </script>
+</th:block>
+
+<div layout:fragment="content" class="content">
+    <div class="menu">
+        <div class="category">
+            <img src="https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/gnb-menu.svg">
+            <span class="mgl-10">카테고리</span>
+            <div class="level1">
+                <div th:each="category, idx : ${itemCategoryDto.subCategories}" th:class="'level1_' + ${idx.index}" th:data-category="'level1_' + ${idx.index}" style="height:30px;">
+                    <div class="categoryName" th:text="${category.categoryName}" style="height: 100%; padding-top: 3px;"></div>
+                </div>
+            </div>
+            <div class="level2">
+                <div th:with="root=0, final=${itemCategoryDto.subCategories.size() - 1}" th:data-size="${itemCategoryDto.subCategories.size() - 1}">
+                    <div th:each="number: ${#numbers.sequence(root, final)}">
+                        <div th:each="category, idx : ${itemCategoryDto.subCategories.get(number).subCategories}"
+                             th:class="'categoryName level2_' + ${itemCategoryDto.subCategories.get(number).id}" style="height: 30px; display: none;">
+                            <a th:href="@{'/categories/' + ${category.id}}"><span class="categoryName" th:text="${category.categoryName}"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="gnb-menu">
+            <li>신상품</li>
+            <li>베스트</li>
+            <li>알뜰쇼핑</li>
+            <li>특가/혜택</li>
+        </ul>
+    </div>
+    <p class="h4 text-center mgb-30">[[${categoryName}]]</p>
+    <div class="col text-end mgb-10">
+        <span><a th:href="@{'/' + '?orderBy=id'}">신상품순</a></span> |
+        <span><a th:href="@{'/' + '?orderBy=salesCount'}">판매량순</a></span> |
+        <span><a th:href="@{'/' + '?orderBy=salePriceAsc'}">낮은가격순</a></span> |
+        <span><a th:href="@{'/' + '?orderBy=salePriceDesc'}">높은가격순</a></span>
+    </div>
+    <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
+    <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="text-center">
+        <p class="h3 font-weight-bold mgb-30" th:text="${itemSearchDto.searchQuery} + '에 대한 검색 결과'"></p>
+    </div>
+
+    <div class="row">
+        <th:block th:each="item, status: ${items.getContent()}">
+            <div class="col-md-3 margin">
+                <div class="card mgb-30">
+                    <a th:href="'/items/' + ${item.id}" class="text-dark" style="text-decoration-line: none;">
+                        <img th:src="${item.imageUrl}" class="card-img-top" th:alt="${item.itemName}" height="250">
+                        <div class="card-body">
+                            <div>[[${item.itemName}]]</div>
+                            <span th:if="${item.salePrice < item.originalPrice}">
+                                <span class="fw-bold text-danger" th:text="${#numbers.formatPercent((item.originalPrice - item.salePrice) * 1.0 / item.originalPrice, 1, 0)}"></span>
+                            </span>
+                            <span class="fw-bold">[[${#numbers.formatInteger(item.salePrice, 1, 'COMMA')}]]원</span>
+                            <span th:if="${item.salePrice < item.originalPrice}">
+                                <div class="text-decoration-line-through text-gray">[[${#numbers.formatInteger(item.originalPrice, 1, 'COMMA')}]]원</div>
+                            </span>
+                            <div class="text-gray">후기 [[${item.reviewCount}]]</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </th:block>
+        <div th:if="${recentItems.size() > 0}" class="recent-view">
+            <div>최근 본 상품</div>
+            <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">
+                <div class="carousel-inner" th:each="recentItem, status: ${recentItems}">
+                    <div th:if="${status.index eq 0}">
+                        <div class="carousel-item active text-center">
+                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                            </a>
+                        </div>
+                    </div>
+                    <div th:unless="${status.index eq 0}">
+                        <div class="carousel-item text-center">
+                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div th:with="start=${(items.number / maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery}+ '&page=' + ${items.number - 1}}" aria-label='Previous' class="page-link text-black">
+                    <span aria-hidden='true'>&lt</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq page - 1}?'active':''">
+                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page - 1}}" th:inline="text" class="page-link text-black">[[${page}]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${items.number + 1 ge items.totalPages}?'disabled':''">
+                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number + 1}}" aria-label='Next' class="page-link text-black">
+                    <span aria-hidden='true'>&gt</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</html>

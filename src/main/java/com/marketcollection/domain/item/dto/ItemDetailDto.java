@@ -1,12 +1,10 @@
 package com.marketcollection.domain.item.dto;
 
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
-import org.springframework.format.annotation.NumberFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,6 @@ public class ItemDetailDto {
     private int salePrice;
     private int stockQuantity;
     private String description;
-    private Category category;
     private ItemSaleStatus itemSaleStatus;
     private List<ItemImageDto> itemImageDtos = new ArrayList<>();
 

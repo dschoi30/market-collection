@@ -1,8 +1,6 @@
 package com.marketcollection.domain.order.service;
 
 import com.marketcollection.domain.common.Address;
-import com.marketcollection.domain.common.BaseEntity;
-import com.marketcollection.domain.item.Category;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.repository.ItemRepository;
