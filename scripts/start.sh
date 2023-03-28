@@ -8,7 +8,7 @@ REPOSITORY=/home/ec2-user/app/step3
 PROJECT_NAME=market-collection
 
 echo "> 기존 Build 파일 삭제"
-rm -r $REPOSITORY/zip/*.jar $REPOSITORY/
+rm -r $REPOSITORY/zip/*.jar
 
 echo "> 신규 Build 파일 복사"
 echo "> cp $REPOSITORY/zip/build/libs/*.jar $REPOSITORY/"
