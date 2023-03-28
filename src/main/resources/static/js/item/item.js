@@ -98,8 +98,8 @@ var item = {
         }).done(function () {
             alert('상품이 정상적으로 수정되었습니다.');
             window.location.href = '/items/' + data.id;
-        }).fail(function (error) {
-            alert(JSON.stringify(error))
+        }).fail(function (jqXHR) {
+            alert(jqXHR.responseText);
         });
     }
 };

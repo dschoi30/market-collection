@@ -2,6 +2,8 @@ package com.marketcollection.domain.order.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
+import com.marketcollection.common.exception.ErrorCode;
+import com.marketcollection.domain.member.exception.UnAuthorizedUserException;
 import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class OrderController {
     public void setMemberInfo(Model model, @LoginUser SessionUser user) {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
+            model.addAttribute("grade", user.getGrade().getTitle());
         }
     }
 

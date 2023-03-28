@@ -2,6 +2,7 @@ package com.marketcollection.domain.cart.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
+import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.cart.dto.CartItemDto;
 import com.marketcollection.domain.cart.dto.CartRequestDto;
 import com.marketcollection.domain.cart.service.CartService;
@@ -28,6 +29,7 @@ public class CartController {
     public void setMemberInfo(Model model, @LoginUser SessionUser user) {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
+            model.addAttribute("grade", user.getGrade().getTitle());
         }
     }
 
@@ -35,6 +37,10 @@ public class CartController {
     @PostMapping("/cart")
     public @ResponseBody ResponseEntity addCart(@LoginUser SessionUser user, @RequestBody @Valid CartRequestDto cartRequestDto,
                                                 BindingResult bindingResult) {
+        if(user == null) {
+            return new ResponseEntity<String>("로그인이 필요한 기능입니다.", HttpStatus.UNAUTHORIZED);
+        }
+
         if(bindingResult.hasErrors()) {
             StringBuilder sb = new StringBuilder();
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();

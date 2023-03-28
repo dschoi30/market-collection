@@ -36,6 +36,7 @@ public class ReviewController {
     public void setMemberInfo(Model model, @LoginUser SessionUser user) {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
+            model.addAttribute("grade", user.getGrade().getTitle());
         }
     }
 

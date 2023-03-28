@@ -38,9 +38,15 @@ public class ApiItemController {
     }
 
     @PostMapping("/admin/item/{itemId}")
-    public ResponseEntity<Long> updateItem(@RequestPart(value = "key") ItemFormDto itemFormDto,
+    public ResponseEntity updateItem(@Valid @RequestPart(value = "key") ItemFormDto itemFormDto, BindingResult bindingResult,
                                            @RequestPart(value = "file", required = false) List<MultipartFile> itemImageFiles) throws Exception {
+        if(bindingResult.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            sb.append(fieldErrors.get(0).getDefaultMessage());
 
+            return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
+        }
         Long itemId = itemService.updateItem(itemFormDto, itemImageFiles);
 
         return new ResponseEntity<>(itemId, HttpStatus.OK);
