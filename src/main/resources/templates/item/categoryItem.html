@@ -31,7 +31,7 @@
             border: 1px solid #c1c3c5;
         }
         .card {
-            height: 380px;
+            height: 400px;
         }
         .text-gray {
             color: #808080;
@@ -291,10 +291,11 @@
     </div>
     <p class="h4 text-center mgb-30">[[${categoryName}]]</p>
     <div class="col text-end mgb-10">
-        <span><a th:href="@{'/' + '?orderBy=id'}">신상품순</a></span> |
-        <span><a th:href="@{'/' + '?orderBy=salesCount'}">판매량순</a></span> |
-        <span><a th:href="@{'/' + '?orderBy=salePriceAsc'}">낮은가격순</a></span> |
-        <span><a th:href="@{'/' + '?orderBy=salePriceDesc'}">높은가격순</a></span>
+        <input type="hidden" id="categoryId" th:value="${itemSearchDto.categoryId}">
+        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?&orderBy=id'}">신상품순</a></span> |
+        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?orderBy=salesCount'}">판매량순</a></span> |
+        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?orderBy=salePriceAsc'}">낮은가격순</a></span> |
+        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?orderBy=salePriceDesc'}">높은가격순</a></span> |
     </div>
     <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
     <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="text-center">

@@ -5,12 +5,19 @@
 
 <th:block layout:fragment="css">
   <style>
+    td {
+      vertical-align: middle;
+    }
     .mgb-30 {
       margin-bottom: 30px;
     }
     .search-bar {
       display: inline-block;
       width: auto;
+    }
+    .thumbnail {
+      width: 40px;
+      height: 40px;
     }
     .pagination > li > a:focus,
     .pagination > li > a:hover,
@@ -98,12 +105,11 @@
         <tr>
           <td>상품번호</td>
           <td>카테고리</td>
-          <td>상품명</td>
+          <td colspan="2" class="text-center">상품명</td>
           <td>조회수</td>
           <td>판매수</td>
           <td>재고수</td>
           <td>판매상태</td>
-          <td>등록자</td>
           <td>등록일</td>
         </tr>
       </thead>
@@ -111,13 +117,13 @@
       <tr th:each="item, status: ${items.getContent()}" th:object="${items}">
         <td th:text="${item.id}"></td>
         <td th:text="${item.categoryId}"></td>
+        <td><img th:src="${item.repImageUrl}" class="rounded thumbnail"></td>
         <td><a th:href="'/admin/item/' + ${item.id}" th:text="${item.itemName}" class="text-dark" style="text-decoration-line: none;"></a></td>
         <td th:text="${#numbers.formatInteger(item.hit, 1, 'COMMA')}"></td>
         <td th:text="${#numbers.formatInteger(item.salesCount, 1, 'COMMA')}"></td>
         <td th:text="${#numbers.formatInteger(item.stockQuantity, 1, 'COMMA')}"></td>
         <td th:text="${item.itemSaleStatus.status}"></td>
-        <td th:text="${item.createdBy}"></td>
-        <td th:text="${item.createdDate}"></td>
+        <td th:text="${#temporals.format(item.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
       </tr>
       </tbody>
     </table>

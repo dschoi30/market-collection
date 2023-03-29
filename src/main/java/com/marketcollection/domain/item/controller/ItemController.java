@@ -102,14 +102,15 @@ public class ItemController {
 
     @GetMapping("/categories/{categoryId}")
     public String categoryItemPage(Model model, @LoginUser SessionUser user, ItemSearchDto itemSearchDto,
-                                   @PathVariable("categoryId") Long categoryId,
+                                   @PathVariable(value = "categoryId") Long categoryId,
+                                   @RequestParam(value = "orderBy", required = false) String orderBy,
                                    Optional<Integer> page, HttpServletRequest request) {
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
             model.addAttribute("grade", user.getGrade().getTitle());
         }
-
         itemSearchDto.setCategoryId(categoryId);
+        itemSearchDto.setOrderBy(orderBy);
         ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
         String categoryName = itemCategoryDto.findCategoryName(categoryId);
 
