@@ -5,7 +5,7 @@
 
 ## 개발 목표
 > 유지 보수를 고려한 객체 지향적인 코드 구현   
-> 점진적인 트래픽 증가를 가정한 부하 분산 설계 및 성능 최적화
+> 대량의 데이터와 트래픽을 대비한 성능 최적화
 
 ## 기술 스택
 
@@ -24,10 +24,11 @@
 > Intellij, Git
 
 ## 아키텍처 설계
-![image](https://user-images.githubusercontent.com/97089961/227414884-73f2507e-ca41-4081-b2df-7d0c1f2aaa73.png)
+![image](https://user-images.githubusercontent.com/97089961/228763378-e65d33f7-11fd-4905-82cc-e26f95cbe33f.png)
 
 ## ERD 설계
-![market-collection - Database ER diagram (crow's foot)](https://user-images.githubusercontent.com/97089961/226277171-1de32a18-2665-49aa-b832-6e825ab8d6f8.png)
+![market-collection - ER diagram](https://user-images.githubusercontent.com/97089961/228749916-0db0ecae-7c7f-4545-8ab0-19d1b9c08f53.png)
+
 
 ## 기능 정의
 
@@ -48,15 +49,19 @@
 1. 상품을 등록, 수정 및 삭제할 수 있습니다.
 2. 상품을 판매순, 조회순, 등록일순으로 필터링 및 검색할 수 있습니다.
 3. 전체 주문 내역을 기간별로 필터링 및 조회할 수 있습니다.
-## 트러블 슈팅
-1. 스프링 부트와 JPA를 활용한 기능 구현 중 무한 루프 빠짐, N+1 문제 등을 접하고 해결
-2. 대용량 데이터 삽입 후 테이블 정규화 및 인덱싱을 통한 처리 속도 개선,
-테스트 코드 작성 및 예외 처리를 통한 문제 관리 능력 향상
-3. Enum, Stream, Lambda 적용 및 메소드 분리를 통한 코드 간결화
 
+## 기술적 이슈 및 개선 사항
+1. JPA를 이용한 기능 구현 중 무한 루프 빠짐, N+1 문제 등을 접하고 해결
+2. 대용량 데이터 삽입 후 테이블 정규화 및 인덱싱을 통한 조회 속도 개선
+3. Enum, Stream, Lambda 적용 및 메소드 분리를 통한 코드 간결화
+4. Exception Handler 적용을 통한 예외 전역 처리
+
+## 기능 시연
+### 메인 페이지
+![2023-03-30-01-48-23](https://user-images.githubusercontent.com/97089961/228750026-6b21019a-abda-415b-bec2-97469b0b1de1.gif)
 ##
-![image](https://user-images.githubusercontent.com/97089961/224226422-09f12046-e980-4e07-acfa-e366f2ae5157.png)   
+### 주문 페이지
+![2023-03-30-15-28-26](https://user-images.githubusercontent.com/97089961/228750075-b5e09d9a-1afb-45f9-bcdf-8d20b22656ef.gif)
 ##
-![image](https://user-images.githubusercontent.com/97089961/224222870-ac587f80-72df-4328-8133-383dab5851e6.png)
-##
-![image](https://user-images.githubusercontent.com/97089961/224226437-c837db5f-00ef-4c88-8fd9-cfc5125d6cea.png)
+### 관리자 페이지
+![2023-03-30-02-02-15](https://user-images.githubusercontent.com/97089961/228750055-b9be069f-c41e-4e9c-b61e-a38271c0fc82.gif)
