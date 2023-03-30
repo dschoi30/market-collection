@@ -58,10 +58,10 @@
 
 ## 기능 시연
 ### 메인 페이지
-![2023-03-30-01-48-23](https://user-images.githubusercontent.com/97089961/228750026-6b21019a-abda-415b-bec2-97469b0b1de1.gif)
+![2023-03-30-01-32-25_2__1](https://user-images.githubusercontent.com/97089961/228779758-2df669df-8d37-4800-a2c9-782502211810.gif)
 ##
 ### 주문 페이지
-![2023-03-30-15-28-26](https://user-images.githubusercontent.com/97089961/228750075-b5e09d9a-1afb-45f9-bcdf-8d20b22656ef.gif)
+![2023-03-30-17-10-41-_2_](https://user-images.githubusercontent.com/97089961/228776715-ea7b77ab-065e-4c36-8d6a-c59afb72481b.gif)
 ##
 ### 관리자 페이지
-![2023-03-30-02-02-15](https://user-images.githubusercontent.com/97089961/228750055-b9be069f-c41e-4e9c-b61e-a38271c0fc82.gif)
+![2023-03-30-02-02-15_1](https://user-images.githubusercontent.com/97089961/228779194-7891a22d-4fee-4e05-b06b-d6c6434814b1.gif)
