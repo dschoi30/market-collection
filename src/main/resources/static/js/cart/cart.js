@@ -45,7 +45,8 @@ function getTotalOrderPrice() {
         }
     });
     $("#totalOrderPrice").html(totalOrderPrice.toLocaleString('en-US') + '원');
-    $("#savingPoint").html(totalOrderPrice.toLocaleString('en-US') + '원');
+    const pointSavingRate = $("#pointSavingRate").val();
+    $("#savingPoint").html(Math.round(totalOrderPrice * pointSavingRate).toLocaleString('en-US') + '원');
 }
 
 function allChecked() {

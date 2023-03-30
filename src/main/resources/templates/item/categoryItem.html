@@ -275,7 +275,7 @@
                 <div th:with="root=0, final=${itemCategoryDto.subCategories.size() - 1}" th:data-size="${itemCategoryDto.subCategories.size() - 1}">
                     <div th:each="number: ${#numbers.sequence(root, final)}">
                         <div th:each="category, idx : ${itemCategoryDto.subCategories.get(number).subCategories}"
-                             th:class="'categoryName level2_' + ${itemCategoryDto.subCategories.get(number).id}" style="height: 30px; display: none;">
+                             th:class="'categoryName level2_' + ${itemCategoryDto.subCategories.get(number).id}" style="width: 220px; height: 30px; display: none;">
                             <a th:href="@{'/categories/' + ${category.id}}"><span class="categoryName" th:text="${category.categoryName}"></span></a>
                         </div>
                     </div>

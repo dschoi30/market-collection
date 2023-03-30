@@ -106,11 +106,13 @@ public class OrderService {
         List<OrderHistoryDto> orderHistoryDtos = new ArrayList<>();
         for (Order order : orders) {
             OrderHistoryDto orderHistoryDto = new OrderHistoryDto(order);
+            List<OrderItemDto> orderItemDtos = new ArrayList<>();
             List<OrderItem> orderItems = order.getOrderItems();
             for (OrderItem orderItem : orderItems) {
                 OrderItemDto orderItemDto = new OrderItemDto(orderItem);
-                orderHistoryDto.setOrderItemDtos(List.of(orderItemDto));
+                orderItemDtos.add(orderItemDto);
             }
+            orderHistoryDto.setOrderItemDtos(orderItemDtos);
             orderHistoryDtos.add(orderHistoryDto);
         }
         return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, total);

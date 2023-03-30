@@ -18,11 +18,14 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-@Profile("local")
 @RequiredArgsConstructor
 @Component
 public class InitDB {
@@ -59,29 +62,29 @@ public class InitDB {
         }
 
         public void dbInit1() {
-//            StopWatch stopWatch = new StopWatch();
-//            stopWatch.start();
-//            List<Item> items = IntStream.range(1, 1000000)
-//                    .parallel()
-//                    .mapToObj(i -> Item.builder()
-//                            .itemName("향기가득 샤인머스캣_" + i)
-//                            .originalPrice((int) (Math.random() * 10000) * 10)
-//                            .salePrice((int) (Math.random() * 10000) * 10)
-//                            .stockQuantity(10000)
-//                            .description("너무 맛있어요")
-//                            .categoryId(24L)
-//                            .repImageUrl("/image/item/grape1.jpg")
-//                            .salesCount((int) (Math.random() * 10000))
-//                            .reviewCount((int) (Math.random() * 10000))
-//                            .hit((int) (Math.random() * 10000))
-//                            .itemSaleStatus(ItemSaleStatus.ON_SALE)
-//                            .build())
-//                    .collect(Collectors.toList());
-//            initDBRepository.bulkItemInsert(items);
-//            stopWatch.stop();
-//            System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            List<Item> items = IntStream.range(1, 100000)
+                    .parallel()
+                    .mapToObj(i -> Item.builder()
+                            .itemName("향기가득 샤인머스캣_" + i)
+                            .originalPrice((int) (Math.random() * 10000) * 10)
+                            .salePrice((int) (Math.random() * 10000) * 10)
+                            .stockQuantity(10000)
+                            .description("너무 맛있어요")
+                            .categoryId(24L)
+                            .repImageUrl("/image/item/grape1.jpg")
+                            .salesCount((int) (Math.random() * 10000))
+                            .reviewCount((int) (Math.random() * 10000))
+                            .hit((int) (Math.random() * 10000))
+                            .itemSaleStatus(ItemSaleStatus.ON_SALE)
+                            .build())
+                    .collect(Collectors.toList());
+            initDBRepository.bulkItemInsert(items);
+            stopWatch.stop();
+            System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());
 
-            for(int i = 1; i <= 10; i++) {
+            for(int i = 100001; i <= 100010; i++) {
 
                 Item item = Item.builder()
                         .itemName("향기가득 샤인머스캣_" + i)
@@ -97,34 +100,32 @@ public class InitDB {
                         .build();
                 em.persist(item);
 
-                ItemImage repImage = new ItemImage(item, "grape1", "grape1", "/image/item/grape1.jpg", true);
+                ItemImage repImage = new ItemImage(item, "grape1", "renamed_grape1", "https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/grape1.jpg", true);
                 em.persist(repImage);
 
-                for(int j = 0; j < 3; j++) {
-                    ItemImage itemImage = new ItemImage(item, "grape2", "grape2", "/image/item/grape2.jpg", false);
-                    em.persist(itemImage);
-                }
+                ItemImage itemImage = new ItemImage(item, "grape2", "renamed_grape2", "https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/grape2.jpg", false);
+                em.persist(itemImage);
+
                 Item item2 = Item.builder()
-                        .itemName("향기가득 샤인머스캣_" + i)
+                        .itemName("1등급 한우 안심 스테이크_" + i)
                         .originalPrice((int)(Math.random() * 10000) * 10)
                         .salePrice((int)(Math.random() * 10000) * 10)
                         .stockQuantity(10000)
                         .description("너무 맛있어요")
-                        .categoryId(22L)
-                        .repImageUrl("/image/item/grape1.jpg")
+                        .categoryId(39L)
+                        .repImageUrl("https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/meat1.jpg")
 //                        .salesCount((int)(Math.random() * 10000))
 //                        .hit((int)(Math.random() * 10000))
                         .itemSaleStatus(ItemSaleStatus.ON_SALE)
                         .build();
                 em.persist(item2);
 
-                ItemImage repImage2 = new ItemImage(item2, "grape1", "grape1", "/image/item/grape1.jpg", true);
+                ItemImage repImage2 = new ItemImage(item2, "meat1", "renamed_meat1", "https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/meat1.jpg", true);
                 em.persist(repImage2);
 
-                for(int j = 0; j < 3; j++) {
-                    ItemImage itemImage2 = new ItemImage(item2, "grape2", "grape2", "/image/item/grape2.jpg", false);
-                    em.persist(itemImage2);
-                }
+                ItemImage itemImage2 = new ItemImage(item2, "meat2", "renamed_meat2", "https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/meat2.jpg", false);
+                em.persist(itemImage2);
+
                 Member member = Member.builder()
                         .socialType(SocialType.NAVER)
                         .memberStatus(MemberStatus.ACTIVE)
@@ -153,13 +154,21 @@ public class InitDB {
 
                 em.persist(order);
 
-                for(int j = 0; j < 11; j++) {
+                for(int j = 0; j <= 10; j++) {
                     Review review = Review.builder()
                             .item(item)
                             .member(member)
                             .content("너무 좋아요, 또 사고 싶어요")
                             .build();
                     em.persist(review);
+                }
+                for(int j = 0; j <= 10; j++) {
+                    Review review2 = Review.builder()
+                            .item(item)
+                            .member(member)
+                            .content("너무 좋아요, 또 사고 싶어요")
+                            .build();
+                    em.persist(review2);
                 }
             }
         }

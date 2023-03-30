@@ -6,6 +6,7 @@ import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.cart.dto.CartItemDto;
 import com.marketcollection.domain.cart.dto.CartRequestDto;
 import com.marketcollection.domain.cart.service.CartService;
+import com.marketcollection.domain.member.Grade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,7 @@ public class CartController {
     public String getCartItemList(Model model, @LoginUser SessionUser user) {
         List<CartItemDto> cartItems = cartService.getCartItemList(user.getEmail());
 
+        model.addAttribute("memberGrade", user.getGrade());
         model.addAttribute("cartItems", cartItems);
 
         return "cart/cart";
