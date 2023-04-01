@@ -99,12 +99,16 @@ public class ItemService {
         String hit = cookie.getValue();
         String[] cookieItemIds = hit.split("-");
 
+        List<ItemListDto> itemListDtos = new ArrayList<>();
         List<Long> itemIds = new ArrayList<>();
-        for(int i = cookieItemIds.length - 1; i > 0; i--) {
-            Long itemId = Long.parseLong(cookieItemIds[i]);
-            itemIds.add(itemId);
+        if(cookieItemIds.length > 1) {
+            for(int i = cookieItemIds.length - 1; i >= 0; i--) {
+                Long itemId = Long.parseLong(cookieItemIds[i]);
+                itemIds.add(itemId);
+            }
+            itemListDtos = itemRepository.findByIds(itemIds);
         }
-        return itemRepository.findByIds(itemIds);
+        return itemListDtos;
     }
 
     public boolean cookieExists(Long itemId, HttpServletRequest request, HttpServletResponse response) {
