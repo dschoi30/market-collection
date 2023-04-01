@@ -53,6 +53,7 @@ public class CartService {
     }
 
     // 장바구니 목록 조회
+    @Transactional(readOnly = true)
     public List<CartItemDto> getCartItemList(String memberId) {
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         Cart cart = cartRepository.findByMemberId(member.getId());
@@ -78,6 +79,7 @@ public class CartService {
     }
 
     // 주문자 유효성 검사
+    @Transactional(readOnly = true)
     public boolean validateCartItem(String email, Long cartItemId) {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);

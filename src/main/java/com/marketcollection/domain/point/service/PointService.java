@@ -17,7 +17,6 @@ public class PointService {
     private final PointRepository pointRepository;
 
     public void createOrderPoint(Member member, OrderItem orderItem) {
-
         Point point = Point.createOrderPoint(member, orderItem);
         pointRepository.save(point);
     }

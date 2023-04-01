@@ -35,7 +35,7 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final ReactionRepository reactionRepository;
 
-    public Long save(String memberId, ReviewDto reviewDto) {
+    public Long saveReview(String memberId, ReviewDto reviewDto) {
 
         Item item = itemRepository.findById(reviewDto.getItemId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
@@ -49,15 +49,16 @@ public class ReviewService {
         return review.getId();
     }
 
+    @Transactional(readOnly = true)
     public PageResponseDto<ReviewDto> getReviewList(Long itemId, PageRequestDto pageRequestDto) {
         Pageable pageable = PageRequest.of(pageRequestDto.getPage() <= 0 ? 0 : pageRequestDto.getPage() - 1, pageRequestDto.getSize(),
                 Sort.by("id").descending());
 
         Page<Review> reviews = reviewRepository.getReviewList(itemId, pageable);
-        List<ReviewDto> reviewDtos = reviews.getContent().stream()
+        List<ReviewDto> reviewDtos = reviews.stream()
                 .map(review -> review.toDto(review)).collect(Collectors.toList());
 
-        return PageResponseDto.<ReviewDto>withAll()
+        return PageResponseDto.<ReviewDto>builder()
                 .pageRequestDto(pageRequestDto)
                 .dtoList(reviewDtos)
                 .total((int) reviews.getTotalElements())

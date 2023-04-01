@@ -17,6 +17,9 @@
         .mgl-10 {
             margin-left: 10px;
         }
+        .wd220 {
+            width: 220px;
+        }
         .thumbnail {
             width: 50px;
             height: 50px;
@@ -32,6 +35,10 @@
         }
         .card {
             height: 400px;
+        }
+        .rep-image {
+            width: 220px;
+            height: 250px;
         }
         .text-gray {
             color: #808080;
@@ -305,10 +312,10 @@
 
     <div class="row">
         <th:block th:each="item, status: ${items.getContent()}">
-            <div class="col-md-3 margin">
-                <div class="card mgb-30">
+            <div class="col-3 margin">
+                <div class="card mgb-30 wd220">
                     <a th:href="'/items/' + ${item.id}" class="text-dark" style="text-decoration-line: none;">
-                        <img th:src="${item.imageUrl}" class="card-img-top" th:alt="${item.itemName}" height="250">
+                        <img th:src="${item.imageUrl}" class="card-img-top rep-image" th:alt="${item.itemName}">
                         <div class="card-body">
                             <div>[[${item.itemName}]]</div>
                             <span th:if="${item.salePrice < item.originalPrice}">

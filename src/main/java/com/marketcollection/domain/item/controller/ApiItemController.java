@@ -32,7 +32,7 @@ public class ApiItemController {
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        Long itemId = itemService.save(itemFormDto, itemImageFiles);
+        Long itemId = itemService.saveItem(itemFormDto, itemImageFiles);
 
         return new ResponseEntity<Long>(itemId, HttpStatus.OK);
     }

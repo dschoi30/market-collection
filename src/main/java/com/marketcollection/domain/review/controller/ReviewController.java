@@ -54,7 +54,7 @@ public class ReviewController {
         if(bindingResult.hasErrors()) {
             throw new ReviewBadReqeustException(ErrorCode.BINDING_WRONG);
         }
-        Long reviewId = reviewService.save(user.getEmail(), reviewDto);
+        Long reviewId = reviewService.saveReview(user.getEmail(), reviewDto);
 
         return new ResponseEntity<Long>(reviewId, HttpStatus.OK);
     }

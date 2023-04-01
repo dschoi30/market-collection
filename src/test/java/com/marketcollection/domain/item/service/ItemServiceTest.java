@@ -59,7 +59,7 @@ class ItemServiceTest {
         itemFormDto.setItemSaleStatus(ItemSaleStatus.ON_SALE);
 
         List<MultipartFile> multipartFiles = createItemImageFiles();
-        Long savedItemId = itemService.save(itemFormDto, multipartFiles);
+        Long savedItemId = itemService.saveItem(itemFormDto, multipartFiles);
         List<ItemImage> itemImages = itemImageRepository.findByItemIdOrderByIdAsc(savedItemId);
 
         Item item = itemRepository.findById(savedItemId).orElseThrow(EntityNotFoundException::new);

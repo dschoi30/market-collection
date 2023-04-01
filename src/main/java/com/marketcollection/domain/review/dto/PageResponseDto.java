@@ -22,7 +22,7 @@ public class PageResponseDto<E> {
 
     private List<E> dtoList;
 
-    @Builder(builderMethodName = "withAll")
+    @Builder
     public PageResponseDto(PageRequestDto pageRequestDto, List<E> dtoList, int total) {
         if(total <= 0) {
             return;

@@ -6,20 +6,9 @@ html {
 body {
     min-height: 100%;
 }
-.footer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    padding: 15px 0;
-    text-align: center;
-}
-.content {
-    margin-bottom:100px;
-    margin-top: 10px;
-    margin-left: 200px;
-    margin-right: 200px;
+.content, .header {
+    width: 960px;
+    margin: 0 auto;
 }
 a {
     text-decoration: none;

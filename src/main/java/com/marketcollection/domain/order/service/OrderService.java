@@ -119,6 +119,7 @@ public class OrderService {
     }
 
     // 주문자 유효성 검사
+    @Transactional(readOnly = true)
     public boolean validateOrder(Long orderId, String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);

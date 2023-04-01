@@ -2,8 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<header th:fragment="header">
-    <div class="row" style="margin: 10px 200px;">
+<header th:fragment="header" class="header row">
         <div class="col" style="padding: 0;">
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
                 <span class="fs-4">
@@ -23,7 +22,7 @@
         <div class="col">
             <div class="grid text-end">
                 <span sec:authorize="isAnonymous()">
-                    <a href="/member/login" class="nav-link">로그인</a>
+                    <a href="/member/login" class="nav-link" style="padding-top: 5px;">로그인</a>
                 </span>
                 <span class="badge text-bg-light" sec:authorize="isAuthenticated()">
                     [[${grade}]]
@@ -54,6 +53,5 @@
                 <intercept-url pattern="/favicon.ico" access="ROLE_ANONYMOUS" />
             </div>
         </div>
-    </div>
 </header>
 </html>

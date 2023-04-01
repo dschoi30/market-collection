@@ -1,24 +1,17 @@
 package com.marketcollection.domain.item.repository;
 
 import com.marketcollection.domain.item.Item;
-import com.marketcollection.domain.item.QItemImage;
 import com.marketcollection.domain.item.dto.ItemListDto;
 import com.marketcollection.domain.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.ItemSaleStatus;
-import com.marketcollection.domain.item.QItem;
 import com.marketcollection.domain.item.dto.QItemListDto;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 
@@ -70,12 +63,11 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return StringUtils.isEmpty(searchQuery) ? null : item.itemName.like("%" + searchQuery + "%");
     }
 
-    private Predicate categoryIdEq(Long categoryId) {
+    private BooleanExpression categoryIdEq(Long categoryId) {
         return ObjectUtils.isEmpty(categoryId) ? null : item.categoryId.eq(categoryId);
     }
 
     private OrderSpecifier orderSpecifier(ItemSearchDto itemSearchDto) {
-
         if (Objects.equals(itemSearchDto.getOrderBy(), "id"))
             return item.id.desc();
         if (Objects.equals(itemSearchDto.getOrderBy(), "itemName"))
@@ -99,8 +91,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     @Override
     public Page<ItemListDto> getItemListPage(ItemSearchDto itemSearchDto, Pageable pageable) {
-        QItem item = QItem.item;
-
         List<ItemListDto> content = queryFactory
                 .select(
                         new QItemListDto(
@@ -112,9 +102,11 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                                 item.reviewCount
                         ))
                 .from(item)
-                .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE))
-                .where(itemNameLike(itemSearchDto.getSearchQuery()))
-                .where(categoryIdEq(itemSearchDto.getCategoryId()))
+                .where(
+                        item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE),
+                        itemNameLike(itemSearchDto.getSearchQuery()),
+                        categoryIdEq(itemSearchDto.getCategoryId())
+                )
                 .orderBy(orderSpecifier(itemSearchDto))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -133,8 +125,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     @Override
     public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
-        QItem item = QItem.item;
-
         List<Item> content = queryFactory
                 .selectFrom(item)
                 .where(
@@ -160,8 +150,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     @Override
     public List<ItemListDto> findByIds(List<Long> itemIds) {
-        QItem item = QItem.item;
-
         return queryFactory
                 .select(new QItemListDto(
                         item.id,

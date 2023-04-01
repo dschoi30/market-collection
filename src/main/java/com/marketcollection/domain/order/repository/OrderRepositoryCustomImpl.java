@@ -1,7 +1,6 @@
 package com.marketcollection.domain.order.repository;
 
 import com.marketcollection.domain.order.Order;
-import com.marketcollection.domain.order.QOrder;
 import com.marketcollection.domain.order.dto.OrderSearchDto;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;

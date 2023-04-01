@@ -31,21 +31,25 @@ public class MainController {
     @GetMapping("/")
     public String mainPage(Model model, @LoginUser SessionUser user, ItemSearchDto itemSearchDto,
                            Optional<Integer> page, HttpServletRequest request) {
+        // 메뉴 상단 회원 정보
         if(user != null) {
             model.addAttribute("userName", user.getUserName());
             model.addAttribute("grade", user.getGrade().getTitle());
         }
 
+        // 카테고리
         ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
 
+        // 상품 목록
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
         Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
-        List<ItemListDto> recentItems = itemService.getRecentViewList(request);
-
-        model.addAttribute("itemCategoryDto", itemCategoryDto);
         model.addAttribute("itemSearchDto", itemSearchDto);
         model.addAttribute("items", items);
         model.addAttribute("maxPage", 10);
+
+        // 최근 본 상품
+        List<ItemListDto> recentItems = itemService.getRecentViewList(request);
         model.addAttribute("recentItems", recentItems);
 
         return "main";
