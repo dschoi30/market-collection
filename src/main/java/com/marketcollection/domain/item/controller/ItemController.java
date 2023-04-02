@@ -90,14 +90,16 @@ public class ItemController {
     }
 
     // 상품 목록 조회(커서 페이징)
-    @GetMapping({"/main", "/main/{cursorItemId}"})
-    public String getItemList(Model model, HttpServletRequest request,
-                              @PathVariable(required = false) Long cursorItemId) {
-        PageCursor<Item> itemCursorList = itemService.getItemCursorList(cursorItemId, PageRequest.of(0, 100));
+    @GetMapping({"/main"})
+    public String getItemList(Model model, HttpServletRequest request) {
         List<ItemListDto> recentItems = itemService.getRecentViewList(request);
-        model.addAttribute("items", itemCursorList);
         model.addAttribute("recentItems", recentItems);
         return "item/items";
+    }
+    // 상품 목록 조회(커서 페이징)
+    @GetMapping({ "/main/", "/main/{cursorItemId}"})
+    public @ResponseBody PageCursor<Item> addCusrorItemList(@PathVariable(required = false) Long cursorItemId) {
+        return itemService.getItemCursorList(cursorItemId, PageRequest.of(0, 8));
     }
 
     @GetMapping("/categories/{categoryId}")

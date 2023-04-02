@@ -11,6 +11,9 @@
         .mgb-30 {
             margin-bottom: 30px;
         }
+        .wd220 {
+            width: 220px;
+        }
         .thumbnail {
             width: 50px;
             height: 50px;
@@ -31,63 +34,90 @@
 </th:block>
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        function printMoreItems(cursorItemId) {
+        async function printItems(cursorItemId) {
+            const result = await axios.get(`/main/${cursorItemId}`, {param: cursorItemId})
 
-            location.href="/main/" + cursorItemId;
-            console.log("id=" + cursorItemId)
+            return result.data;
         }
+        function printMoreItems(cursorItemId) {
+            console.log("ok" + cursorItemId);
+            printItems(cursorItemId).then(
+                data => {
+                    console.log(data.values);
+                    moreItems.innerHTML += (printList(data.values));
+                }
+            );
+        }
+        function printList(dtoList) {
+            let str = '';
+
+            if(dtoList && dtoList.length > 0) {
+
+                for (const dto of dtoList) {
+                    str += `<div class="col-3 margin">
+                <div class="card mgb-30 wd220">
+                    <input type="hidden" class="item-id" value="${dto.id}">
+                    <a href="/items/${dto.id}" class="text-dark" style="text-decoration-line: none;">
+                        <img src="${dto.repImageUrl}" class="card-img-top" th:alt="${dto.itemName}" style="width: 220px; height: 250px;">
+                        <div class="card-body">
+                            <h5 class="card-title">${dto.itemName}</h5>
+                            <h5 class="card-title fw-bold">${dto.salePrice}원</h5>
+                            <h6 class="card-title review-count">후기 ${dto.reviewCount}</h6>
+                        </div>
+                    </a>
+                </div>
+            </div>`
+                }
+            }
+            return str;
+        }
+        const moreItems = document.querySelector('.more-items');
+
+        printMoreItems("");
+
+        $(window).scroll(function () {
+            if ((Math.round(($(window).scrollTop() + $(window).height()) / 1)) + 1 === $(document).height()) {
+                let itemId = $(".item-id").last().val();
+                printMoreItems(itemId);
+            }
+        });
     </script>
 </th:block>
 
 <div layout:fragment="content" class="content">
-<!--    <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
-    <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="text-center">
-        <p class="h3 font-weight-bold mgb-30" th:text="${itemSearchDto.searchQuery} + '에 대한 검색 결과'"></p>
-    </div>-->
-    <div class="row">
-        <th:block th:each="item, status: ${items.values}">
-            <div class="col-md-3 margin">
-                <div class="card mgb-30">
-                    <a th:href="'/items/' + ${item.id}" class="text-dark" style="text-decoration-line: none;">
-                        <img th:src="${item.repImageUrl}" class="card-img-top" th:alt="${item.itemName}" height="250">
-                        <div class="card-body">
-                            <h5 class="card-title">[[${item.itemName}]]</h5>
-                            <h5 class="card-title fw-bold">[[${#numbers.formatInteger(item.salePrice, 1, 'COMMA')}]]원</h5>
-                            <h6 class="card-title review-count">후기 [[${item.reviewCount}]]</h6>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        <button class="btn btn-primary btn-more" th:if="${status.count eq status.size}" th:value="${item.id}" onclick="printMoreItems(this.value)">더 보기</button>
-        </th:block>
-        <div th:if="${recentItems.size() > 0}" class="recent-view">
-            <div>최근 본 상품</div>
-            <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">
-                <div class="carousel-inner" th:each="recentItem, status: ${recentItems}">
-                    <div th:if="${status.index eq 0}">
-                        <div class="carousel-item active text-center">
-                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
-                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
-                            </a>
-                        </div>
-                    </div>
-                    <div th:unless="${status.index eq 0}">
-                        <div class="carousel-item text-center">
-                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
-                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
-                            </a>
-                        </div>
+    <div class="row more-items">
+    </div>
+
+    <div th:if="${recentItems.size() > 0}" class="recent-view">
+        <div>최근 본 상품</div>
+        <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">
+            <div class="carousel-inner" th:each="recentItem, status: ${recentItems}">
+                <div th:if="${status.index eq 0}">
+                    <div class="carousel-item active text-center">
+                        <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                            <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                        </a>
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                </button>
+                <div th:unless="${status.index eq 0}">
+                    <div class="carousel-item text-center">
+                        <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                            <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                        </a>
+                    </div>
+                </div>
             </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 </div>
 
 </html>
