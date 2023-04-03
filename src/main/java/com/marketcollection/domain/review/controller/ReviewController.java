@@ -3,15 +3,13 @@ package com.marketcollection.domain.review.controller;
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
 import com.marketcollection.common.exception.ErrorCode;
+import com.marketcollection.domain.common.LoginMemberInfo;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.item.service.ItemService;
-import com.marketcollection.domain.member.exception.UnAuthorizedUserException;
-import com.marketcollection.domain.review.Review;
 import com.marketcollection.domain.review.dto.PageRequestDto;
 import com.marketcollection.domain.review.dto.PageResponseDto;
 import com.marketcollection.domain.review.dto.ReviewDto;
 import com.marketcollection.domain.review.exception.ReviewBadReqeustException;
-import com.marketcollection.domain.review.repository.ReviewRepository;
 import com.marketcollection.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,24 +19,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @Controller
-public class ReviewController {
+public class ReviewController extends LoginMemberInfo {
 
     private final ReviewService reviewService;
     private final ItemService itemService;
-
-    // 헤더에 회원 정보 출력
-    @ModelAttribute
-    public void setMemberInfo(Model model, @LoginUser SessionUser user) {
-        if(user != null) {
-            model.addAttribute("userName", user.getUserName());
-            model.addAttribute("grade", user.getGrade().getTitle());
-        }
-    }
 
     @GetMapping("/review/{itemId}/new")
     public String getReviewForm(@PathVariable Long itemId, Model model) {

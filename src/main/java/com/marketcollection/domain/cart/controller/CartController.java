@@ -6,6 +6,7 @@ import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.cart.dto.CartItemDto;
 import com.marketcollection.domain.cart.dto.CartRequestDto;
 import com.marketcollection.domain.cart.service.CartService;
+import com.marketcollection.domain.common.LoginMemberInfo;
 import com.marketcollection.domain.member.Grade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,18 +22,9 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
-public class CartController {
+public class CartController extends LoginMemberInfo {
 
     private final CartService cartService;
-
-    // 헤더에 회원 정보 출력
-    @ModelAttribute
-    public void setMemberInfo(Model model, @LoginUser SessionUser user) {
-        if(user != null) {
-            model.addAttribute("userName", user.getUserName());
-            model.addAttribute("grade", user.getGrade().getTitle());
-        }
-    }
 
     // 장바구니 상품 추가
     @PostMapping("/cart")

@@ -2,8 +2,7 @@ package com.marketcollection.domain.order.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
-import com.marketcollection.common.exception.ErrorCode;
-import com.marketcollection.domain.member.exception.UnAuthorizedUserException;
+import com.marketcollection.domain.common.LoginMemberInfo;
 import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -14,29 +13,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
-public class OrderController {
+public class OrderController extends LoginMemberInfo {
 
     private final OrderService orderService;
-
-    // 헤더에 회원 정보 출력
-    @ModelAttribute
-    public void setMemberInfo(Model model, @LoginUser SessionUser user) {
-        if(user != null) {
-            model.addAttribute("userName", user.getUserName());
-            model.addAttribute("grade", user.getGrade().getTitle());
-        }
-    }
 
     // 장바구니 미경유 주문 정보 생성
     @PostMapping("/order/direct")
