@@ -186,16 +186,16 @@ public class ItemService {
 
     // 상품 목록 조회
     @Transactional(readOnly = true)
-    public PageCursor<Item> getItemCursorList(Long cursorItemId, Pageable pageable) {
-        List<Item> items = findByCursorSize(cursorItemId, pageable);
+    public PageCursor<ItemListDto> getItemCursorList(ItemSearchDto itemSearchDto, Long cursorItemId, Pageable pageable) {
+        List<ItemListDto> items  = findByCursorSize(itemSearchDto, cursorItemId, pageable);
         Long lastItemIdOfList = items.isEmpty() ? null : items.get(items.size() - 1).getId(); // 목록의 마지막 상품 ID 확인
         return new PageCursor<>(items, hasNext(lastItemIdOfList));
     }
 
-    private List<Item> findByCursorSize(Long cursorItemId, Pageable pageable) {
+    private List<ItemListDto> findByCursorSize(ItemSearchDto itemSearchDto, Long cursorItemId, Pageable pageable) {
         return cursorItemId == null ?
-                itemRepository.findAllByOrderByIdDesc(pageable) :
-                itemRepository.findByIdLessThanOrderByIdDesc(cursorItemId, pageable); // 상품 ID 기준으로 목록 조회(count 조회 x)
+                itemRepository.getCategoryItemListPage(itemSearchDto, pageable) :
+                itemRepository.getCategoryItemListPageLessThanId(itemSearchDto, cursorItemId, pageable); // 상품 ID 기준으로 목록 조회(count 조회 x)
     }
 
     private Boolean hasNext(Long id) {

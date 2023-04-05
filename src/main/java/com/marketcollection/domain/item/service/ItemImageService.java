@@ -1,6 +1,6 @@
 package com.marketcollection.domain.item.service;
 
-import com.marketcollection.common.unit.S3Uploader;
+import com.marketcollection.domain.common.S3Uploader;
 import com.marketcollection.domain.common.LocalFileService;
 import com.marketcollection.domain.item.dto.ItemImageDto;
 import com.marketcollection.domain.item.ItemImage;

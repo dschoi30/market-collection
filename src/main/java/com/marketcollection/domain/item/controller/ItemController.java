@@ -1,12 +1,11 @@
 package com.marketcollection.domain.item.controller;
 
-import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.domain.category.dto.ItemCategoryDto;
 import com.marketcollection.domain.category.service.CategoryService;
+import com.marketcollection.domain.common.LoginMemberInfo;
 import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.*;
-import com.marketcollection.common.auth.dto.SessionUser;
 import com.marketcollection.domain.item.service.ItemService;
 import com.marketcollection.domain.order.dto.OrderRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -25,19 +24,10 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
-public class ItemController {
+public class ItemController extends LoginMemberInfo {
 
     private final ItemService itemService;
     private final CategoryService categoryService;
-
-    // 헤더에 회원 정보 출력
-    @ModelAttribute
-    public void setMemberInfo(Model model, @LoginUser SessionUser user) {
-        if(user != null) {
-            model.addAttribute("userName", user.getUserName());
-            model.addAttribute("grade", user.getGrade().getTitle());
-        }
-    }
 
     // 상품 등록 페이지
     @GetMapping("/admin/item/new")
@@ -89,39 +79,33 @@ public class ItemController {
         return "item/itemForm";
     }
 
-    // 상품 목록 조회(커서 페이징)
-    @GetMapping({"/main"})
-    public String getItemList(Model model, HttpServletRequest request) {
-        List<ItemListDto> recentItems = itemService.getRecentViewList(request);
-        model.addAttribute("recentItems", recentItems);
-        return "item/items";
-    }
-    // 상품 목록 조회(커서 페이징)
-    @GetMapping({ "/main/", "/main/{cursorItemId}"})
-    public @ResponseBody PageCursor<Item> addCusrorItemList(@PathVariable(required = false) Long cursorItemId) {
-        return itemService.getItemCursorList(cursorItemId, PageRequest.of(0, 8));
-    }
-
+    // 카테고리별 상품 목록 조회
     @GetMapping("/categories/{categoryId}")
-    public String categoryItemPage(Model model, ItemSearchDto itemSearchDto,
-                                   @PathVariable(value = "categoryId") Long categoryId,
-                                   @RequestParam(value = "orderBy", required = false) String orderBy,
-                                   Optional<Integer> page, HttpServletRequest request) {
+    public String getCategoryItemList(Model model, ItemSearchDto itemSearchDto,
+                              @PathVariable(value = "categoryId") Long categoryId,
+                              HttpServletRequest request) {
         itemSearchDto.setCategoryId(categoryId);
-        itemSearchDto.setOrderBy(orderBy);
         ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
         String categoryName = itemCategoryDto.findCategoryName(categoryId);
-
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 8);
-        Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
-        List<ItemListDto> recentItems = itemService.getRecentViewList(request);
-
+        model.addAttribute("categoryId", categoryId);
         model.addAttribute("categoryName", categoryName);
         model.addAttribute("itemCategoryDto", itemCategoryDto);
-        model.addAttribute("items", items);
-        model.addAttribute("maxPage", 10);
+
+        List<ItemListDto> recentItems = itemService.getRecentViewList(request);
         model.addAttribute("recentItems", recentItems);
 
-        return "item/categoryItem";
+        return "item/categoryItemList";
+    }
+
+    // 카테고리별 상품 목록 페이징
+    @GetMapping({"/categories/{categoryId}/0", "/categories/{categoryId}/{lastItemId}"})
+    public @ResponseBody PageCursor<ItemListDto> addCategoryItemList(@PathVariable(value = "categoryId") Long categoryId,
+                                                                    @PathVariable(required = false) Long lastItemId,
+                                                                    @RequestParam(value = "orderBy", required = false) String orderBy,
+                                                                    ItemSearchDto itemSearchDto) {
+        itemSearchDto.setCategoryId(categoryId);
+        itemSearchDto.setOrderBy(orderBy);
+
+        return itemService.getItemCursorList(itemSearchDto, lastItemId, PageRequest.of(0, 20));
     }
 }

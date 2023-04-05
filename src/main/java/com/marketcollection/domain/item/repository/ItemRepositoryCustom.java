@@ -16,4 +16,7 @@ public interface ItemRepositoryCustom {
     Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable);
 
     List<ItemListDto> findByIds(List<Long> itemIds);
+
+    List<ItemListDto> getCategoryItemListPage(ItemSearchDto itemSearchDto, Pageable pageable);
+    List<ItemListDto> getCategoryItemListPageLessThanId(ItemSearchDto itemSearchDto, Long cursorItemId, Pageable pageable);
 }

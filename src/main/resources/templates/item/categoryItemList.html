@@ -8,14 +8,14 @@
         .mgt-5 {
             margin-top: 5px;
         }
-        .mgb-10 {
-            margin-bottom: 10px;
-        }
         .mgb-30 {
             margin-bottom: 30px;
         }
-        .mgl-10 {
-            margin-left: 10px;
+        .mgr-5 {
+            margin-right: 5px;
+        }
+        .wd220 {
+            width: 220px;
         }
         .thumbnail {
             width: 50px;
@@ -115,9 +115,79 @@
         }
     </style>
 </th:block>
-
 <th:block layout:fragment="script">
     <script th:inline="javascript">
+        const categoryId = $("#categoryId").val();
+        async function printItems(categoryId, lastItemId) {
+            let result;
+            if(lastItemId === "") {
+            result = await axios.get(`/categories/${categoryId}/0`)
+            } else {
+            result = await axios.get(`/categories/${categoryId}/${lastItemId}`)
+            }
+            return result.data;
+        }
+        function printMoreItems(categoryId, lastItemId) {
+            printItems(categoryId, lastItemId).then(
+                data => {
+                    console.log(data.values);
+                    moreItems.innerHTML += (printList(data.values));
+                }
+            );
+        }
+        function printList(dtoList) {
+            let str = '';
+
+            if(dtoList && dtoList.length > 0) {
+
+                for (const dto of dtoList) {
+                    let salePrice = dto.salePrice;
+                    let originalPrice = dto.originalPrice;
+                    let discountRate = (((dto.originalPrice - dto.salePrice) / dto.originalPrice) * 100).toFixed(0) + '%';
+                    str += `
+                        <div class="col-3 margin">
+                            <div class="card mgb-30 wd220">
+                                <input type="hidden" class="item-id" value="${dto.id}">
+                                <a href="/items/${dto.id}" class="text-dark" style="text-decoration-line: none;">
+                                    <img src="${dto.imageUrl}" class="card-img-top" th:alt="${dto.itemName}" style="width: 220px; height: 250px;">
+                                    <div class="card-body">
+                                        <div>${dto.itemName}</div>
+                    `
+                    if(salePrice < originalPrice) {
+                        str += `<span class="fw-bold text-danger mgr-5">`
+                        str += discountRate
+                        str += `</span>`
+                    }
+                    str += `<span class="fw-bold">`
+                    str += salePrice.toLocaleString()
+                    str += `원</span>`
+                    if(salePrice < originalPrice) {
+                        str += `<div class="text-decoration-line-through text-gray">`
+                        str += originalPrice.toLocaleString()
+                        str += `원</div>`
+                    }
+                    str += `
+                                        <div class="text-gray">후기 ${dto.reviewCount}</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    `
+                }
+            }
+            return str;
+        }
+        const moreItems = document.querySelector('.more-items');
+
+        printMoreItems(categoryId, "");
+
+        $(window).scroll(function () {
+            if ((Math.round(($(window).scrollTop() + $(window).height()) / 1)) === $(document).height()) {
+                let itemId = $(".item-id").last().val();
+                printMoreItems(categoryId, itemId);
+            }
+        });
+
         $(".category").mouseover(function() {
             $(".level1").css("display", "block");
         });
@@ -276,104 +346,65 @@
                     <div th:each="number: ${#numbers.sequence(root, final)}">
                         <div th:each="category, idx : ${itemCategoryDto.subCategories.get(number).subCategories}"
                              th:class="'categoryName level2_' + ${itemCategoryDto.subCategories.get(number).id}" style="width: 220px; height: 30px; display: none;">
-                            <a th:href="@{'/categories/' + ${category.id}}"><span class="categoryName" th:text="${category.categoryName}"></span></a>
+                            <a th:href="@{'/categories/' + ${category.id}}" style="display: block;"><span class="categoryName" th:text="${category.categoryName}"></span></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <ul class="gnb-menu">
-            <li>신상품</li>
-            <li>베스트</li>
+            <li><a th:href="@{'/' + '?orderBy=id'}">신상품</a></li>
+            <li><a th:href="@{'/' + '?orderBy=salesCount'}">베스트</a></li>
             <li>알뜰쇼핑</li>
             <li>특가/혜택</li>
         </ul>
     </div>
-    <p class="h4 text-center mgb-30">[[${categoryName}]]</p>
+    <input type="hidden" id="categoryId" th:value="${categoryId}">
+    <p class="h4 text-center mgb-30" th:text="${categoryName}"></p>
     <div class="col text-end mgb-10">
-        <input type="hidden" id="categoryId" th:value="${itemSearchDto.categoryId}">
-        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?&orderBy=id'}">신상품순</a></span> |
-        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?orderBy=salesCount'}">판매량순</a></span> |
-        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?orderBy=salePriceAsc'}">낮은가격순</a></span> |
-        <span><a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?orderBy=salePriceDesc'}">높은가격순</a></span> |
+        <span><a th:href="@{'/' + '?orderBy=id'}">신상품순</a></span> |
+        <span><a th:href="@{'/' + '?orderBy=salesCount'}">판매량순</a></span> |
+        <span><a th:href="@{'/' + '?orderBy=salePriceAsc'}">낮은가격순</a></span> |
+        <span><a th:href="@{'/' + '?orderBy=salePriceDesc'}">높은가격순</a></span>
     </div>
     <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
     <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="text-center">
         <p class="h3 font-weight-bold mgb-30" th:text="${itemSearchDto.searchQuery} + '에 대한 검색 결과'"></p>
     </div>
 
-    <div class="row">
-        <th:block th:each="item, status: ${items.getContent()}">
-            <div class="col-md-3 margin">
-                <div class="card mgb-30">
-                    <a th:href="'/items/' + ${item.id}" class="text-dark" style="text-decoration-line: none;">
-                        <img th:src="${item.imageUrl}" class="card-img-top" th:alt="${item.itemName}" height="250">
-                        <div class="card-body">
-                            <div>[[${item.itemName}]]</div>
-                            <span th:if="${item.salePrice < item.originalPrice}">
-                                <span class="fw-bold text-danger" th:text="${#numbers.formatPercent((item.originalPrice - item.salePrice) * 1.0 / item.originalPrice, 1, 0)}"></span>
-                            </span>
-                            <span class="fw-bold">[[${#numbers.formatInteger(item.salePrice, 1, 'COMMA')}]]원</span>
-                            <span th:if="${item.salePrice < item.originalPrice}">
-                                <div class="text-decoration-line-through text-gray">[[${#numbers.formatInteger(item.originalPrice, 1, 'COMMA')}]]원</div>
-                            </span>
-                            <div class="text-gray">후기 [[${item.reviewCount}]]</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </th:block>
-        <div th:if="${recentItems.size() > 0}" class="recent-view">
-            <div>최근 본 상품</div>
-            <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">
-                <div class="carousel-inner" th:each="recentItem, status: ${recentItems}">
-                    <div th:if="${status.index eq 0}">
-                        <div class="carousel-item active text-center">
-                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
-                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
-                            </a>
-                        </div>
-                    </div>
-                    <div th:unless="${status.index eq 0}">
-                        <div class="carousel-item text-center">
-                            <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
-                                <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
-                            </a>
-                        </div>
+    <div class="row more-items">
+    </div>
+
+    <div th:if="${recentItems.size() > 0}" class="recent-view">
+        <div class="text-center">최근 본 상품</div>
+        <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">
+            <div class="carousel-inner" th:each="recentItem, status: ${recentItems}">
+                <div th:if="${status.index eq 0}">
+                    <div class="carousel-item active text-center">
+                        <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                            <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                        </a>
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+                <div th:unless="${status.index eq 0}">
+                    <div class="carousel-item text-center">
+                        <a th:href="'/items/' + ${recentItem.id}" class="text-dark" style="text-decoration-line: none;">
+                            <img th:src="${recentItem.imageUrl}" class="card-img-top thumbnail" th:alt="${recentItem.itemName}">
+                        </a>
+                    </div>
+                </div>
             </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
         </div>
     </div>
 
-    <div th:with="start=${(items.number / maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
-        <ul class="pagination justify-content-center">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-            <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
-                <a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?searchQuery=' + ${itemSearchDto.searchQuery}+ '&page=' + ${items.number - 1}}" aria-label='Previous' class="page-link text-black">
-                    <span aria-hidden='true'>&lt</span>
-                </a>
-            </li>
-
-            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq page - 1}?'active':''">
-                <a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page - 1}}" th:inline="text" class="page-link text-black">[[${page}]]</a>
-            </li>
-
-            <li class="page-item" th:classappend="${items.number + 1 ge items.totalPages}?'disabled':''">
-                <a th:href="@{'/categories/' + ${itemSearchDto.categoryId} + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number + 1}}" aria-label='Next' class="page-link text-black">
-                    <span aria-hidden='true'>&gt</span>
-                </a>
-            </li>
-        </ul>
-    </div>
 </div>
 
 </html>
