@@ -82,19 +82,27 @@ public class ItemController extends LoginMemberInfo {
     // 카테고리별 상품 목록 조회
     @GetMapping("/categories/{categoryId}")
     public String getCategoryItemList(Model model, ItemSearchDto itemSearchDto,
-                              @PathVariable Long categoryId,
-                              HttpServletRequest request) {
-        itemSearchDto.setCategoryId(categoryId);
+                                        @PathVariable Long categoryId, Optional<Integer> page,
+                                        HttpServletRequest request) {
+        // 카테고리
         ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
         String categoryName = itemCategoryDto.findCategoryName(categoryId);
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("categoryName", categoryName);
         model.addAttribute("itemCategoryDto", itemCategoryDto);
 
+        // 상품 목록
+        itemSearchDto.setCategoryId(categoryId);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 100);
+        Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
+        model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("items", items);
+        model.addAttribute("maxPage", 10);
+
+        // 최근 본 상품
         List<ItemListDto> recentItems = itemService.getRecentViewList(request);
         model.addAttribute("recentItems", recentItems);
 
-        return "item/categoryItemList";
+        return "/item/categoryItemList";
     }
-
 }

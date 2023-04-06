@@ -55,16 +55,4 @@ public class ApiItemController {
 
         return new ResponseEntity<>(itemId, HttpStatus.OK);
     }
-
-    // 카테고리별 상품 목록 페이징
-    @GetMapping({"/categories/{categoryId}", "/categories/{categoryId}/{lastItemId}"})
-    public PageCursor<ItemListDto> addCategoryItemList(@PathVariable Long categoryId,
-                                                                     @PathVariable(required = false) Long lastItemId,
-                                                                     @RequestParam(required = false) String orderBy,
-                                                                     ItemSearchDto itemSearchDto) {
-        itemSearchDto.setCategoryId(categoryId);
-        itemSearchDto.setOrderBy(orderBy);
-
-        return itemService.getItemCursorList(itemSearchDto, lastItemId, PageRequest.of(0, 20));
-    }
 }
