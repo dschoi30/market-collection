@@ -8,6 +8,9 @@
         .mgt-5 {
             margin-top: 5px;
         }
+        .mgt-10 {
+            margin-top: 10px;
+        }
         .mgb-30 {
             margin-bottom: 30px;
         }
@@ -118,17 +121,18 @@
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         const categoryId = $("#categoryId").val();
-        async function printItems(categoryId, lastItemId) {
+        let orderBy;
+        async function printItems(categoryId, lastItemId, orderBy) {
             let result;
             if(lastItemId === "") {
-            result = await axios.get(`/categories/${categoryId}/0`)
+            result = await axios.get(`/api/v1/categories/${categoryId}?orderBy=` + orderBy)
             } else {
-            result = await axios.get(`/categories/${categoryId}/${lastItemId}`)
+            result = await axios.get(`/api/v1/categories/${categoryId}/${lastItemId}?orderBy=` + orderBy)
             }
             return result.data;
         }
-        function printMoreItems(categoryId, lastItemId) {
-            printItems(categoryId, lastItemId).then(
+        function printMoreItems(categoryId, lastItemId, orderBy) {
+            printItems(categoryId, lastItemId, orderBy).then(
                 data => {
                     console.log(data.values);
                     moreItems.innerHTML += (printList(data.values));
@@ -177,156 +181,35 @@
             }
             return str;
         }
-        const moreItems = document.querySelector('.more-items');
+        let moreItems = document.querySelector('.more-items');
 
         printMoreItems(categoryId, "");
 
+        function orderById() {
+            moreItems.innerHTML = "";
+            orderBy = "id"
+            printMoreItems(categoryId, "", orderBy);
+        }
+        function orderBySalesCount() {
+            moreItems.innerHTML = "";
+            orderBy = "saleCount"
+            printMoreItems(categoryId, "", orderBy);
+        }
+        function orderBySalePriceDesc() {
+            moreItems.innerHTML = "";
+            orderBy = "salePriceDesc"
+            printMoreItems(categoryId, "", orderBy);
+        }
+        function orderBySalePriceAsc() {
+            moreItems.innerHTML = "";
+            orderBy = "salePriceAsc"
+            printMoreItems(categoryId, "", orderBy);
+        }
         $(window).scroll(function () {
             if ((Math.round(($(window).scrollTop() + $(window).height()) / 1)) === $(document).height()) {
                 let itemId = $(".item-id").last().val();
-                printMoreItems(categoryId, itemId);
+                printMoreItems(categoryId, itemId, orderBy);
             }
-        });
-
-        $(".category").mouseover(function() {
-            $(".level1").css("display", "block");
-        });
-        $(".level1").mouseover(function() {
-            $(".level2").css("display", "block");
-        });
-        $(".level2").mouseleave(function() {
-            $(".level2").css("display", "none");
-            $(".level1").css("display", "none");
-        });
-
-        $(".level1_0").mouseover(function() {
-            $(".level2_1").css("display", "block");
-        });
-        $(".level1_0").mouseleave(function() {
-            $(".level2_1").css("display", "none");
-        });
-        $(".level2_1").mouseover(function() {
-            $(".level2_1").css("display", "block");
-        });
-        $(".level2_1").mouseleave(function() {
-            $(".level2_1").css("display", "none");
-        });
-
-        $(".level1_1").mouseover(function() {
-            $(".level2_2").css("display", "block");
-        });
-        $(".level1_1").mouseleave(function() {
-            $(".level2_2").css("display", "none");
-        });
-        $(".level2_2").mouseover(function() {
-            $(".level2_2").css("display", "block");
-        });
-        $(".level2_2").mouseleave(function() {
-            $(".level2_2").css("display", "none");
-        });
-
-        $(".level1_2").mouseover(function() {
-            $(".level2_3").css("display", "block");
-        });
-        $(".level1_2").mouseleave(function() {
-            $(".level2_3").css("display", "none");
-        });
-        $(".level2_3").mouseover(function() {
-            $(".level2_3").css("display", "block");
-        });
-        $(".level2_3").mouseleave(function() {
-            $(".level2_3").css("display", "none");
-        });
-
-        $(".level1_3").mouseover(function() {
-            $(".level2_4").css("display", "block");
-        });
-        $(".level1_3").mouseleave(function() {
-            $(".level2_4").css("display", "none");
-        });
-        $(".level2_4").mouseover(function() {
-            $(".level2_4").css("display", "block");
-        });
-        $(".level2_4").mouseleave(function() {
-            $(".level2_4").css("display", "none");
-        });
-
-        $(".level1_4").mouseover(function() {
-            $(".level2_5").css("display", "block");
-        });
-        $(".level1_4").mouseleave(function() {
-            $(".level2_5").css("display", "none");
-        });
-        $(".level2_5").mouseover(function() {
-            $(".level2_5").css("display", "block");
-        });
-        $(".level2_5").mouseleave(function() {
-            $(".level2_5").css("display", "none");
-        });
-
-        $(".level1_5").mouseover(function() {
-            $(".level2_6").css("display", "block");
-        });
-        $(".level1_5").mouseleave(function() {
-            $(".level2_6").css("display", "none");
-        });
-        $(".level2_6").mouseover(function() {
-            $(".level2_6").css("display", "block");
-        });
-        $(".level2_6").mouseleave(function() {
-            $(".level2_6").css("display", "none");
-        });
-
-        $(".level1_6").mouseover(function() {
-            $(".level2_7").css("display", "block");
-        });
-        $(".level1_6").mouseleave(function() {
-            $(".level2_7").css("display", "none");
-        });
-        $(".level2_7").mouseover(function() {
-            $(".level2_7").css("display", "block");
-        });
-        $(".level2_7").mouseleave(function() {
-            $(".level2_7").css("display", "none");
-        });
-
-        $(".level1_7").mouseover(function() {
-            $(".level2_8").css("display", "block");
-        });
-        $(".level1_7").mouseleave(function() {
-            $(".level2_8").css("display", "none");
-        });
-        $(".level2_8").mouseover(function() {
-            $(".level2_8").css("display", "block");
-        });
-        $(".level2_8").mouseleave(function() {
-            $(".level2_8").css("display", "none");
-        });
-
-        $(".level1_8").mouseover(function() {
-            $(".level2_9").css("display", "block");
-        });
-        $(".level1_8").mouseleave(function() {
-            $(".level2_9").css("display", "none");
-        });
-        $(".level2_9").mouseover(function() {
-            $(".level2_9").css("display", "block");
-        });
-        $(".level2_9").mouseleave(function() {
-            $(".level2_9").css("display", "none");
-        });
-
-        $(".level1_9").mouseover(function() {
-            $(".level2_10").css("display", "block");
-        });
-        $(".level1_9").mouseleave(function() {
-            $(".level2_10").css("display", "none");
-        });
-        $(".level2_10").mouseover(function() {
-            $(".level2_10").css("display", "block");
-        });
-        $(".level2_10").mouseleave(function() {
-            $(".level2_10").css("display", "none");
         });
     </script>
 </th:block>
@@ -362,17 +245,17 @@
     <input type="hidden" id="categoryId" th:value="${categoryId}">
     <p class="h4 text-center mgb-30" th:text="${categoryName}"></p>
     <div class="col text-end mgb-10">
-        <span><a th:href="@{'/' + '?orderBy=id'}">신상품순</a></span> |
-        <span><a th:href="@{'/' + '?orderBy=salesCount'}">판매량순</a></span> |
-        <span><a th:href="@{'/' + '?orderBy=salePriceAsc'}">낮은가격순</a></span> |
-        <span><a th:href="@{'/' + '?orderBy=salePriceDesc'}">높은가격순</a></span>
+        <span><a onclick="orderById()">신상품순</a></span> |
+        <span><a onclick="orderBySalesCount()">판매량순</a></span> |
+        <span><a onclick="orderBySalePriceAsc()">낮은가격순</a></span> |
+        <span><a onclick="orderBySalePriceDesc()">높은가격순</a></span>
     </div>
     <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
     <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="text-center">
         <p class="h3 font-weight-bold mgb-30" th:text="${itemSearchDto.searchQuery} + '에 대한 검색 결과'"></p>
     </div>
 
-    <div class="row more-items">
+    <div class="row more-items mgt-10">
     </div>
 
     <div th:if="${recentItems.size() > 0}" class="recent-view">
@@ -404,7 +287,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
+    <script src="/js/category.js"></script>
 </div>
 
 </html>

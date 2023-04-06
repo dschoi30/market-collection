@@ -39,7 +39,7 @@ public class ItemController extends LoginMemberInfo {
 
     // 상품 상세 조회
     @GetMapping("/items/{itemId}")
-    public String getItemDetail(Model model, @PathVariable("itemId") Long itemId,
+    public String getItemDetail(Model model, @PathVariable Long itemId,
                                 HttpServletRequest request, HttpServletResponse response) {
         try {
             ItemDetailDto itemDetailDto = itemService.getItemDetail(itemId, request, response);
@@ -56,7 +56,7 @@ public class ItemController extends LoginMemberInfo {
     // 관리자 상품 관리
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
     public String getAdminItemPage(Model model, ItemSearchDto itemSearchDto,
-                                   @PathVariable("page") Optional<Integer> page) {
+                                   @PathVariable Optional<Integer> page) {
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 20);
         Page<Item> items = itemService.getAdminItemPage(itemSearchDto, pageable);
 
@@ -82,7 +82,7 @@ public class ItemController extends LoginMemberInfo {
     // 카테고리별 상품 목록 조회
     @GetMapping("/categories/{categoryId}")
     public String getCategoryItemList(Model model, ItemSearchDto itemSearchDto,
-                              @PathVariable(value = "categoryId") Long categoryId,
+                              @PathVariable Long categoryId,
                               HttpServletRequest request) {
         itemSearchDto.setCategoryId(categoryId);
         ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
@@ -97,15 +97,4 @@ public class ItemController extends LoginMemberInfo {
         return "item/categoryItemList";
     }
 
-    // 카테고리별 상품 목록 페이징
-    @GetMapping({"/categories/{categoryId}/0", "/categories/{categoryId}/{lastItemId}"})
-    public @ResponseBody PageCursor<ItemListDto> addCategoryItemList(@PathVariable(value = "categoryId") Long categoryId,
-                                                                    @PathVariable(required = false) Long lastItemId,
-                                                                    @RequestParam(value = "orderBy", required = false) String orderBy,
-                                                                    ItemSearchDto itemSearchDto) {
-        itemSearchDto.setCategoryId(categoryId);
-        itemSearchDto.setOrderBy(orderBy);
-
-        return itemService.getItemCursorList(itemSearchDto, lastItemId, PageRequest.of(0, 20));
-    }
 }
