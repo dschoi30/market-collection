@@ -100,6 +100,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                         itemNameLike(itemSearchDto.getSearchQuery()),
                         categoryIdEq(itemSearchDto.getCategoryId())
                 )
+                .orderBy(orderSpecifier(itemSearchDto))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
