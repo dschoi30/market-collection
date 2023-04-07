@@ -11,12 +11,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ItemRepositoryCustom {
-
     Page<ItemListDto> getItemListPage(ItemSearchDto itemSearchDto, Pageable pageable);
+
     Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable);
 
     List<ItemListDto> findByIds(List<Long> itemIds);
-
-    List<ItemListDto> getCategoryItemListPage(ItemSearchDto itemSearchDto, Pageable pageable);
-    List<ItemListDto> getCategoryItemListPageLessThanId(ItemSearchDto itemSearchDto, Long cursorItemId, Pageable pageable);
 }

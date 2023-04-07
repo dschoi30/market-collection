@@ -92,6 +92,18 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     @Override
     public Page<ItemListDto> getItemListPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        List<Long> ids = queryFactory
+                .select(item.id)
+                .from(item)
+                .where(
+                        item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE),
+                        itemNameLike(itemSearchDto.getSearchQuery()),
+                        categoryIdEq(itemSearchDto.getCategoryId())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
         List<ItemListDto> content = queryFactory
                 .select(
                         new QItemListDto(
@@ -103,23 +115,14 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                                 item.reviewCount
                         ))
                 .from(item)
-                .where(
-                        item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE),
-                        itemNameLike(itemSearchDto.getSearchQuery()),
-                        categoryIdEq(itemSearchDto.getCategoryId())
-                )
+                .where(item.id.in(ids))
                 .orderBy(orderSpecifier(itemSearchDto))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
 
         long total = queryFactory
                 .select(Wildcard.count)
                 .from(item)
-                .where(item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE),
-                        itemNameLike(itemSearchDto.getSearchQuery()),
-                        categoryIdEq(itemSearchDto.getCategoryId())
-                )
+                .where(categoryIdEq(itemSearchDto.getCategoryId()))
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total);
@@ -163,51 +166,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 ))
                 .from(item)
                 .where(item.id.in(itemIds))
-                .fetch();
-    }
-
-    @Override
-    public List<ItemListDto> getCategoryItemListPage(ItemSearchDto itemSearchDto, Pageable pageable) {
-        return queryFactory
-                .select(new QItemListDto(
-                        item.id,
-                        item.itemName,
-                        item.originalPrice,
-                        item.salePrice,
-                        item.repImageUrl,
-                        item.reviewCount
-                ))
-                .from(item)
-                .where(
-                        item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE),
-                        itemNameLike(itemSearchDto.getSearchQuery()),
-                        categoryIdEq(itemSearchDto.getCategoryId())
-                )
-                .orderBy(orderSpecifier(itemSearchDto))
-                .limit(pageable.getPageSize())
-                .fetch();
-    }
-
-    @Override
-    public List<ItemListDto> getCategoryItemListPageLessThanId(ItemSearchDto itemSearchDto, Long cursorItemId, Pageable pageable) {
-        return queryFactory
-                .select(new QItemListDto(
-                        item.id,
-                        item.itemName,
-                        item.originalPrice,
-                        item.salePrice,
-                        item.repImageUrl,
-                        item.reviewCount
-                ))
-                .from(item)
-                .where(
-                        item.id.lt(cursorItemId),
-                        item.itemSaleStatus.eq(ItemSaleStatus.ON_SALE),
-                        itemNameLike(itemSearchDto.getSearchQuery()),
-                        categoryIdEq(itemSearchDto.getCategoryId())
-                )
-                .orderBy(orderSpecifier(itemSearchDto))
-                .limit(pageable.getPageSize())
                 .fetch();
     }
 }
