@@ -3,7 +3,6 @@ package com.marketcollection.domain.item.controller;
 import com.marketcollection.domain.category.dto.ItemCategoryDto;
 import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.common.LoginMemberInfo;
-import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.domain.item.service.ItemService;
@@ -29,6 +28,9 @@ public class ItemController extends LoginMemberInfo {
     private final ItemService itemService;
     private final CategoryService categoryService;
 
+    private static final int PAGE_SIZE = 20;
+    private static final int MAX_PAGE = 10;
+
     // 상품 등록 페이지
     @GetMapping("/admin/item/new")
     public String saveItem(Model model) {
@@ -37,10 +39,38 @@ public class ItemController extends LoginMemberInfo {
         return "item/itemForm";
     }
 
+    // 상품 검색 페이지
+    @GetMapping("/")
+    public String mainPage(Model model, ItemSearchDto itemSearchDto,
+                           Optional<Integer> page, HttpServletRequest request) {
+        if(itemSearchDto.getSearchQuery().equals("")) {
+            return "redirect:/main";
+        }
+        // 카테고리
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+
+        // 상품 목록
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
+        Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
+        model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("items", items);
+        model.addAttribute("maxPage", MAX_PAGE);
+
+        // 최근 본 상품
+        List<ItemListDto> recentItems = itemService.getRecentViewList(request);
+        model.addAttribute("recentItems", recentItems);
+
+        return "item/searchedItem";
+    }
+
     // 상품 상세 조회
     @GetMapping("/items/{itemId}")
     public String getItemDetail(Model model, @PathVariable Long itemId,
                                 HttpServletRequest request, HttpServletResponse response) {
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+
         try {
             ItemDetailDto itemDetailDto = itemService.getItemDetail(itemId, request, response);
             model.addAttribute("item", itemDetailDto);
@@ -57,12 +87,12 @@ public class ItemController extends LoginMemberInfo {
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
     public String getAdminItemPage(Model model, ItemSearchDto itemSearchDto,
                                    @PathVariable Optional<Integer> page) {
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 20);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
         Page<Item> items = itemService.getAdminItemPage(itemSearchDto, pageable);
 
         model.addAttribute("items", items);
         model.addAttribute("itemSearchDto", itemSearchDto);
-        model.addAttribute("maxPage", 10);
+        model.addAttribute("maxPage", MAX_PAGE);
 
         return "item/adminItem";
     }
@@ -93,11 +123,11 @@ public class ItemController extends LoginMemberInfo {
 
         // 상품 목록
         itemSearchDto.setCategoryId(categoryId);
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 100);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
         Page<ItemListDto> items = itemService.getItemListPage(itemSearchDto, pageable);
         model.addAttribute("itemSearchDto", itemSearchDto);
         model.addAttribute("items", items);
-        model.addAttribute("maxPage", 10);
+        model.addAttribute("maxPage", MAX_PAGE);
 
         // 최근 본 상품
         List<ItemListDto> recentItems = itemService.getRecentViewList(request);

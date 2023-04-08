@@ -6,6 +6,7 @@ import com.marketcollection.domain.item.dto.ItemListDto;
 import com.marketcollection.domain.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.ItemSaleStatus;
 import com.marketcollection.domain.item.dto.QItemListDto;
+import com.marketcollection.domain.order.QOrderItem;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
@@ -29,6 +30,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     public ItemRepositoryCustomImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
+
+    private static final int LIST_SIZE = 4;
 
     private BooleanExpression regDatesAfter(String searchDateType) {
         LocalDateTime dateTime = LocalDateTime.now();
@@ -167,6 +170,61 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 ))
                 .from(item)
                 .where(item.id.in(itemIds))
+                .fetch();
+    }
+
+    @Override
+    public List<ItemListDto> getWeeklyHotItems() {
+        QOrderItem orderItem = QOrderItem.orderItem;
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+
+        List<Long> ids = queryFactory
+                .select(orderItem.id)
+                .from(orderItem)
+                .where(orderItem.createdDate.after(oneWeekAgo))
+                .fetch();
+
+        return queryFactory
+                .select(new QItemListDto(
+                        item.id,
+                        item.itemName,
+                        item.originalPrice,
+                        item.salePrice,
+                        item.repImageUrl,
+                        item.reviewCount
+                ))
+                .from(item)
+                .join(orderItem).on(item.id.eq(orderItem.item.id))
+                .where(orderItem.id.in(ids))
+                .groupBy(item)
+                .orderBy(orderItem.count.sum().desc())
+                .limit(LIST_SIZE)
+                .fetch();
+    }
+
+    @Override
+    public List<ItemListDto> getMonthlyHighestDiscountRateItems() {
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        List<Long> ids = queryFactory
+                .select(item.id)
+                .from(item)
+                .where(item.modifiedDate.after(oneMonthAgo))
+                .fetch();
+
+        return queryFactory
+                .select(new QItemListDto(
+                        item.id,
+                        item.itemName,
+                        item.originalPrice,
+                        item.salePrice,
+                        item.repImageUrl,
+                        item.reviewCount
+                ))
+                .from(item)
+                .where(item.id.in(ids))
+                .orderBy(((item.originalPrice.subtract(item.salePrice)).multiply(1.0)).divide(item.originalPrice).desc())
+                .limit(LIST_SIZE)
                 .fetch();
     }
 }

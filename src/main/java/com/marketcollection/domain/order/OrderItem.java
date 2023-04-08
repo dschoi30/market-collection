@@ -10,6 +10,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
+@Table(indexes = {@Index(name = "idx_order_item_created_date", columnList = "createdDate")})
 @Entity
 public class OrderItem extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -10,6 +10,9 @@ body {
     width: 960px;
     margin: 0 auto;
 }
+.header {
+    padding-top: 10px;
+}
 a {
     text-decoration: none;
     color: black;
