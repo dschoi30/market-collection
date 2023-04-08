@@ -8,6 +8,9 @@
     .mgb-30 {
       margin-bottom: 30px;
     }
+    .mgr-10 {
+      margin-right: 10px;
+    }
     .search-bar {
       display: inline-block;
       width: auto;
@@ -99,7 +102,13 @@
     <div th:each="order : ${orders.getContent()}">
 
       <div class="d-flex mb-3 align-self-center">
-        <span class="fs-5" th:text="${order.orderDate} + ' 주문'"></span>
+        <span class="fs-5 mgr-10" th:text="${order.orderDate} + ' 주문'"></span>
+        <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
+          <button type="button" class="btn btn-outline-secondary btn-no-padding" th:value="${order.orderId}" onclick="cancelOrder(this.value)">전체 상품 주문 취소</button>
+        </th:block>
+        <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
+          <span>(취소 완료)</span>
+        </th:block>
       </div>
       <div class="card d-flex mb-3">
         <div th:each="orderItem : ${order.orderItemDtos}" class="d-flex mb-3">
@@ -107,16 +116,14 @@
             <img th:src="${orderItem.imageUrl}" class = "rounded thumbnail" th:alt="${orderItem.itemName}">
           </div>
           <div class="align-self-center ms-3 mt-3 w-75">
-            <span th:text="${orderItem.itemName}" class="fs24 font-weight-bold"></span>
+            <a th:href="@{/items/{itemId}(itemId=${orderItem.itemId})}">
+              <span th:text="${orderItem.itemName}" class="fs24 font-weight-bold"></span>
+            </a>
             <div class="fs18 font-weight-light">
               <span th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} +'원'"></span>
               <span th:text="${orderItem.count} +'개'"></span>
               <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
-                <a th:href="@{/review/{itemId}/new(itemId=${orderItem.itemId})}">리뷰 작성</a>
-                <button type="button" class="btn btn-outline-secondary btn-no-padding" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문 취소</button>
-              </th:block>
-              <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
-                <span>(취소 완료)</span>
+                <a class="btn btn-outline-secondary btn-no-padding" th:href="@{/review/{itemId}/new(itemId=${orderItem.itemId})}">리뷰 작성</a>
               </th:block>
             </div>
           </div>
