@@ -19,7 +19,9 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-@Table(indexes = {@Index(name = "idx_item_category", columnList = "categoryId")})
+@Table(indexes = {@Index(name = "idx_item_category", columnList = "categoryId"),
+                @Index(name = "idx_category_item", columnList = "id, itemName, originalPrice, salePrice, repImageUrl, itemSaleStatus, categoryId"),
+                @Index(name = "idx_item_modified_date", columnList = "modifiedDate")})
 @Entity
 public class Item extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

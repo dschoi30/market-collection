@@ -16,4 +16,8 @@ public interface ItemRepositoryCustom {
     Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable);
 
     List<ItemListDto> findByIds(List<Long> itemIds);
+
+    List<ItemListDto> getWeeklyHotItems();
+
+    List<ItemListDto> getMonthlyHighestDiscountRateItems();
 }
