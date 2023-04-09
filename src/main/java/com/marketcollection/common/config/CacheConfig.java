@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CacheConfig {
 
-    private CacheManager createCacheManager() {
+    private net.sf.ehcache.CacheManager createCacheManager() {
         net.sf.ehcache.config.Configuration configuration = new net.sf.ehcache.config.Configuration();
         configuration.diskStore(new DiskStoreConfiguration().path("java.io.tmpdir"));
-        return CacheManager.create(configuration);
+        return net.sf.ehcache.CacheManager.create(configuration);
     }
 
     @Bean
