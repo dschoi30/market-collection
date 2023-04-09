@@ -24,4 +24,10 @@ public class ItemListDto {
         this.imageUrl = imageUrl;
         this.reviewCount = reviewCount;
     }
+
+    @QueryProjection
+    public ItemListDto(Long id, String imageUrl) {
+        this.id = id;
+        this.imageUrl = imageUrl;
+    }
 }

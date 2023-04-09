@@ -4,6 +4,7 @@ import com.marketcollection.domain.category.ItemCategory;
 import com.marketcollection.domain.category.dto.ItemCategoryDto;
 import com.marketcollection.domain.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     // 카테고리 루트 생성
+    @Cacheable(value = "getItemCategoryCache")
     public ItemCategoryDto createCategoryRoot() {
         List<ItemCategory> categories = categoryRepository.findAll();
         Map<Long, List<ItemCategoryDto>> subCategoriesMap = categories.stream()
