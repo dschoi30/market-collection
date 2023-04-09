@@ -4,8 +4,11 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter @Setter
-public class ItemListDto {
+public class ItemListDto implements Serializable {
+    private static final long serialVersionUID = -7789795624713666618L;
 
     private Long id;
     private String itemName;
