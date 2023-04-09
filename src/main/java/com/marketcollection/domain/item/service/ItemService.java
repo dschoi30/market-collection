@@ -99,7 +99,7 @@ public class ItemService {
                 Long itemId = Long.parseLong(cookieItemIds[i]);
                 itemIds.add(itemId);
             }
-            itemListDtos = itemRepository.findByIds(itemIds);
+            itemListDtos = itemRepository.getRecentViewList(itemIds);
         }
         return itemListDtos;
     }

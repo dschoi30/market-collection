@@ -11,6 +11,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -158,21 +159,18 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public List<ItemListDto> findByIds(List<Long> itemIds) {
+    public List<ItemListDto> getRecentViewList(List<Long> itemIds) {
         return queryFactory
                 .select(new QItemListDto(
                         item.id,
-                        item.itemName,
-                        item.originalPrice,
-                        item.salePrice,
-                        item.repImageUrl,
-                        item.reviewCount
+                        item.repImageUrl
                 ))
                 .from(item)
                 .where(item.id.in(itemIds))
                 .fetch();
     }
 
+    @Cacheable("getWeeklyHotItemsCache")
     @Override
     public List<ItemListDto> getWeeklyHotItems() {
         QOrderItem orderItem = QOrderItem.orderItem;
@@ -202,6 +200,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .fetch();
     }
 
+    @Cacheable("getMonthlyHighestDiscountRateItemsCache")
     @Override
     public List<ItemListDto> getMonthlyHighestDiscountRateItems() {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);

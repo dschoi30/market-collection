@@ -5,8 +5,6 @@ import com.marketcollection.domain.item.dto.ItemListDto;
 import com.marketcollection.domain.item.dto.ItemSearchDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -15,7 +13,7 @@ public interface ItemRepositoryCustom {
 
     Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable);
 
-    List<ItemListDto> findByIds(List<Long> itemIds);
+    List<ItemListDto> getRecentViewList(List<Long> itemIds);
 
     List<ItemListDto> getWeeklyHotItems();
 
