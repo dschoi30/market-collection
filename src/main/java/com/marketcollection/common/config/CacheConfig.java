@@ -17,6 +17,7 @@ public class CacheConfig {
     private net.sf.ehcache.CacheManager createCacheManager() {
         net.sf.ehcache.config.Configuration configuration = new net.sf.ehcache.config.Configuration();
         configuration.diskStore(new DiskStoreConfiguration().path("java.io.tmpdir"));
+        configuration.setUpdateCheck(false);
         return net.sf.ehcache.CacheManager.create(configuration);
     }
 
