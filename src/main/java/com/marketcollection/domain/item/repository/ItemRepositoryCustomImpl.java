@@ -1,7 +1,6 @@
 package com.marketcollection.domain.item.repository;
 
 import com.marketcollection.domain.item.Item;
-import com.marketcollection.domain.item.QItem;
 import com.marketcollection.domain.item.dto.ItemListDto;
 import com.marketcollection.domain.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.ItemSaleStatus;
@@ -116,6 +115,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                                 item.itemName,
                                 item.originalPrice,
                                 item.salePrice,
+                                item.discountPrice,
                                 item.repImageUrl,
                                 item.reviewCount
                         ))
@@ -188,6 +188,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                         item.itemName,
                         item.originalPrice,
                         item.salePrice,
+                        item.discountPrice,
                         item.repImageUrl,
                         item.reviewCount
                 ))
@@ -217,6 +218,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                         item.itemName,
                         item.originalPrice,
                         item.salePrice,
+                        item.discountPrice,
                         item.repImageUrl,
                         item.reviewCount
                 ))

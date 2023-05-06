@@ -183,4 +183,14 @@ public class ItemService {
         }
         return item.getId();
     }
+
+    public List<Item> getItemList(List<Long> itemIds) {
+        List<Item> items = new ArrayList<>();
+        for(Long itemId : itemIds) {
+            Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
+            items.add(item);
+        }
+
+        return items;
+    }
 }
