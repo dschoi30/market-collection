@@ -8,6 +8,9 @@
     td {
       vertical-align: middle;
     }
+    .mgl-10 {
+      margin-left: 10px;
+    }
     .mgb-30 {
       margin-bottom: 30px;
     }
@@ -100,18 +103,19 @@
       <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
     </div>
     <hr>
+    <p class="mgl-10">총 <span th:text="${#numbers.formatInteger((items.size * items.totalPages), 1, 'COMMA')}"></span> 건</p>
     <table class="table mgb-30">
       <thead>
-        <tr>
-          <td>상품번호</td>
-          <td>카테고리</td>
-          <td colspan="2" class="text-center">상품명</td>
-          <td>조회수</td>
-          <td>판매수</td>
-          <td>재고수</td>
-          <td>판매상태</td>
-          <td>등록일</td>
-        </tr>
+      <tr>
+        <td>상품번호</td>
+        <td>카테고리</td>
+        <td colspan="2" class="text-center">상품명</td>
+        <td>조회수</td>
+        <td>판매수</td>
+        <td>재고수</td>
+        <td>판매상태</td>
+        <td>등록일</td>
+      </tr>
       </thead>
       <tbody>
       <tr th:each="item, status: ${items.getContent()}" th:object="${items}">

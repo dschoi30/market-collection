@@ -117,11 +117,69 @@
         .categoryName:hover {
             background-color: #f1f3f5;
         }
+        .daily-sale-time-info {
+            /*display: block;*/
+            /*border: 1px solid black;*/
+            /*width: 244px;*/
+            /*height: 400px;*/
+        }
+        .daily-sale-item-list {
+            /*display: block;*/
+            /*border: 1px solid black;*/
+            padding: 0;
+            /*width: 738px;*/
+            /*height: 400px;*/
+        }
+        .sale-item-wrap {
+            display: inline-block;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+        .daily-sale-item-label {
+            text-align: center;
+            position: absolute;
+            background-color: darkolivegreen;
+            color: white;
+            width: 80px;
+            height: 25px;
+        }
     </style>
 </th:block>
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
+        var time = document.getElementById("time");
+
+        function updateTime() {
+            // 할인 만료일 설정
+            var expirationDate = new Date('2023-05-08');
+
+            // 현재 시간 가져오기
+            var now = new Date();
+            now.setHours(now.getHours() + 9);
+
+            // 남은 시간 계산
+            var timeLeft = expirationDate.getTime() - now.getTime();
+            var secondsLeft = Math.floor(timeLeft / 1000);
+            var minutesLeft = Math.floor(secondsLeft / 60);
+            var hoursLeft = Math.floor(minutesLeft / 60);
+
+            // 시간, 분, 초 계산
+            var seconds = secondsLeft % 60;
+            var minutes = minutesLeft % 60;
+            var hours = hoursLeft % 24;
+
+            // 시간, 분, 초를 2자리 숫자로 표현
+            var formattedSeconds = seconds.toString().padStart(2, '0');
+            var formattedMinutes = minutes.toString().padStart(2, '0');
+            var formattedHours = hours.toString().padStart(2, '0');
+
+            // 메시지 출력
+            var message = formattedHours + " : " + formattedMinutes + " : " + formattedSeconds;
+            time.innerHTML = message;
+        }
+
+        setInterval(updateTime, 1000);
     </script>
 </th:block>
 
@@ -181,6 +239,39 @@
             </div>
         </th:block>
     </div>
+    <div style="background-color: #f1f3f5; width: 100%; height: 100px; margin-bottom: 30px;
+    text-align: center; display: flex; justify-content: center; align-items: center;">배너</div>
+    <div class="row row-cols-2">
+        <div class="daily-sale-time-info col-3">
+            <p class="h4">일일 특가</p>
+            <p class="text-gray">24시간 한정 특가</p>
+            <p id="time" class="h4 fw-bold"></p>
+            <p id="current"></p>
+        </div>
+        <div class="daily-sale-item-list col-9">
+            <th:block th:each="item, status: ${discountItems}">
+                <div class="sale-item-wrap">
+                    <div class="card mgb-30 wd220">
+                        <a th:href="'/items/' + ${item.id}" class="text-dark" style="text-decoration-line: none;">
+                            <div class="daily-sale-item-label">일일 특가</div>
+                            <img th:src="${item.imageUrl}" class="card-img-top rep-image" th:alt="${item.itemName}">
+                            <div class="card-body">
+                                <div>[[${item.itemName}]]</div>
+                                <span th:if="${item.salePrice < item.originalPrice}">
+                                <span class="fw-bold text-danger" th:text="${#numbers.formatPercent((item.originalPrice - item.salePrice) * 1.0 / item.originalPrice, 1, 0)}"></span>
+                            </span>
+                                <span class="fw-bold">[[${#numbers.formatInteger(item.salePrice, 1, 'COMMA')}]]원</span>
+                                <span th:if="${item.salePrice < item.originalPrice}">
+                                <div class="text-decoration-line-through text-gray">[[${#numbers.formatInteger(item.originalPrice, 1, 'COMMA')}]]원</div>
+                            </span>
+                                <div class="text-gray">후기 [[${item.reviewCount}]]</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
     <p class="h4 text-center">놓치면 후회할 가격</p>
     <p class="h6 text-center mgb-30">이번 달에 할인율이 가장 높은 상품을 모았어요</p>
     <div class="row">
@@ -205,7 +296,6 @@
             </div>
         </th:block>
     </div>
-
     <div th:if="${recentItems.size() > 0}" class="recent-view">
         <div class="text-center">최근 본 상품</div>
         <div id="carouselExample" class="carousel carousel-dark carousel-fade mgt-5">

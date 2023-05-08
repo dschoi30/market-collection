@@ -4,6 +4,7 @@ import com.marketcollection.domain.discount.DiscountType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,9 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class DiscountRequestDto {
-    private List<Long> itemIds = new ArrayList<>();
-    private DiscountType discountType;
-    private int discountRate; // 0 ~ 100
+
+    @NonNull private List<Long> itemIds = new ArrayList<>();
+    @NonNull private DiscountType discountType;
+    @NonNull private int discountRate; // 0 ~ 100
     private LocalDateTime startDate;
     private LocalDateTime finishDate;
 

@@ -2,10 +2,13 @@ package com.marketcollection.domain.discount.service;
 
 import com.marketcollection.domain.discount.ItemDiscount;
 import com.marketcollection.domain.discount.dto.DiscountRequestDto;
+import com.marketcollection.domain.discount.dto.DiscountResponseDto;
 import com.marketcollection.domain.discount.repository.DiscountRepository;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +30,12 @@ public class DiscountService {
 
             ItemDiscount itemDiscount = ItemDiscount.createFlashDiscountItem(item, dto);
             ItemDiscount savedItemDiscount = discountRepository.save(itemDiscount);
-            discountItemId = savedItemDiscount.getId();
         }
         return discountItemId;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<DiscountResponseDto> getItemDiscountList(Pageable pageable) {
+        return discountRepository.getItemDiscountList(pageable);
     }
 }
