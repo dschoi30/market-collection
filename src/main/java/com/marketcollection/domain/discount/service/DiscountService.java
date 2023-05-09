@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional
@@ -37,5 +38,14 @@ public class DiscountService {
     @Transactional(readOnly = true)
     public Page<DiscountResponseDto> getItemDiscountList(Pageable pageable) {
         return discountRepository.getItemDiscountList(pageable);
+    }
+
+    public void finishItemDiscount(List<Long> itemDiscountIds) {
+        for(Long id : itemDiscountIds) {
+            ItemDiscount itemDiscount = discountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+            itemDiscount.offSale();
+            Item item = itemRepository.findById(itemDiscount.getItem().getId()).orElseThrow(EntityNotFoundException::new);
+            item.setDiscountPrice(0);
+        };
     }
 }

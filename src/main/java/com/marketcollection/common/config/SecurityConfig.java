@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/member/login")
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/", "/main", "/member/login", "/categories/**", "/items/**", "/reviews/**", "/css/**", "/image/**", "/js/**", "/h2-console/**", "/swagger-ui.html", "/profile").permitAll()
+                    .antMatchers("/", "/main", "/member/login", "/categories/**", "/items/**", "/reviews/**", "/item-discount/finish", "/css/**", "/image/**", "/js/**", "/h2-console/**", "/swagger-ui.html", "/profile").permitAll()
                     .antMatchers("/review/**").hasAnyRole("USER, ADMIN")
                     .antMatchers("/api/v1/admin/**", "/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()

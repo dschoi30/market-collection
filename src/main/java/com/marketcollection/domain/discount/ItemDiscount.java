@@ -45,4 +45,8 @@ public class ItemDiscount extends BaseTimeEntity {
                 .finishDate(dto.getFinishDate())
                 .build();
     }
+
+    public void offSale() {
+        this.discountStatus = DiscountStatus.OFF;
+    }
 }

@@ -1,8 +1,8 @@
 package com.marketcollection.domain.discount.controller;
 
-import com.marketcollection.domain.discount.ItemDiscount;
 import com.marketcollection.domain.discount.dto.DiscountRequestDto;
 import com.marketcollection.domain.discount.dto.DiscountResponseDto;
+import com.marketcollection.domain.discount.repository.DiscountRepository;
 import com.marketcollection.domain.discount.service.DiscountService;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.service.ItemService;
@@ -29,6 +29,7 @@ public class DiscountController {
 
     private static final int PAGE_SIZE = 20;
     private static final int MAX_PAGE = 10;
+    private final DiscountRepository discountRepository;
 
     @GetMapping("/admin/item-discount/new")
     public String saveItemDiscount(Model model, @RequestParam(value = "id") List<Long> itemIds) {
@@ -59,5 +60,14 @@ public class DiscountController {
         model.addAttribute("itemDiscountList", itemDiscountList);
 
         return "/discount/itemDiscountList";
+    }
+
+    @GetMapping("/item-discount/finish")
+    public void finishDailyItemSale(@RequestParam("itemDiscountIds[]") List<Long> itemDiscountIds) {
+        try {
+            discountService.finishItemDiscount(itemDiscountIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

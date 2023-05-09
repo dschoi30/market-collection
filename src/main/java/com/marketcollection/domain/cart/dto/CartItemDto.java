@@ -11,15 +11,17 @@ public class CartItemDto {
     private String itemName;
     private int originalPrice;
     private int salePrice;
+    private int discountPrice;
     private int count;
 
-    public CartItemDto(Long cartItemId, String imageUrl, Long itemId, String itemName, int originalPrice, int salePrice, int count) {
+    public CartItemDto(Long cartItemId, String imageUrl, Long itemId, String itemName, int originalPrice, int salePrice, int discountPrice, int count) {
         this.cartItemId = cartItemId;
         this.imageUrl = imageUrl;
         this.itemId = itemId;
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
+        this.discountPrice = discountPrice;
         this.count = count;
     }
 }
