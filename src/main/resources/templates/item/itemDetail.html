@@ -336,9 +336,9 @@
             <div class="fs-3 fw-bold" th:text="${item.itemName}"></div>
             <div class="text-end">
                 <div class="fs-4 text-start">
-                    <span class="fw-bold text-danger" th:text="${#numbers.formatPercent((item.originalPrice - item.salePrice) * 1.0 / item.originalPrice, 1, 0)}"></span>
-                    <span th:text="${#numbers.formatInteger(item.salePrice, 1, 'COMMA')}"></span>원
-                    <input type="hidden" th:value="${item.salePrice}" id="price" name="price">
+                    <span class="fw-bold text-danger" th:text="${#numbers.formatPercent((item.originalPrice - item.salePrice - item.discountPrice) * 1.0 / item.originalPrice, 1, 0)}"></span>
+                    <span th:text="${#numbers.formatInteger(item.salePrice - item.discountPrice, 1, 'COMMA')}"></span>원
+                    <input type="hidden" th:value="${item.salePrice - item.discountPrice}" id="price" name="price">
                 </div>
                 <div class="fs-6 text-start">
                     <span class="text-decoration-line-through" th:text="${#numbers.formatInteger(item.originalPrice, 1, 'COMMA')} + '원'"></span>

@@ -3,17 +3,17 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <header th:fragment="adminSideBar">
-  <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 800px; float: left">
-      <a href="/" class="text-dark text-decoration-none">
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 800px; float: left">
+        <a href="/" class="text-dark text-decoration-none">
         <span class="fs-4">마켓컬렉션</span>
-      </a>
+        </a>
     <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-      <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
-      <span class="fs-4">관리자페이지</span>
+        <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+        <span class="fs-4">관리자페이지</span>
     </a>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
-<!--      <li class="nav-item">
+    <!--      <li class="nav-item">
         <a href="#" class="nav-link link-dark" aria-current="page">
           <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"/></svg>
           대시보드
@@ -21,50 +21,95 @@
       </li>
       <li>-->
         <a href="#" class="nav-link link-dark">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
-          회원관리
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+            회원관리
         </a>
       </li>
       <li>
-        <a href="/admin/items" class="nav-link active">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"/></svg>
-          상품관리
+        <a href="/admin/items" class="nav-link link-dark">
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"/></svg>
+            상품관리
+        </a>
+      </li>
+      <li>
+      <li>
+        <a href="/admin/item-discount/list" class="nav-link link-dark">
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"/></svg>
+            할인관리
         </a>
       </li>
       <li>
         <a href="/admin/orders" class="nav-link link-dark">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
-          주문관리
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
+            주문관리
         </a>
       </li>
       <li>
         <a href="#" class="nav-link link-dark">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
-          리뷰관리
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
+            리뷰관리
         </a>
       </li>
       <hr>
       <li>
         <a href="/admin/item/new" class="nav-link link-dark">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
-          상품등록
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
+            상품등록
         </a>
       </li>
     </ul>
     <hr>
     <div class="dropdown">
-      <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/grape1.jpg" alt="" width="32" height="32" class="rounded-circle me-2">
-        <strong>관리자</strong>
-      </a>
-      <ul class="dropdown-menu text-small shadow">
-        <li><a class="dropdown-item" href="#">New project...</a></li>
-        <li><a class="dropdown-item" href="#">Settings</a></li>
-        <li><a class="dropdown-item" href="#">Profile</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/logout">Sign out</a></li>
-      </ul>
+        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://market-collection-s3.s3.ap-northeast-2.amazonaws.com/image/grape1.jpg" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong>관리자</strong>
+        </a>
+        <ul class="dropdown-menu text-small shadow">
+            <li><a class="dropdown-item" href="#">New project...</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+        </ul>
     </div>
-  </div>
+    </div>
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');  // 모든 nav-link 요소를 선택합니다.
+
+        // 각 nav-link 요소에 대해 이벤트 리스너를 등록합니다.
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                // 모든 nav-link 요소에서 active 클래스를 제거합니다.
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // 클릭한 요소에 active 클래스를 추가합니다.
+                this.classList.add('active');
+                this.classList.remove('link-dark');
+            });
+        });
+
+        var currentPath = window.location.pathname;
+
+        // 이전에 클릭한 링크 정보 가져오기
+        var clickedLink = localStorage.getItem('clickedLink');
+
+        // 이전에 클릭한 링크가 있으면 해당 링크에 active 클래스 추가
+        if (clickedLink && clickedLink === currentPath) {
+            $('.nav-link[href="' + clickedLink + '"]').addClass('active');
+            $('.nav-link[href="' + clickedLink + '"]').removeClass('link-dark');
+        }
+
+        // 링크 클릭 이벤트 핸들러
+        $('.nav-link').click(function() {
+            // 클릭한 링크에 active 클래스 추가
+            $(this).addClass('active');
+            $(this).removeClass('link-dark');
+
+            // 이전에 클릭한 링크 정보 저장
+            localStorage.setItem('clickedLink', $(this).attr('href'));
+        });
+    </script>
 </header>
 </html>

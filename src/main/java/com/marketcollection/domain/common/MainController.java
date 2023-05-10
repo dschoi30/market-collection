@@ -2,6 +2,8 @@ package com.marketcollection.domain.common;
 
 import com.marketcollection.domain.category.dto.ItemCategoryDto;
 import com.marketcollection.domain.category.service.CategoryService;
+import com.marketcollection.domain.discount.dto.DailySaleItemListDto;
+import com.marketcollection.domain.discount.repository.DiscountRepository;
 import com.marketcollection.domain.item.dto.ItemListDto;
 import com.marketcollection.domain.item.dto.ItemSearchDto;
 import com.marketcollection.domain.item.repository.ItemRepository;
@@ -22,9 +24,10 @@ import java.util.Optional;
 @Controller
 public class MainController extends LoginMemberInfo {
 
+    private final CategoryService categoryService;
     private final ItemService itemService;
     private final ItemRepository itemRepository;
-    private final CategoryService categoryService;
+    private final DiscountRepository discountRepository;
 
     @GetMapping("/main")
     public String mainPage(Model model, HttpServletRequest request) {
@@ -37,7 +40,8 @@ public class MainController extends LoginMemberInfo {
         model.addAttribute("hotItems", weeklyHotItems);
         List<ItemListDto> discountItems = itemRepository.getMonthlyHighestDiscountRateItems();
         model.addAttribute("discountItems", discountItems);
-
+        List<DailySaleItemListDto> dailySaleItems = discountRepository.getDailySaleItems();
+        model.addAttribute("dailySaleItems", dailySaleItems);
         // 최근 본 상품
         List<ItemListDto> recentItems = itemService.getRecentViewList(request);
         model.addAttribute("recentItems", recentItems);

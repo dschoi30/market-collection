@@ -1,12 +1,12 @@
-package com.marketcollection.domain.item;
+package com.marketcollection.domain.discount;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum ItemSaleStatus {
-    ON_SALE("판매 중"), SOLD_OUT("품절");
+public enum DiscountStatus {
+    ON("진행 중"), OFF("종료");
 
     private final String status;
 }
