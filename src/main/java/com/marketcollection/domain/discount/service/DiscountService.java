@@ -9,10 +9,12 @@ import com.marketcollection.domain.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -47,5 +49,18 @@ public class DiscountService {
             Item item = itemRepository.findById(itemDiscount.getItem().getId()).orElseThrow(EntityNotFoundException::new);
             item.setDiscountPrice(0);
         };
+    }
+
+    // 한 시간 주기로 할인 종료 여부 확인 후 처리
+    @Scheduled(cron = "0 0 0/1 * * *")
+    public void finishSale() {
+        List<ItemDiscount> itemDiscounts = discountRepository.findOnGoingItemDiscount();
+        for(ItemDiscount itemDiscount : itemDiscounts) {
+            if(itemDiscount.getFinishDate().isBefore(LocalDateTime.now())) {
+                itemDiscount.offSale();
+                Item item = itemRepository.findById(itemDiscount.getItem().getId()).orElseThrow(EntityNotFoundException::new);
+                item.setDiscountPrice(0);
+            }
+        }
     }
 }
