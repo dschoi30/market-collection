@@ -54,11 +54,12 @@ public class Item extends BaseEntity {
     private List<ItemImage> itemImages = new ArrayList<>();
 
     @Builder
-    public Item(String itemName, int originalPrice, int salePrice, int stockQuantity, String description,
+    public Item(String itemName, int originalPrice, int salePrice, int discountPrice, int stockQuantity, String description,
                 Long categoryId, String repImageUrl, int salesCount, int reviewCount, int hit, ItemSaleStatus itemSaleStatus) {
         this.itemName = itemName;
         this.originalPrice = originalPrice;
         this.salePrice = salePrice;
+        this.discountPrice = discountPrice;
         this.stockQuantity = stockQuantity;
         this.description = description;
         this.categoryId = categoryId;

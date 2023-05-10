@@ -33,6 +33,7 @@ public class DiscountService {
 
             ItemDiscount itemDiscount = ItemDiscount.createFlashDiscountItem(item, dto);
             ItemDiscount savedItemDiscount = discountRepository.save(itemDiscount);
+            discountItemId = savedItemDiscount.getId();
         }
         return discountItemId;
     }

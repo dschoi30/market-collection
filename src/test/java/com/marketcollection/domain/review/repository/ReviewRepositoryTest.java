@@ -34,7 +34,7 @@ class ReviewRepositoryTest {
         return memberRepository.save(member);
     }
     public Item saveItem() {
-        Item item = new Item("test1", 10000, 9000, 10000, "content",
+        Item item = new Item("test1", 10000, 9000, 0, 10000, "content",
                 1L, "", 0, 0, 0, ItemSaleStatus.ON_SALE);
         return itemRepository.save(item);
     }

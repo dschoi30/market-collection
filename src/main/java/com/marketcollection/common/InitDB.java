@@ -51,8 +51,8 @@ public class InitDB {
         private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
             public void bulkItemInsert(List<Item> items) {
-                String sql = "insert into item (item_name, original_price, sale_price, stock_quantity, description, category_id, rep_image_url, sales_count, review_count, hit, item_sale_status) " +
-                        "values (:itemName, :originalPrice, :salePrice, :stockQuantity, :description, :categoryId, :repImageUrl, :salesCount, :reviewCount, :hit, \"ON_SALE\")";
+                String sql = "insert into item (item_name, original_price, sale_price, discount_price, stock_quantity, description, category_id, rep_image_url, sales_count, review_count, hit, item_sale_status) " +
+                        "values (:itemName, :originalPrice, :salePrice, :discountPrice, :stockQuantity, :description, :categoryId, :repImageUrl, :salesCount, :reviewCount, :hit, \"ON_SALE\")";
 
                 SqlParameterSource[] params = items.stream()
                         .map(BeanPropertySqlParameterSource::new)
@@ -64,12 +64,13 @@ public class InitDB {
         public void dbInit1() {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            List<Item> items = IntStream.range(1, 100000)
+            List<Item> items = IntStream.range(1, 1000000)
                     .parallel()
                     .mapToObj(i -> Item.builder()
                             .itemName("향기가득 샤인머스캣_" + i)
                             .originalPrice((int) (Math.random() * 10000) * 10)
                             .salePrice((int) (Math.random() * 10000) * 10)
+                            .discountPrice(0)
                             .stockQuantity(10000)
                             .description("너무 맛있어요")
                             .categoryId(24L)
@@ -84,7 +85,7 @@ public class InitDB {
             stopWatch.stop();
             System.out.println("InitDB 소요 시간 : " + stopWatch.getTotalTimeSeconds());
 
-            for(int i = 100001; i <= 100010; i++) {
+            for(int i = 1000001; i <= 1000010; i++) {
 
                 Item item = Item.builder()
                         .itemName("향기가득 샤인머스캣_" + i)

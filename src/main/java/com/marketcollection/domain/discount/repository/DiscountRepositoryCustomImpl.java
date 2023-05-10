@@ -1,15 +1,10 @@
 package com.marketcollection.domain.discount.repository;
 
 import com.marketcollection.domain.discount.DiscountStatus;
-import com.marketcollection.domain.discount.ItemDiscount;
-import com.marketcollection.domain.discount.QItemDiscount;
 import com.marketcollection.domain.discount.dto.DailySaleItemListDto;
 import com.marketcollection.domain.discount.dto.DiscountResponseDto;
 import com.marketcollection.domain.discount.dto.QDailySaleItemListDto;
 import com.marketcollection.domain.discount.dto.QDiscountResponseDto;
-import com.marketcollection.domain.item.QItem;
-import com.marketcollection.domain.item.dto.ItemListDto;
-import com.marketcollection.domain.item.dto.QItemListDto;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -83,6 +78,7 @@ public class DiscountRepositoryCustomImpl implements DiscountRepositoryCustom {
                         itemDiscount.startDate.loe(LocalDateTime.now()),
                         itemDiscount.finishDate.goe(LocalDateTime.now())
                 )
+                .orderBy(itemDiscount.id.desc())
                 .limit(LIST_SIZE)
                 .fetch();
     }
