@@ -61,10 +61,10 @@
 
 ## 기능 시연
 ### 메인 페이지
-![1 main](https://github.com/dschoi30/market-collection/assets/97089961/e8892a3b-e3f2-49c8-a765-c0635bd7ad48)
+https://github.com/dschoi30/market-collection/assets/97089961/a31fed43-aee4-46de-b4ec-81e4b68c4259
 ##
 ### 주문 페이지
-![2 order](https://github.com/dschoi30/market-collection/assets/97089961/42735558-d4bf-4e0e-9c4a-86987f0bcb5d)
+https://github.com/dschoi30/market-collection/assets/97089961/b9e5644f-0c3a-465e-be14-4a5505c72c0a
 ##
 ### 관리자 페이지
-![3 admin](https://github.com/dschoi30/market-collection/assets/97089961/8c0aa40b-2f1f-472b-821d-7e4f08e89f19)
+https://github.com/dschoi30/market-collection/assets/97089961/25e5f01d-00f5-4b90-a941-3c849fd10be4
