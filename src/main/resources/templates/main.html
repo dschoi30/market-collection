@@ -260,7 +260,7 @@
                                             <span class="fw-bold text-danger" th:text="${#numbers.formatPercent((item.originalPrice - item.salePrice - item.discountPrice) * 1.0 / item.originalPrice, 1, 0)}"></span>
                                         </span>
                                         <span class="fw-bold">[[${#numbers.formatInteger(item.salePrice - item.discountPrice, 1, 'COMMA')}]]원</span>
-                                        <span th:if="${item.salePrice < item.originalPrice}">
+                                        <span th:if="${item.salePrice - item.discountPrice < item.originalPrice}">
                                             <div class="text-decoration-line-through text-gray">[[${#numbers.formatInteger(item.originalPrice, 1, 'COMMA')}]]원</div>
                                         </span>
                                         <div class="text-gray">후기 [[${#numbers.formatInteger(item.reviewCount, 1, 'COMMA')}]]</div>

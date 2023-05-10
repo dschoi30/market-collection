@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/adminLayout}">
+
+<th:block layout:fragment="css">
+    <style>
+        td {
+            vertical-align: middle;
+        }
+        .mgl-10 {
+            margin-left: 10px;
+        }
+        .mgb-30 {
+            margin-bottom: 30px;
+        }
+        .search-bar {
+            display: inline-block;
+            width: auto;
+        }
+        .thumbnail {
+            width: 40px;
+            height: 40px;
+        }
+        .pagination > li > a:focus,
+        .pagination > li > a:hover,
+        .pagination > li > span:focus,
+        .pagination > li > span:hover {
+            color: black;
+            background-color: #f1f3f5;
+            border-color: #ddd;
+        }
+        .pagination > .active > a {
+            color: white;
+            background-color: #f1f3f5;
+            border: 1px solid #dddddd;
+        }
+        .pagination > .active > a:hover {
+            background-color: #f1f3f5;
+        }
+        .pagination > .disabled > a {
+            background-color: white;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            $("#searchBtn").on("click", function(e) {
+                e.preventDefault();
+                page(0);
+            });
+        });
+
+        function page(page) {
+            let searchDateType = $("#searchDateType").val();
+            let itemSaleStatus = $("#itemSaleStatus").val();
+            let searchBy = $("#searchBy").val();
+            let searchQuery = $("#searchQuery").val();
+            let orderBy = $("#orderBy").val();
+
+            location.href="/admin/items/" + page + "?searchDateType=" + searchDateType
+                + "&itemSaleStatus=" + itemSaleStatus
+                + "&searchBy=" + searchBy
+                + "&searchQuery=" + searchQuery
+                + "&orderBy=" + orderBy;
+        }
+    </script>
+</th:block>
+
+<div layout:fragment="content">
+    <form th:action="@{'/admin/items/'}" method="get" th:object="${itemDiscountList}">
+        <div class="form-inline">
+            <span class="fs-4 mgb-30">할인 관리</span>
+<!--            <select th:field="*{orderBy}" class="form-select search-bar">-->
+<!--                <option value="">정렬기준</option>-->
+<!--                <option value="id">상품번호</option>-->
+<!--                <option value="itemName">상품명</option>-->
+<!--                <option value="hit">조회수</option>-->
+<!--                <option value="salesCount">판매량</option>-->
+<!--                <option value="itemSaleStatus">판매상태</option>-->
+<!--                <option value="createdBy">등록자</option>-->
+<!--                <option value="createdDate">등록일</option>-->
+<!--            </select>-->
+<!--            <select th:field="*{searchDateType}" class="form-select search-bar">-->
+<!--                <option value="all">전체기간</option>-->
+<!--                <option value="1d">1일</option>-->
+<!--                <option value="1w">1주</option>-->
+<!--                <option value="1m">1개월</option>-->
+<!--                <option value="6m">6개월</option>-->
+<!--            </select>-->
+<!--            <select th:field="*{itemSaleStatus}" class="form-select search-bar">-->
+<!--                <option value="">판매상태(전체)</option>-->
+<!--                <option value="ON_SALE">판매</option>-->
+<!--                <option value="SOLD_OUT">품절</option>-->
+<!--            </select>-->
+<!--            <select th:field="*{searchBy}" class="form-select search-bar">-->
+<!--                <option value="itemName">상품명</option>-->
+<!--                <option value="createdBy">등록자</option>-->
+<!--            </select>-->
+<!--            <input th:field="*{searchQuery}" type="text" class="form-control search-bar" placeholder="검색어를 입력해주세요">-->
+<!--            <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>-->
+        </div>
+        <hr>
+        <table class="table mgb-30">
+            <thead>
+            <tr>
+                <td>할인번호</td>
+                <td>할인상태</td>
+                <td>할인종류</td>
+                <td>상품번호</td>
+                <td colspan="2" class="text-center">상품명</td>
+                <td>판매가</td>
+                <td>기간할인율</td>
+                <td>기간판매가</td>
+                <td class="text-center">할인적용기간</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, status: ${itemDiscountList.getContent()}" th:object="${itemDiscountList}">
+                <td th:text="${item.itemDiscountId}"></td>
+                <td th:text="${item.discountStatus.status}"></td>
+                <td th:text="${item.discountType.title}"></td>
+                <td th:text="${item.itemId}"></td>
+                <td><img th:src="${item.repImageUrl}" class="rounded thumbnail"></td>
+                <td><a th:href="'/items/' + ${item.itemId}" th:text="${item.itemName}" class="text-dark" style="text-decoration-line: none;"></a></td>
+                <td th:text="${#numbers.formatInteger(item.originalSalePrice, 1, 'COMMA')}"></td>
+                <td th:text="${#numbers.formatPercent((item.discountPrice) * 1.0 / item.originalSalePrice, 1, 0)}"></td>
+                <td th:text="${#numbers.formatInteger(item.originalSalePrice - item.discountPrice, 1, 'COMMA')}"></td>
+                <td>
+                    <span th:text="${#temporals.format(item.startDate, 'yyyy-MM-dd HH:mm')}"></span><br> ~
+                    <span th:text="${#temporals.format(item.finishDate, 'yyyy-MM-dd HH:mm')}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:with="start=${(itemDiscountList.number / maxPage) * maxPage + 1},
+         end=(${(itemDiscountList.totalPages == 0) ? 1 : (start + (maxPage - 1) < itemDiscountList.totalPages ? start + (maxPage - 1) : itemDiscountList.totalPages)})">
+            <ul class="pagination justify-content-center">
+
+                <li class="page-item" th:classappend="${itemDiscountList.first} ? 'disabled'">
+                    <a th:onclick="'javascript:page(' + ${itemDiscountList.number - 1} + ')'" aria-label="Previous" class="page-link text-black">
+                        <span aria-hidden="true">&lt</span>
+                    </a>
+                </li>
+
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${itemDiscountList.number eq (page - 1)} ? 'active' : ''">
+                    <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link text-black">
+                        [[${page}]]
+                    </a>
+                </li>
+
+                <li class="page-item" th:classappend="${itemDiscountList.last}?'disabled'">
+                    <a th:onclick="'javascript:page(' + ${itemDiscountList.number + 1} + ')'" aria-label='Next' class="page-link text-black">
+                        <span aria-hidden='true'>&gt</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>
+
+</html>

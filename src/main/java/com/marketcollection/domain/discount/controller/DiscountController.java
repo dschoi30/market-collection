@@ -29,10 +29,9 @@ public class DiscountController {
 
     private static final int PAGE_SIZE = 20;
     private static final int MAX_PAGE = 10;
-    private final DiscountRepository discountRepository;
 
     @GetMapping("/admin/item-discount/new")
-    public String saveItemDiscount(Model model, @RequestParam(value = "id") List<Long> itemIds) {
+    public String saveItemDiscount(Model model, @RequestParam("id") List<Long> itemIds) {
         List<Item> items = itemService.getItemList(itemIds);
         model.addAttribute("items", items);
         model.addAttribute("discountRequestDto", new DiscountRequestDto(itemIds));

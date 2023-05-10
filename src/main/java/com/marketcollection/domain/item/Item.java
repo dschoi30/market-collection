@@ -113,6 +113,6 @@ public class Item extends BaseEntity {
     public void addReviewCount() { this.reviewCount++; }
 
     public void setDiscountPrice(float discountRate) {
-        this.discountPrice = (int) Math.round(this.salePrice * discountRate);
+        this.discountPrice = (int) Math.round(this.salePrice * discountRate * 0.01);
     }
 }
