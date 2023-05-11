@@ -1,7 +1,8 @@
 # 마켓컬렉션(Market-collection)
 
 ### 온라인 식품 쇼핑몰 '마켓컬리' 벤치마킹 프로젝트
-마켓컬리의 주요 기능들(타임 세일, 상품 추천, 회원 등급제, 적립금, 최근 본 상품 등)을 스스로 고민하고 구현한 1인 개발 프로젝트입니다.
+마켓컬리의 주요 기능들(타임 세일, 상품 추천, 회원 등급제, 적립금, 최근 본 상품 등)을 스스로 고민하고 구현한   
+1인 개발 프로젝트입니다.
 
 ## 개발 목표
 > 유지 보수를 고려한 객체 지향적인 코드 구현   
@@ -25,6 +26,14 @@
 
 ## 아키텍처 설계
 ![image](https://user-images.githubusercontent.com/97089961/228763378-e65d33f7-11fd-4905-82cc-e26f95cbe33f.png)
+
+### CI/CD 프로세스
+1. Github에 커밋 시 Github Actions로 배포 요청
+2. Github Actions는 배포 스크립트를 실행하여 프로젝트 빌드 및 jar 파일을 생성 후 S3에 전달
+3. Github Actions는 동시에 CodeDeploy에 배포 요청
+4. CodeDeploy는 EC2 내부 CodeDeployAgent에 배포 요청
+5. CodeDeployAgent는 S3에서 파일을 받아 배포 스크립트 실행
+6. SpringBoot WAS 실행(Nginx 리버스 프록시를 적용하여 포트 스위칭을 통한 무중단 배포)
 
 ## ERD 설계
 ![market-collection - ER diagram](https://user-images.githubusercontent.com/97089961/228749916-0db0ecae-7c7f-4545-8ab0-19d1b9c08f53.png)
