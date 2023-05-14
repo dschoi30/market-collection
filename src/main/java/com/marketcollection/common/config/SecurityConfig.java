@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/member/login")
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/", "/main", "/member/login", "/categories/**", "/items/**", "/reviews/**", "/item-discount/finish", "/css/**", "/image/**", "/js/**", "/h2-console/**", "/swagger-ui.html", "/profile").permitAll()
+                    .antMatchers("/", "/main", "/member/login", "/categories/**", "/items/**", "/reviews/**", "/item-discount/finish", "/css/**", "/image/**", "/js/**").permitAll()
                     .antMatchers("/review/**").hasAnyRole("USER, ADMIN")
                     .antMatchers("/api/v1/admin/**", "/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
@@ -39,6 +39,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web
-                .ignoring().antMatchers("/static/image/favicon.ico");
+                .ignoring().antMatchers("/static/image/favicon.ico", "/swagger-ui.html", "/profile", "/health", "/actuator", "/actuator/**");
     }
 }
