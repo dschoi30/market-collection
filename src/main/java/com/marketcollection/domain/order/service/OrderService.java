@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PessimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -61,6 +63,9 @@ public class OrderService {
 
     // 주문 처리
     public Long order(String memberId, OrderDto orderDto) {
+        int retryCount = 0;
+        boolean success = false;
+
         // 주문자 정보로 회원 정보 업데이트
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         member.updateOrderInfo(orderDto);
@@ -69,7 +74,7 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
         for (OrderItemDto orderItemDto : orderItemDtos) {
-            Item item = itemRepository.findById(orderItemDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+            Item item = itemRepository.findWithPessimisticLockById(orderItemDto.getItemId());
             item.addSalesCount(orderItemDto.getCount()); // 상품 판매 수량 업데이트
 
             OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount(), member.getGrade().getPointSavingRate());
@@ -77,7 +82,6 @@ public class OrderService {
         }
 
         Order order = Order.createOrder(member, orderItems, orderDto);
-
         orderItems.forEach(oi -> oi.setOrder(order));
         orderRepository.save(order);
 
