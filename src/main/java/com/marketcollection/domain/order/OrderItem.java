@@ -36,15 +36,17 @@ public class OrderItem extends BaseEntity {
     }
 
     public static OrderItem createOrderItem(Item item, int count, float savingRate) {
-        OrderItem orderItem = OrderItem.builder()
+        item.checkStock(count);
+        item.deductStock(count);
+        item.addSalesCount(count);
+
+        return OrderItem.builder()
                 .item(item)
                 .repImageUrl(item.getRepImageUrl())
                 .orderPrice(item.getSalePrice())
                 .count(count)
-                .savingPoint((int) Math.round(item.getSalePrice() * count * savingRate))
+                .savingPoint(Math.round(item.getSalePrice() * count * savingRate))
                 .build();
-        item.deductStock(count);
-        return orderItem;
     }
 
     public void setOrder(Order order) {

@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.QueryHints;
 
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
+import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryCustom {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "5000")})
-    Item findWithPessimisticLockById(Long itemId);
+    Optional<Item> findWithPessimisticLockById(Long itemId);
 }

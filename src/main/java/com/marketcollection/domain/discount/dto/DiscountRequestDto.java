@@ -17,7 +17,7 @@ public class DiscountRequestDto {
 
     @NonNull private List<Long> itemIds = new ArrayList<>();
     @NonNull private DiscountType discountType;
-    @NonNull private int discountRate; // 0 ~ 100
+    private int discountRate; // 0 ~ 100
     private LocalDateTime startDate;
     private LocalDateTime finishDate;
 

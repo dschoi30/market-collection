@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PessimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,24 +46,22 @@ public class OrderService {
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
         List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
         for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
-            Item item = itemRepository.findById(orderItemRequestDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+            Item item = itemRepository.findById(orderItemRequestDto.getItemId())
+                    .orElseThrow(EntityNotFoundException::new);
 
-            OrderItemDto orderItemDto = new OrderItemDto(item, orderItemRequestDto.getCount(), member.getGrade().getPointSavingRate());
+            OrderItemDto orderItemDto = new OrderItemDto(item, orderItemRequestDto.getCount(),
+                    member.getGrade().getPointSavingRate());
             orderItemDtos.add(orderItemDto);
         }
 
-        int totalOrderPrice = orderItemDtos.stream().mapToInt(OrderItemDto::getOrderPrice).sum();
-        int totalSavingPoint = orderItemDtos.stream().mapToInt(OrderItemDto::getSavingPoint).sum();
-        orderDto.setOrderItemInfo(orderItemDtos, totalOrderPrice, totalSavingPoint);
+        orderDto.setOrderItemInfo(orderItemDtos);
         orderDto.setDirectOrderYn(directOrderYn);
+
         return orderDto;
     }
 
     // 주문 처리
     public Long order(String memberId, OrderDto orderDto) {
-        int retryCount = 0;
-        boolean success = false;
-
         // 주문자 정보로 회원 정보 업데이트
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         member.updateOrderInfo(orderDto);
@@ -74,10 +70,11 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
         for (OrderItemDto orderItemDto : orderItemDtos) {
-            Item item = itemRepository.findWithPessimisticLockById(orderItemDto.getItemId());
-            item.addSalesCount(orderItemDto.getCount()); // 상품 판매 수량 업데이트
+            Item item = itemRepository.findWithPessimisticLockById(orderItemDto.getItemId())
+                    .orElseThrow(EntityNotFoundException::new);
 
-            OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount(), member.getGrade().getPointSavingRate());
+            OrderItem orderItem = OrderItem.createOrderItem(item, orderItemDto.getCount(),
+                                                            member.getGrade().getPointSavingRate());
             orderItems.add(orderItem);
         }
 

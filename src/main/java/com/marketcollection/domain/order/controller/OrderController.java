@@ -25,6 +25,9 @@ public class OrderController extends LoginMemberInfo {
 
     private final OrderService orderService;
 
+    private static final int PAGE_SIZE = 10;
+    private static final int MAX_PAGE = 10;
+
     // 장바구니 미경유 주문 정보 생성
     @PostMapping("/order/direct")
     public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, OrderRequestDto orderRequestDto) {
@@ -63,12 +66,12 @@ public class OrderController extends LoginMemberInfo {
     @GetMapping({"/orders", "/orders/{page}"})
     public String getOrderHistory(Model model, @LoginUser SessionUser user,
                                   OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
         Page<OrderHistoryDto> orders = orderService.getOrderHistory(user.getEmail(), orderSearchDto, pageable);
 
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearchDto", orderSearchDto);
-        model.addAttribute("maxPage", 10);
+        model.addAttribute("maxPage", MAX_PAGE);
 
         return "order/orderHistory";
     }
@@ -77,12 +80,12 @@ public class OrderController extends LoginMemberInfo {
     @GetMapping({"/admin/orders", "/admin/orders/{page}"})
     public String getAdminOrderList(Model model,
                                     OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
         Page<AdminOrderDto> orders = orderService.getAdminOrderList(orderSearchDto, pageable);
 
         model.addAttribute("orders", orders);
         model.addAttribute("orderSearchDto", orderSearchDto);
-        model.addAttribute("maxPage", 10);
+        model.addAttribute("maxPage", MAX_PAGE);
 
         return "order/adminOrderList";
     }

@@ -48,7 +48,10 @@ public class OrderDto {
         this.existingPoint = member.getPoint();
     }
 
-    public void setOrderItemInfo(List<OrderItemDto> orderItemDtos, int totalOrderAmount, int totalSavingPoint) {
+    public void setOrderItemInfo(List<OrderItemDto> orderItemDtos) {
+        int totalOrderAmount = orderItemDtos.stream().mapToInt(OrderItemDto::getOrderPrice).sum();
+        int totalSavingPoint = orderItemDtos.stream().mapToInt(OrderItemDto::getSavingPoint).sum();
+
         this.orderItemDtos = orderItemDtos;
         this.totalOrderAmount = totalOrderAmount;
         this.totalSavingPoint = totalSavingPoint;
