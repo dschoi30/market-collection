@@ -110,7 +110,7 @@ public class ItemService {
         String hit = cookie.getValue();
         boolean exist = false;
 
-        if(hit != null && hit.indexOf(itemId + "-") >= 0) {
+        if(hit != null && hit.contains(itemId + "-")) {
             exist = true;
         }
 
