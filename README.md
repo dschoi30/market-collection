@@ -25,7 +25,8 @@
 > Intellij, Git
 
 ## 아키텍처 설계
-![image](https://user-images.githubusercontent.com/97089961/228763378-e65d33f7-11fd-4905-82cc-e26f95cbe33f.png)
+AWS에서 무료 제공하는 프리티어 환경에서 구축하였습니다.
+![market-collection-architecture](https://github.com/dschoi30/market-collection/assets/97089961/04a11214-80ca-4853-95c2-0aa0c7b511e4)
 
 ### CI/CD 프로세스
 1. Github에 커밋 시 Github Actions로 배포 요청
@@ -62,10 +63,10 @@
 4. 특정 기간을 설정하여 상품 할인을 진행할 수 있습니다.
 
 ## 기술적 이슈 및 개선 사항
-1. 테이블 정규화 및 인덱싱 최적화를 통한 조회 속도 개선
-2. 정적 데이터 캐시 적용을 통한 조회 속도 개선
-3. JPA를 이용한 기능 구현 중 무한 루프 빠짐, N+1 문제 해결
-4. Enum, Stream, Lambda 적용을 통한 코드 간결화
+1. DB 100만건 데이터 삽입 및 실행 계획 분석 후 커버링 인덱스 적용 페이징 처리 속도 개선(4s -> 0.02s)
+2. 상품 주문 시의 동시성 이슈 확인 후 비관적 락 적용을 통한 문제 개선
+3. 정적 데이터 캐시 적용을 통한 조회 속도 개선
+4. JPA를 이용한 기능 구현 중 무한 루프 빠짐, N+1 문제 해결
 5. Exception Handler를 활용한 예외 전역 처리
 
 ## 기능 시연
