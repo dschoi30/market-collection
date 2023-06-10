@@ -8,8 +8,8 @@ import com.marketcollection.domain.order.dto.OrderDto;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -20,6 +20,8 @@ import java.util.List;
 public class Order extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String orderNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -53,9 +55,11 @@ public class Order extends BaseEntity {
     }
 
     public static Order createOrder(Member member, List<OrderItem> orderItems, OrderDto orderDto) {
+        String orderNumber = UUID.randomUUID().toString();
         int savingPoint = orderItems.stream().mapToInt(OrderItem::getSavingPoint).sum();
         int orderAmount = orderItems.stream().mapToInt(OrderItem::getOrderPrice).sum();
         return Order.builder()
+                .orderNumber(orderNumber)
                 .member(member)
                 .phoneNumber(member.getPhoneNumber())
                 .address(member.getAddress())
@@ -80,5 +84,9 @@ public class Order extends BaseEntity {
         for (OrderItem orderItem : orderItems) {
             orderItem.cancel();
         }
+    }
+
+    public void failOrder() {
+        this.orderStatus = OrderStatus.FAILED;
     }
 }
