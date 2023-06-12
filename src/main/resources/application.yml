@@ -50,3 +50,5 @@ cloud:
       bucket: market-collection-s3/items
     region:
       static: ap-northeast-2
+
+tossSecretKey: ${TOSS_SECRET_KEY}

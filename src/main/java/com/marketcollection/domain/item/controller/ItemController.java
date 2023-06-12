@@ -2,7 +2,7 @@ package com.marketcollection.domain.item.controller;
 
 import com.marketcollection.domain.category.dto.ItemCategoryDto;
 import com.marketcollection.domain.category.service.CategoryService;
-import com.marketcollection.domain.common.LoginMemberInfo;
+import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.domain.item.service.ItemService;
@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
-public class ItemController extends LoginMemberInfo {
+public class ItemController extends HeaderInfo {
 
     private final ItemService itemService;
     private final CategoryService categoryService;

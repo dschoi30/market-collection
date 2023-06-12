@@ -2,7 +2,7 @@ package com.marketcollection.domain.order.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
-import com.marketcollection.domain.common.LoginMemberInfo;
+import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
-public class OrderController extends LoginMemberInfo {
+public class OrderController extends HeaderInfo {
 
     private final OrderService orderService;
 
@@ -57,9 +57,10 @@ public class OrderController extends LoginMemberInfo {
     // 주문 처리
     @PostMapping("/order/checkout")
     public @ResponseBody ResponseEntity order(@LoginUser SessionUser user, @Valid @RequestBody OrderDto orderDto) {
-        Long orderId = orderService.order(user.getEmail(), orderDto);
+        OrderResponseDto orderResponseDto = orderService.order(user.getEmail(), orderDto);
 
-        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
+
+        return new ResponseEntity<OrderResponseDto>(orderResponseDto, HttpStatus.OK);
     }
 
     // 내 주문 내역 조회
@@ -99,5 +100,10 @@ public class OrderController extends LoginMemberInfo {
         orderService.cancelOrder(orderId);
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
+    }
+
+    @GetMapping("/pay")
+    public String pay() {
+        return "payment/payment";
     }
 }

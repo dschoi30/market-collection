@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Transactional
@@ -61,7 +59,7 @@ public class OrderService {
     }
 
     // 주문 처리
-    public Long order(String memberId, OrderDto orderDto) {
+    public OrderResponseDto order(String memberId, OrderDto orderDto) {
         // 주문자 정보로 회원 정보 업데이트
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         member.updateOrderInfo(orderDto);
@@ -94,7 +92,17 @@ public class OrderService {
             cartService.deleteCartItemsAfterOrder(member.getId(), orderItems);
         }
 
-        return order.getId();
+        return order.toDto();
+    }
+
+    // 주문자 유효성 검사
+    @Transactional(readOnly = true)
+    public boolean validateOrder(Long orderId, String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        Member savedMember = order.getMember();
+
+        return StringUtils.equals(member.getEmail(), savedMember.getEmail());
     }
 
     // 내 주문 정보 조회
@@ -117,16 +125,6 @@ public class OrderService {
             orderHistoryDtos.add(orderHistoryDto);
         }
         return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, total);
-    }
-
-    // 주문자 유효성 검사
-    @Transactional(readOnly = true)
-    public boolean validateOrder(Long orderId, String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
-        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-        Member savedMember = order.getMember();
-
-        return StringUtils.equals(member.getEmail(), savedMember.getEmail());
     }
 
     // 주문 취소

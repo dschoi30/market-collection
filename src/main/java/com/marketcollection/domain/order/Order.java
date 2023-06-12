@@ -5,11 +5,12 @@ import com.marketcollection.domain.common.Address;
 import com.marketcollection.domain.common.BaseEntity;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.order.dto.OrderDto;
+import com.marketcollection.domain.order.dto.OrderResponseDto;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -20,6 +21,8 @@ import java.util.List;
 public class Order extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String orderNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -39,9 +42,6 @@ public class Order extends BaseEntity {
     private int totalPaymentAmount;
 
     @Enumerated(EnumType.STRING)
-    private PaymentType paymentType;
-
-    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     public Order(Member member, List<OrderItem> orderItems, String phoneNumber, Address address, OrderStatus orderStatus) {
@@ -53,9 +53,11 @@ public class Order extends BaseEntity {
     }
 
     public static Order createOrder(Member member, List<OrderItem> orderItems, OrderDto orderDto) {
+        String orderNumber = UUID.randomUUID().toString().substring(1,8);
         int savingPoint = orderItems.stream().mapToInt(OrderItem::getSavingPoint).sum();
         int orderAmount = orderItems.stream().mapToInt(OrderItem::getOrderPrice).sum();
         return Order.builder()
+                .orderNumber(orderNumber)
                 .member(member)
                 .phoneNumber(member.getPhoneNumber())
                 .address(member.getAddress())
@@ -80,5 +82,25 @@ public class Order extends BaseEntity {
         for (OrderItem orderItem : orderItems) {
             orderItem.cancel();
         }
+    }
+
+    public void failOrder() {
+        this.orderStatus = OrderStatus.FAILED;
+    }
+
+    public OrderResponseDto toDto() {
+        String orderName;
+        if(orderItems.size() > 1) {
+            orderName = orderItems.get(0).getItem().getItemName() + "외 " + (orderItems.size() - 1) + "건";
+        } else {
+            orderName = orderItems.get(0).getItem().getItemName();
+        }
+        return OrderResponseDto.builder()
+                .orderNumber(orderNumber)
+                .orderName(orderName)
+                .orderPrice(totalPaymentAmount)
+                .memberName(member.getMemberName())
+                .memberEmail(member.getEmail())
+                .build();
     }
 }
