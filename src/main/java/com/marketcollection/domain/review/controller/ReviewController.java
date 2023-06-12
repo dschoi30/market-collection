@@ -3,7 +3,7 @@ package com.marketcollection.domain.review.controller;
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
 import com.marketcollection.common.exception.ErrorCode;
-import com.marketcollection.domain.common.LoginMemberInfo;
+import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.item.service.ItemService;
 import com.marketcollection.domain.review.dto.PageRequestDto;
@@ -23,7 +23,7 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @Controller
-public class ReviewController extends LoginMemberInfo {
+public class ReviewController extends HeaderInfo {
 
     private final ReviewService reviewService;
     private final ItemService itemService;

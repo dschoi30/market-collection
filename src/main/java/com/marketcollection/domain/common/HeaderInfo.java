@@ -5,7 +5,8 @@ import com.marketcollection.common.auth.dto.SessionUser;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-public abstract class LoginMemberInfo {
+public abstract class HeaderInfo {
+
     @ModelAttribute
     public void setMemberInfo(Model model, @LoginUser SessionUser user) {
         if(user != null) {

@@ -2,12 +2,10 @@ package com.marketcollection.domain.cart.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
-import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.cart.dto.CartItemDto;
 import com.marketcollection.domain.cart.dto.CartRequestDto;
 import com.marketcollection.domain.cart.service.CartService;
-import com.marketcollection.domain.common.LoginMemberInfo;
-import com.marketcollection.domain.member.Grade;
+import com.marketcollection.domain.common.HeaderInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
-public class CartController extends LoginMemberInfo {
+public class CartController extends HeaderInfo {
 
     private final CartService cartService;
 
