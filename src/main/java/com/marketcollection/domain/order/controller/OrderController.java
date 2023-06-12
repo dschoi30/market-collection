@@ -2,13 +2,10 @@ package com.marketcollection.domain.order.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
-import com.marketcollection.common.exception.ErrorCode;
-import com.marketcollection.domain.common.LoginMemberInfo;
+import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.order.dto.*;
-import com.marketcollection.domain.order.exception.InvalidPaymentAmountException;
 import com.marketcollection.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +21,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
-public class OrderController extends LoginMemberInfo {
+public class OrderController extends HeaderInfo {
 
     private final OrderService orderService;
 
@@ -60,36 +57,10 @@ public class OrderController extends LoginMemberInfo {
     // 주문 처리
     @PostMapping("/order/checkout")
     public @ResponseBody ResponseEntity order(@LoginUser SessionUser user, @Valid @RequestBody OrderDto orderDto) {
-        String orderNumber = orderService.order(user.getEmail(), orderDto);
-        JSONObject response = new JSONObject();
-        response.put("orderNumber", orderNumber);
+        OrderResponseDto orderResponseDto = orderService.order(user.getEmail(), orderDto);
 
-        return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
-    }
 
-    // 결제 처리
-    @GetMapping("/order/checkout/success")
-    public String handlePayment(Model model, String paymentKey, String orderId, Long amount) {
-        if(!orderService.validatePaymentAmount(orderId, amount)) {
-            throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
-        };
-
-        try {
-            String s = orderService.requestPaymentApproval(paymentKey, orderId, amount);
-            System.out.println("결제 정보: " + s);
-
-            model.addAttribute("payment", s);
-
-            return "order/success";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "main";
-    }
-
-    @GetMapping("/order/checkout/fail")
-    public String fail() {
-        return "order/fail";
+        return new ResponseEntity<OrderResponseDto>(orderResponseDto, HttpStatus.OK);
     }
 
     // 내 주문 내역 조회

@@ -11,22 +11,14 @@ import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.repository.OrderRepository;
 import com.marketcollection.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -39,10 +31,6 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final CartService cartService;
     private final PointService pointService;
-
-    @Value("${tossSecretKey}")
-    private String secretKey;
-    private String url = "https://api.tosspayments.com/v1/payments/confirm";
 
     // 주문 정보 생성
     public OrderDto setOrderInfo(String memberId, OrderRequestDto orderRequestDto, String directOrderYn) {
@@ -71,7 +59,7 @@ public class OrderService {
     }
 
     // 주문 처리
-    public String order(String memberId, OrderDto orderDto) {
+    public OrderResponseDto order(String memberId, OrderDto orderDto) {
         // 주문자 정보로 회원 정보 업데이트
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
         member.updateOrderInfo(orderDto);
@@ -104,7 +92,7 @@ public class OrderService {
             cartService.deleteCartItemsAfterOrder(member.getId(), orderItems);
         }
 
-        return order.getOrderNumber();
+        return order.toDto();
     }
 
     // 주문자 유효성 검사
@@ -115,40 +103,6 @@ public class OrderService {
         Member savedMember = order.getMember();
 
         return StringUtils.equals(member.getEmail(), savedMember.getEmail());
-    }
-
-    // 결제 승인 요청
-    public String requestPaymentApproval(String paymentKey, String orderId, Long amount) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-
-        secretKey = secretKey + ":";
-        String encodedAuth = new String(Base64.getEncoder().encode(secretKey.getBytes(StandardCharsets.UTF_8)));
-
-        headers.setBasicAuth(encodedAuth);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        JSONObject params = new JSONObject();
-        params.put("orderId", orderId);
-        params.put("amount", amount);
-        params.put("paymentKey", paymentKey);
-
-        return restTemplate.postForEntity(
-                url, new HttpEntity<>(params, headers), String.class
-        ).getBody();
-    }
-
-    // 결제 금액 유효성 검사
-    @Transactional
-    public boolean validatePaymentAmount(String orderId, Long amount) {
-        Order order = orderRepository.findByOrderNumber(orderId).orElseThrow(EntityNotFoundException::new);
-        boolean isValidAmount = order.getTotalPaymentAmount() == amount;
-        if(!isValidAmount) {
-            order.failOrder();
-        }
-
-        return isValidAmount;
     }
 
     // 내 주문 정보 조회

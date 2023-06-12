@@ -70,10 +70,10 @@ class OrderServiceTest {
         OrderDto orderDto = new OrderDto(member.getMemberName(), "01012341234", 12345, "서울시", "강남", 0, 10000, 100, 0, 10000, orderItemDtos, "Y");
 
         //when
-        Long orderId = orderService.order(member.getEmail(), orderDto);
+        OrderResponseDto orderResponseDto = orderService.order(member.getEmail(), orderDto);
 
         //then
-        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        Order order = orderRepository.findByOrderNumber(orderResponseDto.getOrderNumber()).orElseThrow(EntityNotFoundException::new);
         String itemName = order.getOrderItems().get(0).getItem().getItemName();
         assertThat(itemName).isEqualTo(item.getItemName());
     }
