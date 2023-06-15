@@ -33,7 +33,7 @@
 
       $("#usingPoint").on("propertychange change keyup paste input", function() {
         const maxPoint = $("#existingPoint").attr("value");
-        let inputValue = parseInt($(this).val());
+        const inputValue = parseInt($(this).val());
         $(this).val(inputValue);
         if(inputValue < 0 || '' || null || undefined || 0 || NaN) {
           $(this).val(0);
@@ -46,6 +46,10 @@
 
       $(".check-all").on("click", function() {
         const maxPoint = $("#existingPoint").attr("value");
+        const inputValue = parseInt(maxPoint);
+        $(this).val(inputValue);
+        $(".using-point").html($(this).val().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원");
+        $(".total-tossPaymentDto-amount").html((($("#totalOrderAmount").attr("value") - $(this).val())).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원");
 
         let status = $(this).data("status");
         if(status === 'Y') {
@@ -285,34 +289,25 @@
           </tr>
         </table>
       </div>
-      <div class="mgt-30">
-        <p class="h4 mgb-30">결제 수단</p>
-        <table class="table">
-          <tr>
-            <td style="width: 15%">결제수단 선택</td>
-            <td><input type="radio" class="paymentType"> 신용카드</td>
-          </tr>
-        </table>
-      </div>
     </div>
-      <div class="mgt-30">
-        <p class="h4 mgb-30">결제 금액</p>
-        <table class="table">
-          <tr>
-            <td style="width: 15%">주문 금액</td>
-            <td colspan="2" th:id="totalOrderAmount" th:value="${orderDto.totalOrderAmount}" th:text="${#numbers.formatInteger(orderDto.totalOrderAmount, 1, 'COMMA') + ' 원'}"> </td>
-          </tr>
-          <tr>
-            <td>포인트 사용</td>
-            <td colspan="2" class="using-point"> 0 원</td>
-          </tr>
-          <tr>
-            <td>최종 결제 금액</td>
-            <td class="total-tossPaymentDto-amount" style="width: 12%" th:text="${#numbers.formatInteger(orderDto.totalOrderAmount, 1, 'COMMA') + ' 원'}"></td>
-            <td> ( 적립 포인트 : <span th:id="totalSavingPoint" th:value="${orderDto.totalSavingPoint}" th:text="${#numbers.formatInteger(orderDto.totalSavingPoint, 1, 'COMMA')}"></span> 원 )</td>
-          </tr>
-        </table>
-      </div>
+    <div class="mgt-30">
+      <p class="h4 mgb-30">결제 금액</p>
+      <table class="table">
+        <tr>
+          <td style="width: 15%">주문 금액</td>
+          <td colspan="2" th:id="totalOrderAmount" th:value="${orderDto.totalOrderAmount}" th:text="${#numbers.formatInteger(orderDto.totalOrderAmount, 1, 'COMMA') + ' 원'}"> </td>
+        </tr>
+        <tr>
+          <td>포인트 사용</td>
+          <td colspan="2" class="using-point"> 0 원</td>
+        </tr>
+        <tr>
+          <td>최종 결제 금액</td>
+          <td class="total-tossPaymentDto-amount" style="width: 12%" th:text="${#numbers.formatInteger(orderDto.totalOrderAmount, 1, 'COMMA') + ' 원'}"></td>
+          <td> ( 적립 포인트 : <span th:id="totalSavingPoint" th:value="${orderDto.totalSavingPoint}" th:text="${#numbers.formatInteger(orderDto.totalSavingPoint, 1, 'COMMA')}"></span> 원 )</td>
+        </tr>
+      </table>
+    </div>
     <div id="payment-method"></div>
     <div id="agreement"></div>
     <div class="mgt-30 mgb-30 text-center">

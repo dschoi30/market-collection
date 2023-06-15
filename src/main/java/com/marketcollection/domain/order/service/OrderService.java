@@ -5,20 +5,33 @@ import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.member.repository.MemberRepository;
+import com.marketcollection.domain.order.Card;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderItem;
 import com.marketcollection.domain.order.dto.*;
+import com.marketcollection.domain.order.repository.CardRepository;
 import com.marketcollection.domain.order.repository.OrderRepository;
+import com.marketcollection.domain.order.dto.PaymentResponseDto;
+import com.marketcollection.domain.order.dto.TossPaymentDto;
 import com.marketcollection.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -27,10 +40,15 @@ import java.util.*;
 public class OrderService {
 
     private final ItemRepository itemRepository;
-    private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
+    private final OrderRepository orderRepository;
+    private final CardRepository cardRepository;
     private final CartService cartService;
     private final PointService pointService;
+
+    @Value("${tossSecretKey}")
+    private String secretKey;
+    private String tossUrl = "https://api.tosspayments.com/v1/payments";
 
     // 주문 정보 생성
     public OrderDto setOrderInfo(String memberId, OrderRequestDto orderRequestDto, String directOrderYn) {
@@ -97,9 +115,9 @@ public class OrderService {
 
     // 주문자 유효성 검사
     @Transactional(readOnly = true)
-    public boolean validateOrder(Long orderId, String email) {
+    public boolean validateOrder(String orderNumber, String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
-        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        Order order = orderRepository.findByOrderNumber(orderNumber).orElseThrow(EntityNotFoundException::new);
         Member savedMember = order.getMember();
 
         return StringUtils.equals(member.getEmail(), savedMember.getEmail());
@@ -127,10 +145,80 @@ public class OrderService {
         return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, total);
     }
 
+    // 결제 승인 요청
+    public PaymentResponseDto requestPaymentApproval(String paymentKey, String orderId, Long amount) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+
+        secretKey = secretKey + ":";
+        String encodedAuth = new String(Base64.getEncoder().encode(secretKey.getBytes(StandardCharsets.UTF_8)));
+
+        headers.setBasicAuth(encodedAuth);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        JSONObject params = new JSONObject();
+        params.put("orderId", orderId);
+        params.put("amount", amount);
+        params.put("paymentKey", paymentKey);
+
+        URI uri = URI.create(tossUrl + "/confirm");
+
+        TossPaymentDto tossPaymentDto = restTemplate.postForEntity(
+                uri, new HttpEntity<>(params, headers), TossPaymentDto.class
+        ).getBody();
+
+        Assert.notNull(tossPaymentDto, "결제 승인 요청에 실패했습니다.");
+        Order order = orderRepository.findByOrderNumber(orderId).orElseThrow(EntityNotFoundException::new);
+        order.updatePaymnetInfo(tossPaymentDto);
+        Card card = tossPaymentDto.getCard();
+        cardRepository.save(card);
+
+        return PaymentResponseDto.of(tossPaymentDto);
+    }
+
+    // 결제 금액 유효성 검사
+    public boolean validatePaymentAmount(String orderId, Long amount) {
+        Order order = orderRepository.findByOrderNumber(orderId).orElseThrow(EntityNotFoundException::new);
+        boolean isValidAmount = order.getTotalPaymentAmount() == amount;
+        if(!isValidAmount) {
+            order.failOrder();
+        }
+
+        return isValidAmount;
+    }
+
     // 주문 취소
-    public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+    public void cancelOrder(String orderNumber) {
+        Order order = orderRepository.findByOrderNumber(orderNumber).orElseThrow(EntityNotFoundException::new);
+        requestPaymentCancel(order);
         order.cancelOrder();
+    }
+
+    // 결제 취소 요청
+    public void requestPaymentCancel(Order order) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+
+        secretKey = secretKey + ":";
+        String encodedAuth = new String(Base64.getEncoder().encode(secretKey.getBytes(StandardCharsets.UTF_8)));
+
+        headers.setBasicAuth(encodedAuth);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        JSONObject params = new JSONObject();
+        params.put("cancelReason", order.getOrderNumber());
+        params.put("cancelAmount", order.getTotalPaymentAmount());
+
+        String paymentKey = order.getPaymentKey();
+        URI uri = URI.create(tossUrl + paymentKey + "/cancel");
+
+        TossPaymentDto tossPaymentDto = restTemplate.postForEntity(
+                uri, new HttpEntity<>(params, headers), TossPaymentDto.class
+        ).getBody();
+
+        Assert.notNull(tossPaymentDto, "결제 취소 요청에 실패했습니다.");
     }
 
     // 관리자 주문 관리
@@ -153,4 +241,5 @@ public class OrderService {
 
         return new PageImpl<AdminOrderDto>(adminOrderDtos, pageable, total);
     }
+
 }

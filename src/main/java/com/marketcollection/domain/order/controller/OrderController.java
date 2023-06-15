@@ -2,9 +2,14 @@ package com.marketcollection.domain.order.controller;
 
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
+import com.marketcollection.common.exception.ErrorCode;
+import com.marketcollection.domain.category.dto.ItemCategoryDto;
+import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.order.dto.*;
+import com.marketcollection.domain.order.exception.InvalidPaymentAmountException;
 import com.marketcollection.domain.order.service.OrderService;
+import com.marketcollection.domain.order.dto.PaymentResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +28,7 @@ import java.util.Optional;
 @Controller
 public class OrderController extends HeaderInfo {
 
+    private final CategoryService categoryService;
     private final OrderService orderService;
 
     private static final int PAGE_SIZE = 10;
@@ -59,8 +65,36 @@ public class OrderController extends HeaderInfo {
     public @ResponseBody ResponseEntity order(@LoginUser SessionUser user, @Valid @RequestBody OrderDto orderDto) {
         OrderResponseDto orderResponseDto = orderService.order(user.getEmail(), orderDto);
 
-
         return new ResponseEntity<OrderResponseDto>(orderResponseDto, HttpStatus.OK);
+    }
+
+    // 결제 처리
+    @GetMapping("/order/checkout/success")
+    public String handlePayment(Model model, @LoginUser SessionUser user, String paymentKey, String orderId, Long amount) {
+        // 카테고리
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+
+        if(!orderService.validatePaymentAmount(orderId, amount)) {
+            throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+        };
+
+        try {
+            PaymentResponseDto paymentResponseDto = orderService.requestPaymentApproval(paymentKey, orderId, amount);
+
+            model.addAttribute("payment", paymentResponseDto);
+            model.addAttribute("user", user);
+
+            return "payment/paymentResult";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/";
+    }
+
+    @GetMapping("/order/checkout/fail")
+    public String fail() {
+        return "payment/fail";
     }
 
     // 내 주문 내역 조회
@@ -92,18 +126,13 @@ public class OrderController extends HeaderInfo {
     }
 
     // 주문 취소
-    @PostMapping("/orders/{orderId}/cancel")
-    public @ResponseBody ResponseEntity cancelOrder(@LoginUser SessionUser user, @PathVariable("orderId") Long orderId) {
-        if(!orderService.validateOrder(orderId, user.getEmail())) {
+    @PostMapping("/orders/{orderNumber}/cancel")
+    public @ResponseBody ResponseEntity cancelOrder(@LoginUser SessionUser user, @PathVariable("orderNumber") String orderNumber) {
+        if(!orderService.validateOrder(orderNumber, user.getEmail())) {
             return new ResponseEntity<String>("주문 취소 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
         }
-        orderService.cancelOrder(orderId);
+        orderService.cancelOrder(orderNumber);
 
-        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
-    }
-
-    @GetMapping("/pay")
-    public String pay() {
-        return "payment/payment";
+        return new ResponseEntity<String>(orderNumber, HttpStatus.OK);
     }
 }

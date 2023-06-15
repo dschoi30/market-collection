@@ -1,7 +1,9 @@
-package com.marketcollection.domain.payment.dto;
+package com.marketcollection.domain.order.dto;
 
+import lombok.Getter;
+
+@Getter
 public class TossCardDto {
-
     private int amount;
     private String issuerCode; // 카드 발급사 코드
     private String number; // 카드 번호
