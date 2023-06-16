@@ -1,6 +1,7 @@
 package com.marketcollection.domain.order.repository;
 
 import com.marketcollection.domain.order.Order;
+import com.marketcollection.domain.order.OrderStatus;
 import com.marketcollection.domain.order.dto.OrderSearchDto;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
@@ -40,6 +41,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 .selectFrom(order)
                 .where(
                         order.member.id.eq(memberId),
+                        order.orderStatus.in(
+                                OrderStatus.DONE, OrderStatus.CANCELED, OrderStatus.READY, OrderStatus.IN_PROGRESS,
+                                OrderStatus.PARTIAL_CANCELED, OrderStatus.WAITING_FOR_DEPOSIT),
                         regDatesAfter(orderSearchDto.getSearchDateType()))
                 .orderBy(order.id.desc())
                 .offset(pageable.getOffset())

@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 public enum PaymentType {
     CARD("카드"),
-    VIRTUAL_ACCOUNT("가상계좌"),
     TRANSFER("계좌이체"),
     POINT("포인트");
 

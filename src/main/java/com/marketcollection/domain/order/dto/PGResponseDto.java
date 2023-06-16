@@ -5,7 +5,7 @@ import com.marketcollection.domain.order.Transfer;
 import lombok.Getter;
 
 @Getter
-public class TossPaymentDto {
+public class PGResponseDto {
     String mId; // 상점아이디
     String version; // Payment 객체의 응답 버전
     String paymentKey; // 결제 키 값

@@ -9,7 +9,7 @@ public class PaymentResponseDto {
     private String orderNumber;
     private int totalAmount;
 
-    public static PaymentResponseDto of(TossPaymentDto tossPaymentDto) {
+    public static PaymentResponseDto of(PGResponseDto tossPaymentDto) {
         return PaymentResponseDto.builder()
                 .orderNumber(tossPaymentDto.getOrderId())
                 .totalAmount(Integer.parseInt(tossPaymentDto.getTotalAmount()))

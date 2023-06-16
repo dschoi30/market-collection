@@ -6,7 +6,7 @@ import com.marketcollection.domain.common.BaseTimeEntity;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.order.dto.OrderDto;
 import com.marketcollection.domain.order.dto.OrderResponseDto;
-import com.marketcollection.domain.order.dto.TossPaymentDto;
+import com.marketcollection.domain.order.dto.PGResponseDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -46,12 +46,10 @@ public class Order extends BaseTimeEntity {
     private int usingPoint;
     private int totalPaymentAmount;
 
-
     /* 결제 완료 후 삽입 될 값 */
-    String paymentKey; // 결제 키 값
-
-    PaymentType paymentType; // 결제 수단(카드, 가상계좌, 간편결제, 휴대폰, 계좌이체, 문화상품권, 도서문화상품권, 게임문화상품권)
-    LocalDateTime paymentApprovedAt; // 결제 승인이 일어난 날짜와 시간 정보
+    String paymentKey;
+    String paymentType;
+    LocalDateTime paymentApprovedAt;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -107,6 +105,9 @@ public class Order extends BaseTimeEntity {
 
     public void failOrder() {
         this.orderStatus = OrderStatus.ABORTED;
+        for (OrderItem orderItem : orderItems) {
+            orderItem.cancel();
+        }
     }
 
     public OrderResponseDto toDto() {
@@ -125,10 +126,10 @@ public class Order extends BaseTimeEntity {
                 .build();
     }
 
-    public Order updatePaymnetInfo(TossPaymentDto tossPaymentDto) {
+    public Order savePaymentInfo(PGResponseDto tossPaymentDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         this.paymentKey = tossPaymentDto.getPaymentKey();
-        this.paymentType = PaymentType.valueOf(tossPaymentDto.getMethod());
+        this.paymentType = tossPaymentDto.getMethod();
         this.orderStatus = OrderStatus.valueOf(tossPaymentDto.getStatus());
         this.paymentApprovedAt = OffsetDateTime.parse(tossPaymentDto.getApprovedAt(), formatter).toLocalDateTime();
         return this;

@@ -80,21 +80,22 @@ public class OrderController extends HeaderInfo {
         };
 
         try {
-            PaymentResponseDto paymentResponseDto = orderService.requestPaymentApproval(paymentKey, orderId, amount);
+            PaymentResponseDto paymentResponseDto = orderService.handlePayment(paymentKey, orderId, amount);
 
             model.addAttribute("payment", paymentResponseDto);
             model.addAttribute("user", user);
 
-            return "payment/paymentResult";
+            return "payment/paymentSuccess";
         } catch (Exception e) {
             e.printStackTrace();
+            orderService.abortOrder(orderId);
         }
-        return "redirect:/";
+        return "payment/paymentFail";
     }
 
     @GetMapping("/order/checkout/fail")
     public String fail() {
-        return "payment/fail";
+        return "paymentFail";
     }
 
     // 내 주문 내역 조회
