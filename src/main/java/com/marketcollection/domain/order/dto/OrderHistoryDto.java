@@ -11,14 +11,14 @@ import java.util.List;
 
 @Getter @Setter
 public class OrderHistoryDto {
-    private Long orderId;
+    private String orderNumber;
     private String orderDate;
     private OrderStatus orderStatus;
     private List<OrderItemDto> orderItemDtos = new ArrayList<>();
 
     public OrderHistoryDto(Order order) {
-        this.orderId = order.getId();
-        this.orderDate = order.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.orderNumber = order.getOrderNumber();
+        this.orderDate = order.getPaymentApprovedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.orderStatus = order.getOrderStatus();
     }
 }

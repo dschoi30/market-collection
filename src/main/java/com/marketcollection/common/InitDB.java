@@ -149,7 +149,7 @@ public class InitDB {
                         .member(member)
                         .address(new Address())
                         .orderItems(List.of(orderItem))
-                        .orderStatus(OrderStatus.ORDERED)
+                        .orderStatus(OrderStatus.DONE)
                         .build();
                 orderItem.setOrder(order);
 

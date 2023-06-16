@@ -59,11 +59,11 @@
       location.href="/orders/" + page + "?searchDateType=" + searchDateType;
     }
 
-    function cancelOrder(orderId) {
+    function cancelOrder(orderNumber) {
 
-      const url = "/orders/" + orderId + "/cancel";
+      const url = "/orders/" + orderNumber + "/cancel";
       const paramData = {
-        orderId: orderId
+        orderNumber: orderNumber
       }
       const param = JSON.stringify(paramData);
 
@@ -103,10 +103,10 @@
 
       <div class="d-flex mb-3 align-self-center">
         <span class="fs-5 mgr-10" th:text="${order.orderDate} + ' 주문'"></span>
-        <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
-          <button type="button" class="btn btn-outline-secondary btn-no-padding" th:value="${order.orderId}" onclick="cancelOrder(this.value)">전체 상품 주문 취소</button>
+        <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).DONE}">
+          <button type="button" class="btn btn-outline-secondary btn-no-padding" th:value="${order.orderNumber}" onclick="cancelOrder(this.value)">전체 상품 주문 취소</button>
         </th:block>
-        <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
+        <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).DONE}">
           <span>(취소 완료)</span>
         </th:block>
       </div>
@@ -122,7 +122,7 @@
             <div class="fs18 font-weight-light">
               <span th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} +'원'"></span>
               <span th:text="${orderItem.count} +'개'"></span>
-              <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).ORDERED}">
+              <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).DONE}">
                 <a class="btn btn-outline-secondary btn-no-padding" th:href="@{/review/{itemId}/new(itemId=${orderItem.itemId})}">리뷰 작성</a>
               </th:block>
             </div>

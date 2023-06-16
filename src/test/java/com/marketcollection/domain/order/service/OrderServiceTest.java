@@ -53,7 +53,7 @@ class OrderServiceTest {
         List<OrderItem> orderItems = new ArrayList<>();
         OrderItem orderItem = new OrderItem(item, null, item.getRepImageUrl(), item.getSalePrice());
         orderItems.add(orderItem);
-        Order order = new Order(member, orderItems, member.getPhoneNumber(), new Address(), OrderStatus.ORDERED);
+        Order order = new Order(member, orderItems, member.getPhoneNumber(), new Address(), OrderStatus.DONE);
         return orderRepository.save(order);
     }
 
@@ -113,7 +113,7 @@ class OrderServiceTest {
         Order order = saveOrder();
 
         //when
-        boolean isValid = orderService.validateOrder(order.getId(), saveMember().getEmail());
+        boolean isValid = orderService.validateOrder(order.getOrderNumber(), saveMember().getEmail());
 
         //then
         assertThat(isValid).isTrue();
@@ -126,6 +126,6 @@ class OrderServiceTest {
         Order order = saveOrder();
 
         //then
-        assertThatThrownBy(() -> orderService.validateOrder(order.getId(), "fakeAccount")).isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> orderService.validateOrder(order.getOrderNumber(), "fakeAccount")).isInstanceOf(EntityNotFoundException.class);
     }
 }

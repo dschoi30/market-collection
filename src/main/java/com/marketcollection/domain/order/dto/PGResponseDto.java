@@ -1,9 +1,11 @@
-package com.marketcollection.domain.payment.dto;
+package com.marketcollection.domain.order.dto;
 
+import com.marketcollection.domain.order.Card;
+import com.marketcollection.domain.order.Transfer;
 import lombok.Getter;
 
 @Getter
-public class TossPaymentDto {
+public class PGResponseDto {
     String mId; // 상점아이디
     String version; // Payment 객체의 응답 버전
     String paymentKey; // 결제 키 값
@@ -15,5 +17,6 @@ public class TossPaymentDto {
     String requestedAt; // 결제가 일어난 날짜와 시간 정보
     String approvedAt; // 결제 승인이 일어난 날짜와 시간 정보
     String totalAmount; // 총 결제 금액
-    TossCardDto tossCardDto;
+    Card card; // 카드 결제
+    Transfer transfer; // 계좌 이체
 }
