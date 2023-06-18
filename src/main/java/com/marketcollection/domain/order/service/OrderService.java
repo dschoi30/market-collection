@@ -8,8 +8,9 @@ import com.marketcollection.domain.member.repository.MemberRepository;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderItem;
 import com.marketcollection.domain.order.dto.*;
+import com.marketcollection.domain.order.repository.OrderItemRepository;
 import com.marketcollection.domain.order.repository.OrderRepository;
-import com.marketcollection.domain.order.dto.PaymentResponseDto;
+import com.marketcollection.domain.order.dto.PaymentSuccessDto;
 import com.marketcollection.domain.order.dto.PGResponseDto;
 import com.marketcollection.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
@@ -39,13 +40,14 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
     private final PaymentContext paymentContext;
     private final CartService cartService;
     private final PointService pointService;
 
     @Value("${tossSecretKey}")
     private String secretKey;
-    private String tossUrl = "https://api.tosspayments.com/v1/payments";
+    private String tossUrl = "https://api.tosspayments.com/v1/payments/";
 
     // 주문 정보 생성
     @Transactional(readOnly = true)
@@ -114,11 +116,11 @@ public class OrderService {
 
     // 결제 처리
     @Transactional
-    public PaymentResponseDto handlePayment(String paymentKey, String orderId, Long amount) {
+    public PaymentSuccessDto handlePayment(String paymentKey, String orderId, Long amount) {
         // 결제 승인 요청
         RestTemplate restTemplate = new RestTemplate();
 
-        URI uri = URI.create(tossUrl + "/confirm");
+        URI uri = URI.create(tossUrl + "confirm");
         JSONObject params = createPaymentParams(orderId, amount, paymentKey);
         HttpHeaders headers = createHeaders();
 
@@ -136,7 +138,7 @@ public class OrderService {
         PaymentService paymentService = paymentContext.getPaymentService(pgResponseDto);
         paymentService.savePaymentInfo(pgResponseDto, order);
 
-        return PaymentResponseDto.of(pgResponseDto);
+        return PaymentSuccessDto.of(pgResponseDto);
     }
 
     private HttpHeaders createHeaders() {
@@ -163,7 +165,15 @@ public class OrderService {
         return params;
     }
 
+    private JSONObject createPaymentCancelParams(String cancelReason, int cancelAmount) {
+        JSONObject params = new JSONObject();
+        params.put("cancelReason", cancelReason);
+        params.put("cancelAmount", cancelAmount);
+        return params;
+    }
+
     // 결제 금액 유효성 검사
+    @Transactional
     public boolean validatePaymentAmount(String orderId, Long amount) {
         Order order = orderRepository.findByOrderNumber(orderId).orElseThrow(EntityNotFoundException::new);
         boolean isValidAmount = order.getTotalPaymentAmount() == amount;
@@ -183,37 +193,36 @@ public class OrderService {
 
     // 주문 취소
     @Transactional
-    public void cancelOrder(String orderNumber) {
-        Order order = orderRepository.findByOrderNumber(orderNumber).orElseThrow(EntityNotFoundException::new);
-        requestPaymentCancel(order);
+    public void cancelOrder(PaymentCancelDto paymentCancelDto) {
+        Order order = orderRepository.findById(paymentCancelDto.getOrderId()).orElseThrow(EntityNotFoundException::new);
+        String paymentKey = order.getPaymentKey();
+        String cancelReason = paymentCancelDto.getCancelReason();
+
+        List<Long> orderItemIds = paymentCancelDto.getOrderItemIds();
+        List<OrderItem> orderItems = orderItemRepository.findByIdIn(orderItemIds);
+        int cancelAmount = orderItems.stream()
+                .mapToInt(OrderItem::getOrderPrice)
+                .sum();
+
+        requestPaymentCancel(paymentKey, cancelReason, cancelAmount);
+
         order.cancelOrder();
     }
 
-    // 결제 취소 요청
-    @Transactional
-    public void requestPaymentCancel(Order order) {
+    public void requestPaymentCancel(String paymentKey, String cancelReason, int cancelAmount) {
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
 
-        secretKey = secretKey + ":";
-        String encodedAuth = new String(Base64.getEncoder().encode(secretKey.getBytes(StandardCharsets.UTF_8)));
-
-        headers.setBasicAuth(encodedAuth);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        JSONObject params = new JSONObject();
-        params.put("cancelReason", order.getOrderNumber());
-        params.put("cancelAmount", order.getTotalPaymentAmount());
-
-        String paymentKey = order.getPaymentKey();
         URI uri = URI.create(tossUrl + paymentKey + "/cancel");
 
-        PGResponseDto tossPaymentDto = restTemplate.postForEntity(
-                uri, new HttpEntity<>(params, headers), PGResponseDto.class
-        ).getBody();
+        JSONObject params = createPaymentCancelParams(cancelReason, cancelAmount);
+        HttpHeaders headers = createHeaders();
 
-        Assert.notNull(tossPaymentDto, "결제 취소 요청에 실패했습니다.");
+        PGResponseDto pgResponseDto = restTemplate
+                .postForEntity(uri, new HttpEntity<>(params, headers), PGResponseDto.class)
+                .getBody();
+
+        Assert.notNull(pgResponseDto, "결제 취소 요청에 실패했습니다.");
+        System.out.println(pgResponseDto.toString());
     }
 
     // 주문자 유효성 검사
@@ -248,6 +257,12 @@ public class OrderService {
         return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, total);
     }
 
+    @Transactional(readOnly = true)
+    public Page<OrderHistoryDto2> getOrderHistory2(String email, OrderSearchDto orderSearchDto, Pageable pageable) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+
+        return orderRepository.findOrderHistory(member.getId(), orderSearchDto, pageable);
+    }
     // 관리자 주문 관리
     @Transactional(readOnly = true)
     public Page<AdminOrderDto> getAdminOrderList(OrderSearchDto orderSearchDto, Pageable pageable) {

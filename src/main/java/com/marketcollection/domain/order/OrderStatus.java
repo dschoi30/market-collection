@@ -6,14 +6,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum OrderStatus {
-    READY("결제 대기"),
-    IN_PROGRESS("결제 승인 대기"),
-    WAITING_FOR_DEPOSIT("가상계좌 입금 대기"),
+    READY("상품 준비 중"),
+    IN_PROGRESS("배송 중"),
     DONE("주문 완료"),
     CANCELED("주문 취소"),
     PARTIAL_CANCELED("부분 취소"),
-    ABORTED("결제 실패"),
-    EXPIRED("결제 만료");
+    ABORTED("주문 실패");
 
     private final String status;
 }

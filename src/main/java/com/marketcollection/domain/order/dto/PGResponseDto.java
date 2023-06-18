@@ -3,7 +3,10 @@ package com.marketcollection.domain.order.dto;
 import com.marketcollection.domain.order.Card;
 import com.marketcollection.domain.order.Transfer;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 @Getter
 public class PGResponseDto {
     String mId; // 상점아이디
@@ -19,4 +22,24 @@ public class PGResponseDto {
     String totalAmount; // 총 결제 금액
     Card card; // 카드 결제
     Transfer transfer; // 계좌 이체
+    CancelInfo[] cancels; // 결제 취소 정보
+
+    public static class CancelInfo {
+        String cancelAmount; // 취소 금액
+        String cancelReason; // 취소 사유
+        String canceledAt ; // 취소 시각
+        String transactionKey; // 트랜잭션 키
+        String receiptKey; // 현금 영수증 키
+
+        public CancelInfo() {}
+
+        public CancelInfo(String cancelAmount, String cancelReason, String canceledAt, String transactionKey, String receiptKey) {
+            this.cancelAmount = cancelAmount;
+            this.cancelReason = cancelReason;
+            this.canceledAt = canceledAt;
+            this.transactionKey = transactionKey;
+            this.receiptKey = receiptKey;
+        }
+    }
+
 }

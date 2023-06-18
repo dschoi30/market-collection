@@ -31,6 +31,12 @@ public class ItemController extends HeaderInfo {
     private static final int PAGE_SIZE = 20;
     private static final int MAX_PAGE = 10;
 
+    @ModelAttribute
+    public void initItemCategory(Model model) {
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+    }
+
     // 상품 등록 페이지
     @GetMapping("/admin/item/new")
     public String saveItem(Model model) {
@@ -46,9 +52,6 @@ public class ItemController extends HeaderInfo {
         if(itemSearchDto.getSearchQuery().equals("")) {
             return "redirect:/main";
         }
-        // 카테고리
-        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
-        model.addAttribute("itemCategoryDto", itemCategoryDto);
 
         // 상품 목록
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
@@ -68,9 +71,6 @@ public class ItemController extends HeaderInfo {
     @GetMapping("/items/{itemId}")
     public String getItemDetail(Model model, @PathVariable Long itemId,
                                 HttpServletRequest request, HttpServletResponse response) {
-        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
-        model.addAttribute("itemCategoryDto", itemCategoryDto);
-
         try {
             ItemDetailDto itemDetailDto = itemService.getItemDetail(itemId, request, response);
             model.addAttribute("item", itemDetailDto);

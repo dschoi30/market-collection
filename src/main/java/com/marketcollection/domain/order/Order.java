@@ -54,7 +54,6 @@ public class Order extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-
     public Order(Member member, List<OrderItem> orderItems, String phoneNumber, Address address, OrderStatus orderStatus) {
         this.member = member;
         this.orderItems = orderItems;

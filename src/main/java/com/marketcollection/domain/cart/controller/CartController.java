@@ -5,6 +5,8 @@ import com.marketcollection.common.auth.dto.SessionUser;
 import com.marketcollection.domain.cart.dto.CartItemDto;
 import com.marketcollection.domain.cart.dto.CartRequestDto;
 import com.marketcollection.domain.cart.service.CartService;
+import com.marketcollection.domain.category.dto.ItemCategoryDto;
+import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.common.HeaderInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,14 @@ import java.util.List;
 @Controller
 public class CartController extends HeaderInfo {
 
+    private final CategoryService categoryService;
     private final CartService cartService;
+
+    @ModelAttribute
+    public void initItemCategory(Model model) {
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+    }
 
     // 장바구니 상품 추가
     @PostMapping("/cart")
