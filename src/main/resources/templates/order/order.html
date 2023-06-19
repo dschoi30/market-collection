@@ -149,7 +149,7 @@
             requestPayment(data);
           } catch (error) {
             console.log(error);
-            // TODO: 주문 실패를 DB에 기록하는 예외 처리 로직 추가
+            abortOrder(data.orderNumber);
             alert("주문에 실패하였습니다. 다시 시도바랍니다.");
           }
         },
@@ -160,7 +160,7 @@
           } else {
             console.log(jqXHR.responseText);
             console.log(error);
-            // TODO: 주문 실패를 DB에 기록하는 예외 처리 로직 추가
+            abortOrder(data.orderNumber);
             alert("주문에 실패하였습니다. 다시 시도바랍니다.");
           }
         }
@@ -208,6 +208,30 @@
         customerEmail: customerEmail,
         successUrl: 'http://localhost:8080/order/checkout/success', // 결제 성공 시 이동할 페이지(이 주소는 예시입니다. 상점에서 직접 만들어주세요.)
         failUrl: 'http://localhost:8080/order/checkout/fail' // 결제 실패 시 이동할 페이지(이 주소는 예시입니다. 상점에서 직접 만들어주세요.)
+      })
+    }
+
+    function abortOrder(orderNumber) {
+      $.ajax({
+        url: "/order/" + orderNumber + "/fail",
+        type: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        cache: false,
+        success: function(data, status) {
+          alert("주문이 취소되었습니다.");
+          location.href='/orders';
+        },
+        error: function(jqXHR, status, error) {
+          if(jqXHR.status === '401') {
+            alert("로그인 후 이용 가능합니다.");
+            location.href='/members/login';
+          } else {
+            console.log(jqXHR.responseText);
+            console.log(error);
+            alert("주문 취소에 실패하였습니다. 다시 시도바랍니다.");
+          }
+        }
       })
     }
   </script>

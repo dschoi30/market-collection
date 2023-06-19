@@ -147,7 +147,6 @@ public class InitDB {
 
                 Order order = Order.builder()
                         .member(member)
-                        .address(new Address())
                         .orderItems(List.of(orderItem))
                         .orderStatus(OrderStatus.DONE)
                         .build();

@@ -2,10 +2,15 @@ package com.marketcollection.domain.order.repository;
 
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderStatus;
+import com.marketcollection.domain.order.QOrderItem;
+import com.marketcollection.domain.order.dto.OrderHistoryDto2;
 import com.marketcollection.domain.order.dto.OrderSearchDto;
+import com.marketcollection.domain.order.dto.QOrderHistoryDto2;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
 
@@ -42,8 +47,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 .where(
                         order.member.id.eq(memberId),
                         order.orderStatus.in(
-                                OrderStatus.DONE, OrderStatus.CANCELED, OrderStatus.READY, OrderStatus.IN_PROGRESS,
-                                OrderStatus.PARTIAL_CANCELED, OrderStatus.WAITING_FOR_DEPOSIT),
+                                OrderStatus.READY, OrderStatus.IN_PROGRESS, OrderStatus.DONE,
+                                OrderStatus.CANCELED, OrderStatus.PARTIAL_CANCELED),
                         regDatesAfter(orderSearchDto.getSearchDateType()))
                 .orderBy(order.id.desc())
                 .offset(pageable.getOffset())
@@ -60,6 +65,45 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                         order.member.id.eq(memberId),
                         regDatesAfter(orderSearchDto.getSearchDateType()))
                 .fetchOne();
+    }
+
+    @Override
+    public Page<OrderHistoryDto2> findOrderHistory(Long memberId, OrderSearchDto orderSearchDto, Pageable pageable) {
+        QOrderItem orderItem = QOrderItem.orderItem;
+        List<OrderHistoryDto2> content =  queryFactory
+                .select(
+                        new QOrderHistoryDto2(
+                                order.orderNumber,
+                                order.orderName,
+                                order.paymentType,
+                                order.totalPaymentAmount,
+                                order.createdDate,
+                                orderItem.repImageUrl,
+                                order.orderStatus
+                        ))
+                .from(order)
+                .join(orderItem).on(order.id.eq(orderItem.order.id))
+                .where(
+                        order.member.id.eq(memberId),
+                        order.orderStatus.in(
+                                OrderStatus.DONE, OrderStatus.CANCELED, OrderStatus.PARTIAL_CANCELED),
+                        regDatesAfter(orderSearchDto.getSearchDateType()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(order.id.desc())
+                .fetch();
+
+        long total = queryFactory
+                .select(Wildcard.count)
+                .from(order)
+                .where(
+                        order.member.id.eq(memberId),
+                        order.orderStatus.in(
+                                OrderStatus.DONE, OrderStatus.CANCELED, OrderStatus.PARTIAL_CANCELED),
+                        regDatesAfter(orderSearchDto.getSearchDateType()))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     @Override

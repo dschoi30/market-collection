@@ -19,7 +19,7 @@ public class AdminOrderDto {
 
     public void addOrderInfo(Order order) {
         this.orderId = order.getId();
-        this.orderDate = order.getPaymentApprovedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.orderDate = order.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.orderStatus = order.getOrderStatus();
     }
 

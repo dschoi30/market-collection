@@ -3,6 +3,8 @@ package com.marketcollection.domain.review.controller;
 import com.marketcollection.common.auth.LoginUser;
 import com.marketcollection.common.auth.dto.SessionUser;
 import com.marketcollection.common.exception.ErrorCode;
+import com.marketcollection.domain.category.dto.ItemCategoryDto;
+import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.item.dto.ItemFormDto;
 import com.marketcollection.domain.item.service.ItemService;
@@ -25,8 +27,15 @@ import javax.validation.Valid;
 @Controller
 public class ReviewController extends HeaderInfo {
 
-    private final ReviewService reviewService;
+    private final CategoryService categoryService;
     private final ItemService itemService;
+    private final ReviewService reviewService;
+
+    @ModelAttribute
+    public void initItemCategory(Model model) {
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+    }
 
     @GetMapping("/review/{itemId}/new")
     public String getReviewForm(@PathVariable Long itemId, Model model) {

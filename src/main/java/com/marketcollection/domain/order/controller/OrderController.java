@@ -9,7 +9,7 @@ import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.exception.InvalidPaymentAmountException;
 import com.marketcollection.domain.order.service.OrderService;
-import com.marketcollection.domain.order.dto.PaymentResponseDto;
+import com.marketcollection.domain.order.dto.PaymentSuccessDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +33,12 @@ public class OrderController extends HeaderInfo {
 
     private static final int PAGE_SIZE = 10;
     private static final int MAX_PAGE = 10;
+
+    @ModelAttribute
+    public void initItemCategory(Model model) {
+        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
+        model.addAttribute("itemCategoryDto", itemCategoryDto);
+    }
 
     // 장바구니 미경유 주문 정보 생성
     @PostMapping("/order/direct")
@@ -71,31 +77,34 @@ public class OrderController extends HeaderInfo {
     // 결제 처리
     @GetMapping("/order/checkout/success")
     public String handlePayment(Model model, @LoginUser SessionUser user, String paymentKey, String orderId, Long amount) {
-        // 카테고리
-        ItemCategoryDto itemCategoryDto = categoryService.createCategoryRoot();
-        model.addAttribute("itemCategoryDto", itemCategoryDto);
-
+        // 결제 금액 검증(결제 요청 시 금액을 변조하여 실 결제 금액이 주문 금액과 달라지는 경우를 막기 위함)
         if(!orderService.validatePaymentAmount(orderId, amount)) {
             throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
         };
 
         try {
-            PaymentResponseDto paymentResponseDto = orderService.handlePayment(paymentKey, orderId, amount);
-
-            model.addAttribute("payment", paymentResponseDto);
+            PaymentSuccessDto paymentSuccessDto = orderService.handlePayment(paymentKey, orderId, amount);
+            if(paymentSuccessDto.getTotalAmount() != amount) {
+                orderService.abortPayment(orderId);
+                throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+            }
+            model.addAttribute("payment", paymentSuccessDto);
             model.addAttribute("user", user);
-
-            return "payment/paymentSuccess";
         } catch (Exception e) {
             e.printStackTrace();
             orderService.abortOrder(orderId);
+            model.addAttribute("errorMessage", "결제 요청에 실패했습니다. 다시 시도해 주세요.");
+
+            return "redirect:/";
         }
-        return "payment/paymentFail";
+
+        return "payment/paymentSuccess";
     }
 
+    // 결제 실패
     @GetMapping("/order/checkout/fail")
     public String fail() {
-        return "paymentFail";
+        return "payment/paymentFail";
     }
 
     // 내 주문 내역 조회
@@ -112,10 +121,23 @@ public class OrderController extends HeaderInfo {
         return "order/orderHistory";
     }
 
+    @GetMapping({"/orders2", "/orders2/{page}"})
+    public String getOrderHistory2(Model model, @LoginUser SessionUser user,
+                                  OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
+        Page<OrderHistoryDto2> orders = orderService.getOrderHistory2(user.getEmail(), orderSearchDto, pageable);
+
+        model.addAttribute("orders", orders);
+        model.addAttribute("orderSearchDto", orderSearchDto);
+        model.addAttribute("maxPage", MAX_PAGE);
+
+        return "order/orderHistory2";
+    }
+
     // 관리자 주문 관리
     @GetMapping({"/admin/orders", "/admin/orders/{page}"})
-    public String getAdminOrderList(Model model,
-                                    OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
+    public String getAdminOrderList(Model model, OrderSearchDto orderSearchDto,
+                                    @PathVariable("page") Optional<Integer> page) {
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
         Page<AdminOrderDto> orders = orderService.getAdminOrderList(orderSearchDto, pageable);
 
@@ -128,11 +150,30 @@ public class OrderController extends HeaderInfo {
 
     // 주문 취소
     @PostMapping("/orders/{orderNumber}/cancel")
-    public @ResponseBody ResponseEntity cancelOrder(@LoginUser SessionUser user, @PathVariable("orderNumber") String orderNumber) {
+    public @ResponseBody ResponseEntity cancelOrder(@LoginUser SessionUser user,
+                                                    @PathVariable("orderNumber") String orderNumber,
+                                                    @RequestBody OrderCancelDto orderCancelDto) {
         if(!orderService.validateOrder(orderNumber, user.getEmail())) {
             return new ResponseEntity<String>("주문 취소 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
         }
-        orderService.cancelOrder(orderNumber);
+        try {
+            orderService.cancelOrder(orderCancelDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("주문 취소에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<String>(orderNumber, HttpStatus.OK);
+    }
+
+    // 주문 실패 처리
+    @PostMapping("/order/{orderNumber}/fail")
+    public @ResponseBody ResponseEntity failOrder(@LoginUser SessionUser user,
+                                                  @PathVariable("orderNumber") String orderNumber) {
+        if(!orderService.validateOrder(orderNumber, user.getEmail())) {
+            return new ResponseEntity<String>("주문 실패 처리 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
+        orderService.abortOrder(orderNumber);
 
         return new ResponseEntity<String>(orderNumber, HttpStatus.OK);
     }

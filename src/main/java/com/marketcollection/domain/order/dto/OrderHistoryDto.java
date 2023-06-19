@@ -18,7 +18,7 @@ public class OrderHistoryDto {
 
     public OrderHistoryDto(Order order) {
         this.orderNumber = order.getOrderNumber();
-        this.orderDate = order.getPaymentApprovedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.orderDate = order.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.orderStatus = order.getOrderStatus();
     }
 }
