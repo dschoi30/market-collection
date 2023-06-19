@@ -1,13 +1,17 @@
 package com.marketcollection.domain.order.service;
 
 import com.marketcollection.domain.cart.service.CartService;
+import com.marketcollection.domain.delivery.Delivery;
+import com.marketcollection.domain.delivery.repository.DeliveryRepository;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.repository.ItemRepository;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.member.repository.MemberRepository;
 import com.marketcollection.domain.order.Order;
+import com.marketcollection.domain.order.OrderCancel;
 import com.marketcollection.domain.order.OrderItem;
 import com.marketcollection.domain.order.dto.*;
+import com.marketcollection.domain.order.repository.OrderCancelRepository;
 import com.marketcollection.domain.order.repository.OrderItemRepository;
 import com.marketcollection.domain.order.repository.OrderRepository;
 import com.marketcollection.domain.order.dto.PaymentSuccessDto;
@@ -32,6 +36,7 @@ import javax.persistence.EntityNotFoundException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -39,8 +44,10 @@ public class OrderService {
 
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
+    private final DeliveryRepository deliveryRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final OrderCancelRepository orderCancelRepository;
     private final PaymentContext paymentContext;
     private final CartService cartService;
     private final PointService pointService;
@@ -79,13 +86,16 @@ public class OrderService {
     // 주문 처리
     @Transactional
     public OrderResponseDto order(String memberId, OrderDto orderDto) {
-        // 주문자 정보로 회원 정보 업데이트
+        // 배송 정보 등록
         Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
-        member.updateOrderInfo(orderDto);
+        member.updateDeliveryInfo(orderDto);
+        Delivery delivery = Delivery.createDelivery(orderDto);
+        deliveryRepository.save(delivery);
 
         // 주문 등록
         List<OrderItem> orderItems = new ArrayList<>();
         List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
+
         for (OrderItemDto orderItemDto : orderItemDtos) {
             Item item = itemRepository.findWithPessimisticLockById(orderItemDto.getItemId())
                     .orElseThrow(EntityNotFoundException::new);
@@ -95,11 +105,13 @@ public class OrderService {
             orderItems.add(orderItem);
         }
 
-        Order order = Order.createOrder(member, orderItems, orderDto);
+        Order order = Order.createOrder(member, delivery, orderItems, orderDto);
+        order.getDelivery().setOrder(order);
         orderItems.forEach(oi -> oi.setOrder(order));
         orderRepository.save(order);
 
         // 포인트 입출 내역 등록
+        member.updateOrderPoint(orderDto.getTotalSavingPoint(), orderDto.getUsingPoint());
         orderItems.forEach(oi -> pointService.createOrderPoint(member, oi));
 
         if (orderDto.getUsingPoint() > 0) {
@@ -117,7 +129,7 @@ public class OrderService {
     // 결제 처리
     @Transactional
     public PaymentSuccessDto handlePayment(String paymentKey, String orderId, Long amount) {
-        // 결제 승인 요청
+        // 결제 승인 요청 TODO: 결제와 주문 로직 분리할 것
         RestTemplate restTemplate = new RestTemplate();
 
         URI uri = URI.create(tossUrl + "confirm");
@@ -204,12 +216,15 @@ public class OrderService {
                 .mapToInt(OrderItem::getOrderPrice)
                 .sum();
 
-        requestPaymentCancel(paymentKey, cancelReason, cancelAmount);
+        PGResponseDto pgResponseDto = requestPaymentCancel(paymentKey, cancelReason, cancelAmount);
 
-        order.cancelOrder();
+        order.cancelOrder(); // TODO: 부분 취소 여부 확인 후 처리
+        OrderCancel orderCancel = OrderCancel.createOrderCancel(pgResponseDto);
+        orderCancel.setOrder(order);
+        orderCancelRepository.save(orderCancel);
     }
 
-    public void requestPaymentCancel(String paymentKey, String cancelReason, int cancelAmount) {
+    public PGResponseDto requestPaymentCancel(String paymentKey, String cancelReason, int cancelAmount) {
         RestTemplate restTemplate = new RestTemplate();
 
         URI uri = URI.create(tossUrl + paymentKey + "/cancel");
@@ -222,7 +237,8 @@ public class OrderService {
                 .getBody();
 
         Assert.notNull(pgResponseDto, "결제 취소 요청에 실패했습니다.");
-        System.out.println(pgResponseDto.toString());
+
+        return pgResponseDto;
     }
 
     // 주문자 유효성 검사

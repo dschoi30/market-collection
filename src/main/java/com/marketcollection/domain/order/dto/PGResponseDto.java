@@ -24,6 +24,7 @@ public class PGResponseDto {
     Transfer transfer; // 계좌 이체
     CancelInfo[] cancels; // 결제 취소 정보
 
+    @Getter
     public static class CancelInfo {
         String cancelAmount; // 취소 금액
         String cancelReason; // 취소 사유

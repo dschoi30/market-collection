@@ -50,4 +50,13 @@ public class Point extends BaseEntity {
                 .eventType(EventType.USED)
                 .build();
     }
+
+    public static Point createOrderCancelPoint(Member member, OrderItem orderItem) {
+        return Point.builder()
+                .member(member)
+                .orderItem(orderItem)
+                .point(orderItem.getSavingPoint())
+                .eventType(EventType.CANCELED)
+                .build();
+    }
 }

@@ -41,9 +41,17 @@ public class Member extends BaseEntity {
         return this;
     }
 
-    public void updateOrderInfo(OrderDto orderDto) {
-        this.phoneNumber = orderDto.getPhoneNumber();
-        this.address = new Address(orderDto.getZipCode(), orderDto.getAddress(), orderDto.getDetailAddress());
-        this.point += orderDto.getTotalSavingPoint() - orderDto.getUsingPoint();
+    public void updateDeliveryInfo(OrderDto orderDto) {
+        if(this.phoneNumber == null) {
+            this.phoneNumber = orderDto.getPhoneNumber();
+        }
+        if(this.address == null) {
+            this.address = new Address(orderDto.getZipCode(), orderDto.getAddress(), orderDto.getDetailAddress());
+        }
     }
+
+    public void updateOrderPoint(int totalSavingPoint, int usingPoint) {
+        this.point += totalSavingPoint - usingPoint;
+    }
+
 }

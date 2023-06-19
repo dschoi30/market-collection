@@ -28,6 +28,9 @@ public class OrderItem extends BaseEntity {
     private int count;
     private int savingPoint;
 
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
     public OrderItem(Item item, Order order, String repImageUrl, int orderPrice) {
         this.item = item;
         this.order = order;
