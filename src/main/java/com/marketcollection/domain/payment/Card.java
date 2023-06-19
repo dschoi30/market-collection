@@ -1,5 +1,6 @@
-package com.marketcollection.domain.order;
+package com.marketcollection.domain.payment;
 
+import com.marketcollection.domain.order.Order;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -23,5 +24,6 @@ public class Card {
 
     public void setOrder(Order order) {
         this.order = order;
+        order.setPaymentType(PaymentType.CARD);
     }
 }

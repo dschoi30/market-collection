@@ -20,8 +20,8 @@ public class Delivery {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "delivery")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     private String phoneNumber;

@@ -12,7 +12,7 @@ public class PaymentSuccessDto {
     public static PaymentSuccessDto of(PGResponseDto tossPaymentDto) {
         return PaymentSuccessDto.builder()
                 .orderNumber(tossPaymentDto.getOrderId())
-                .totalAmount(Integer.parseInt(tossPaymentDto.getTotalAmount()))
+                .totalAmount(tossPaymentDto.getTotalAmount())
                 .build();
     }
 }

@@ -16,6 +16,10 @@ import com.marketcollection.domain.order.repository.OrderItemRepository;
 import com.marketcollection.domain.order.repository.OrderRepository;
 import com.marketcollection.domain.order.dto.PaymentSuccessDto;
 import com.marketcollection.domain.order.dto.PGResponseDto;
+import com.marketcollection.domain.payment.Payment;
+import com.marketcollection.domain.payment.repository.PaymentRepository;
+import com.marketcollection.domain.payment.service.PaymentContext;
+import com.marketcollection.domain.payment.service.PaymentService;
 import com.marketcollection.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
@@ -48,6 +52,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderCancelRepository orderCancelRepository;
+    private final PaymentRepository paymentRepository;
     private final PaymentContext paymentContext;
     private final CartService cartService;
     private final PointService pointService;
@@ -106,9 +111,9 @@ public class OrderService {
         }
 
         Order order = Order.createOrder(member, delivery, orderItems, orderDto);
-        order.getDelivery().setOrder(order);
         orderItems.forEach(oi -> oi.setOrder(order));
         orderRepository.save(order);
+        delivery.setOrder(order);
 
         // 포인트 입출 내역 등록
         member.updateOrderPoint(orderDto.getTotalSavingPoint(), orderDto.getUsingPoint());
@@ -129,7 +134,22 @@ public class OrderService {
     // 결제 처리
     @Transactional
     public PaymentSuccessDto handlePayment(String paymentKey, String orderId, Long amount) {
-        // 결제 승인 요청 TODO: 결제와 주문 로직 분리할 것
+        // 결제 승인 요청
+        PGResponseDto pgResponseDto = requestPaymentApproval(paymentKey, orderId, amount);
+
+        // 결제 수단별 결제 정보 저장
+        PaymentService paymentService = paymentContext.getPaymentService(pgResponseDto);
+        Payment payment = paymentService.savePayment(pgResponseDto);
+
+        Order order = orderRepository.findByOrderNumber(orderId).orElseThrow(EntityNotFoundException::new);
+        payment.setOrder(order);
+
+        paymentService.savePaymentMethod(pgResponseDto, order);
+
+        return PaymentSuccessDto.of(pgResponseDto);
+    }
+
+    public PGResponseDto requestPaymentApproval(String paymentKey, String orderId, Long amount) {
         RestTemplate restTemplate = new RestTemplate();
 
         URI uri = URI.create(tossUrl + "confirm");
@@ -142,15 +162,7 @@ public class OrderService {
 
         Assert.notNull(pgResponseDto, "결제 승인 요청에 실패했습니다.");
 
-        // 결제 정보 저장
-        Order order = orderRepository.findByOrderNumber(orderId).orElseThrow(EntityNotFoundException::new);
-        order.savePaymentInfo(pgResponseDto);
-
-        // 결제 수단별 결제 정보 저장
-        PaymentService paymentService = paymentContext.getPaymentService(pgResponseDto);
-        paymentService.savePaymentInfo(pgResponseDto, order);
-
-        return PaymentSuccessDto.of(pgResponseDto);
+        return pgResponseDto;
     }
 
     private HttpHeaders createHeaders() {
@@ -205,23 +217,32 @@ public class OrderService {
 
     // 주문 취소
     @Transactional
-    public void cancelOrder(PaymentCancelDto paymentCancelDto) {
-        Order order = orderRepository.findById(paymentCancelDto.getOrderId()).orElseThrow(EntityNotFoundException::new);
-        String paymentKey = order.getPaymentKey();
-        String cancelReason = paymentCancelDto.getCancelReason();
-
-        List<Long> orderItemIds = paymentCancelDto.getOrderItemIds();
-        List<OrderItem> orderItems = orderItemRepository.findByIdIn(orderItemIds);
-        int cancelAmount = orderItems.stream()
-                .mapToInt(OrderItem::getOrderPrice)
-                .sum();
+    public void cancelOrder(OrderCancelDto orderCancelDto) {
+        // 결제 취소 요청
+        String paymentKey = paymentRepository.findByOrderId(orderCancelDto.getOrderId())
+                .orElseThrow(EntityNotFoundException::new)
+                .getPaymentKey();
+        String cancelReason = orderCancelDto.getCancelReason();
+        int cancelAmount = getCancelAmount(orderCancelDto);
 
         PGResponseDto pgResponseDto = requestPaymentCancel(paymentKey, cancelReason, cancelAmount);
 
+        // 주문 취소 처리
+        Order order = orderRepository.findById(orderCancelDto.getOrderId()).orElseThrow(EntityNotFoundException::new);
         order.cancelOrder(); // TODO: 부분 취소 여부 확인 후 처리
+
+        // 주문 취소 정보 저장
         OrderCancel orderCancel = OrderCancel.createOrderCancel(pgResponseDto);
         orderCancel.setOrder(order);
         orderCancelRepository.save(orderCancel);
+    }
+
+    public int getCancelAmount(OrderCancelDto orderCancelDto) {
+        List<Long> orderItemIds = orderCancelDto.getOrderItemIds();
+        List<OrderItem> orderItems = orderItemRepository.findByIdIn(orderItemIds);
+        return orderItems.stream()
+                .mapToInt(OrderItem::getOrderPrice)
+                .sum();
     }
 
     public PGResponseDto requestPaymentCancel(String paymentKey, String cancelReason, int cancelAmount) {
@@ -300,4 +321,12 @@ public class OrderService {
         return new PageImpl<AdminOrderDto>(adminOrderDtos, pageable, total);
     }
 
+    // 결제 금액 변조 시도 시 결제 취소
+    @Transactional
+    public void abortPayment(String orderNumber) {
+        Order order = orderRepository.findByOrderNumber(orderNumber).orElseThrow(EntityNotFoundException::new);
+        List<Long> orderItemIds = order.getOrderItems().stream().map(OrderItem::getId).collect(Collectors.toList());
+
+        cancelOrder(new OrderCancelDto(order.getId(), orderItemIds, "결제 금액 변조 시도로 인한 주문 취소"));
+    }
 }

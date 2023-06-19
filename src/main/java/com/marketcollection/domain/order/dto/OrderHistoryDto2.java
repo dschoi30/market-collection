@@ -1,7 +1,7 @@
 package com.marketcollection.domain.order.dto;
 
-import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderStatus;
+import com.marketcollection.domain.payment.PaymentType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
@@ -12,14 +12,14 @@ import java.time.format.DateTimeFormatter;
 public class OrderHistoryDto2 {
     private String orderNumber;
     private String orderName;
-    private String paymentType;
+    private PaymentType paymentType;
     private int totalPaymentAmount;
     private String orderDate;
     private String repImage;
     private OrderStatus orderStatus;
 
     @QueryProjection
-    public OrderHistoryDto2(String orderNumber, String orderName, String paymentType,
+    public OrderHistoryDto2(String orderNumber, String orderName, PaymentType paymentType,
                             int totalPaymentAmount, LocalDateTime orderDate, String repImage, OrderStatus orderStatus) {
         this.orderNumber = orderNumber;
         this.orderName = orderName;

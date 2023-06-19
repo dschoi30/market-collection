@@ -77,22 +77,28 @@ public class OrderController extends HeaderInfo {
     // 결제 처리
     @GetMapping("/order/checkout/success")
     public String handlePayment(Model model, @LoginUser SessionUser user, String paymentKey, String orderId, Long amount) {
+        // 결제 금액 검증(결제 요청 시 금액을 변조하여 실 결제 금액이 주문 금액과 달라지는 경우를 막기 위함)
         if(!orderService.validatePaymentAmount(orderId, amount)) {
             throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
         };
 
         try {
             PaymentSuccessDto paymentSuccessDto = orderService.handlePayment(paymentKey, orderId, amount);
-
+            if(paymentSuccessDto.getTotalAmount() != amount) {
+                orderService.abortPayment(orderId);
+                throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+            }
             model.addAttribute("payment", paymentSuccessDto);
             model.addAttribute("user", user);
-
-            return "payment/paymentSuccess";
         } catch (Exception e) {
             e.printStackTrace();
             orderService.abortOrder(orderId);
+            model.addAttribute("errorMessage", "결제 요청에 실패했습니다. 다시 시도해 주세요.");
+
+            return "redirect:/";
         }
-        return "payment/paymentFail";
+
+        return "payment/paymentSuccess";
     }
 
     // 결제 실패
@@ -146,12 +152,12 @@ public class OrderController extends HeaderInfo {
     @PostMapping("/orders/{orderNumber}/cancel")
     public @ResponseBody ResponseEntity cancelOrder(@LoginUser SessionUser user,
                                                     @PathVariable("orderNumber") String orderNumber,
-                                                    @RequestBody PaymentCancelDto paymentCancelDto) {
+                                                    @RequestBody OrderCancelDto orderCancelDto) {
         if(!orderService.validateOrder(orderNumber, user.getEmail())) {
             return new ResponseEntity<String>("주문 취소 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
         }
         try {
-            orderService.cancelOrder(paymentCancelDto);
+            orderService.cancelOrder(orderCancelDto);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<String>("주문 취소에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
