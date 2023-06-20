@@ -5,12 +5,12 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class PaymentSuccessDto {
+public class PaymentResponse {
     private String orderNumber;
     private int totalAmount;
 
-    public static PaymentSuccessDto of(PGResponseDto tossPaymentDto) {
-        return PaymentSuccessDto.builder()
+    public static PaymentResponse of(PGResponse tossPaymentDto) {
+        return PaymentResponse.builder()
                 .orderNumber(tossPaymentDto.getOrderId())
                 .totalAmount(tossPaymentDto.getTotalAmount())
                 .build();

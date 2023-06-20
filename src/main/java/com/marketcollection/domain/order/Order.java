@@ -2,10 +2,10 @@ package com.marketcollection.domain.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.domain.common.BaseTimeEntity;
-import com.marketcollection.domain.delivery.Delivery;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.order.dto.OrderDto;
-import com.marketcollection.domain.order.dto.OrderResponseDto;
+import com.marketcollection.domain.order.dto.OrderResponse;
+import com.marketcollection.domain.payment.Payment;
 import com.marketcollection.domain.payment.PaymentType;
 import lombok.*;
 
@@ -25,7 +25,7 @@ public class Order extends BaseTimeEntity {
 
     private String orderNumber;
     private String orderName;
-    private String repImage;
+    private String repImageUrl;
 
     @JsonIgnore
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -38,12 +38,9 @@ public class Order extends BaseTimeEntity {
     private int totalSavingPoint;
     private int usingPoint;
     private int totalPaymentAmount;
-    private PaymentType paymentType;
 
-    /* 결제 완료 후 삽입 될 값 */
-//    String paymentKey;
-//    String paymentType;
-//    LocalDateTime paymentApprovedAt;
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -54,7 +51,7 @@ public class Order extends BaseTimeEntity {
         this.orderStatus = orderStatus;
     }
 
-    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems, OrderDto orderDto) {
+    public static Order createOrder(Member member, List<OrderItem> orderItems, OrderDto orderDto) {
         String orderNumber = UUID.randomUUID().toString().substring(1,8);
 
         String orderName;
@@ -63,17 +60,19 @@ public class Order extends BaseTimeEntity {
         } else {
             orderName = orderItems.get(0).getItem().getItemName();
         }
-
+        String repImageUrl = orderItems.get(0).getRepImageUrl();
         int savingPoint = orderItems.stream().mapToInt(OrderItem::getSavingPoint).sum();
         int orderAmount = orderItems.stream().mapToInt(OrderItem::getOrderPrice).sum();
         return Order.builder()
                 .orderNumber(orderNumber)
                 .orderName(orderName)
+                .repImageUrl(repImageUrl)
                 .orderItems(orderItems)
                 .member(member)
                 .totalSavingPoint(savingPoint)
                 .usingPoint(orderDto.getUsingPoint())
                 .totalPaymentAmount(orderAmount - orderDto.getUsingPoint())
+                .orderStatus(OrderStatus.READY)
                 .build();
     }
 
@@ -99,14 +98,8 @@ public class Order extends BaseTimeEntity {
         }
     }
 
-    public OrderResponseDto toDto() {
-        String orderName;
-        if(orderItems.size() > 1) {
-            orderName = orderItems.get(0).getItem().getItemName() + "외 " + (orderItems.size() - 1) + "건";
-        } else {
-            orderName = orderItems.get(0).getItem().getItemName();
-        }
-        return OrderResponseDto.builder()
+    public OrderResponse toDto() {
+        return OrderResponse.builder()
                 .orderNumber(orderNumber)
                 .orderName(orderName)
                 .orderPrice(totalPaymentAmount)
@@ -118,13 +111,4 @@ public class Order extends BaseTimeEntity {
     public void setPaymentType(PaymentType paymentType) {
         this.paymentType = paymentType;
     }
-
-//    public Order savePaymentInfo(PGResponseDto tossPaymentDto) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-//        this.paymentKey = tossPaymentDto.getPaymentKey();
-//        this.paymentType = tossPaymentDto.getMethod();
-//        this.orderStatus = OrderStatus.valueOf(tossPaymentDto.getStatus());
-//        this.paymentApprovedAt = OffsetDateTime.parse(tossPaymentDto.getApprovedAt(), formatter).toLocalDateTime();
-//        return this;
-//    }
 }

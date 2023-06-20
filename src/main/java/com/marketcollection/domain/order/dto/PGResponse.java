@@ -6,7 +6,7 @@ import com.marketcollection.domain.payment.EasyPay;
 import lombok.*;
 
 @Getter
-public class PGResponseDto {
+public class PGResponse {
     String mId; // 상점아이디
     String version; // Payment 객체의 응답 버전
     String paymentKey; // 결제 키 값

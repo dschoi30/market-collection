@@ -3,7 +3,7 @@ package com.marketcollection.domain.payment.service;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.payment.PaymentType;
 import com.marketcollection.domain.payment.Transfer;
-import com.marketcollection.domain.order.dto.PGResponseDto;
+import com.marketcollection.domain.order.dto.PGResponse;
 import com.marketcollection.domain.payment.repository.TransferRepository;
 import com.marketcollection.domain.payment.Payment;
 import com.marketcollection.domain.payment.repository.PaymentRepository;
@@ -20,15 +20,15 @@ public class TransferService implements PaymentService {
 
     @Override
     @Transactional
-    public Payment savePayment(PGResponseDto pgResponseDto) {
-        Payment payment = Payment.createPayment(pgResponseDto, PaymentType.TRANSFER);
+    public Payment savePayment(PGResponse pgResponse) {
+        Payment payment = Payment.createPayment(pgResponse, PaymentType.TRANSFER);
         return paymentRepository.save(payment);
     }
 
     @Override
     @Transactional
-    public void savePaymentMethod(PGResponseDto pgResponseDto, Order order) {
-        Transfer transfer = pgResponseDto.getTransfer();
+    public void savePaymentMethod(PGResponse pgResponse, Order order) {
+        Transfer transfer = pgResponse.getTransfer();
         transfer.setOrder(order);
         transferRepository.save(transfer);
     }

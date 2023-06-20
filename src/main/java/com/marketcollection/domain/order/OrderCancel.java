@@ -1,6 +1,6 @@
 package com.marketcollection.domain.order;
 
-import com.marketcollection.domain.order.dto.PGResponseDto;
+import com.marketcollection.domain.order.dto.PGResponse;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,10 +27,10 @@ public class OrderCancel {
     private String transactionKey;
     String receiptKey;
 
-    public static OrderCancel createOrderCancel(PGResponseDto pgResponseDto) {
+    public static OrderCancel createOrderCancel(PGResponse pgResponse) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-        PGResponseDto.CancelInfo[] cancels = pgResponseDto.getCancels();
-        PGResponseDto.CancelInfo cancelInfo = cancels[0];
+        PGResponse.CancelInfo[] cancels = pgResponse.getCancels();
+        PGResponse.CancelInfo cancelInfo = cancels[0];
         return OrderCancel.builder()
                 .cancelAmount(Integer.parseInt(cancelInfo.getCancelAmount()))
                 .cancelReason(cancelInfo.getCancelReason())

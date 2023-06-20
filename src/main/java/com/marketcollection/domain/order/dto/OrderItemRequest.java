@@ -6,7 +6,7 @@ import lombok.Setter;
 import javax.validation.constraints.Min;
 
 @Getter @Setter
-public class OrderItemRequestDto {
+public class OrderItemRequest {
     private Long itemId;
 
     @Min(value = 1, message = "최소 1개 이상 주문해야 합니다.")

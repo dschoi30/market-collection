@@ -1,6 +1,6 @@
 package com.marketcollection.domain.payment.service;
 
-import com.marketcollection.domain.order.dto.PGResponseDto;
+import com.marketcollection.domain.order.dto.PGResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ public class PaymentContext {
     private final TransferService transferService;
     private final EasyPayService easyPayService;
 
-    public PaymentService getPaymentService(PGResponseDto tossPaymentDto) {
+    public PaymentService getPaymentService(PGResponse tossPaymentDto) {
         final PaymentService paymentService;
 
         switch (tossPaymentDto.getMethod()) {

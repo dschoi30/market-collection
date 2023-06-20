@@ -254,7 +254,7 @@
             </tr>
           </thead>
           <tbody>
-          <tr th:each="orderItem, status: ${orderDto.orderItemDtos}" class="order-items">
+          <tr th:each="orderItem, status: ${orderDto.getOrderItemDtos}" class="order-items">
             <input type="hidden" th:hidden="${orderItem.itemId}" th:value="${orderItem.itemId}" id="itemId">
             <input type="hidden" th:hidden="${orderItem.count}" th:value="${orderItem.count}" id="count">
             <td><img class="rounded thumbnail" th:src="${orderItem.imageUrl}"></td>

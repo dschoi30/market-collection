@@ -9,7 +9,7 @@ import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.exception.InvalidPaymentAmountException;
 import com.marketcollection.domain.order.service.OrderService;
-import com.marketcollection.domain.order.dto.PaymentSuccessDto;
+import com.marketcollection.domain.order.dto.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,12 +42,12 @@ public class OrderController extends HeaderInfo {
 
     // 장바구니 미경유 주문 정보 생성
     @PostMapping("/order/direct")
-    public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, OrderRequestDto orderRequestDto) {
-        List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
-        for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
-            if(orderItemRequestDto.getCount() <= 0) throw new IllegalArgumentException("최소 1개 이상 주문해야 합니다.");
+    public String setDirectOrderInfo(Model model, @LoginUser SessionUser user, OrderRequest orderRequest) {
+        List<OrderItemRequest> orderItemRequests = orderRequest.getOrderItemRequests();
+        for (OrderItemRequest orderItemRequest : orderItemRequests) {
+            if(orderItemRequest.getCount() <= 0) throw new IllegalArgumentException("최소 1개 이상 주문해야 합니다.");
         }
-        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "Y");
+        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequest, "Y");
         model.addAttribute("orderDto", orderDto);
 
         return "order/order";
@@ -55,12 +55,12 @@ public class OrderController extends HeaderInfo {
 
     // 장바구니 경유 주문 정보 생성
     @PostMapping("/order")
-    public String setOrderInfo(Model model, @LoginUser SessionUser user, OrderRequestDto orderRequestDto) {
-        List<OrderItemRequestDto> orderItemRequestDtos = orderRequestDto.getOrderItemRequestDtos();
-        for (OrderItemRequestDto orderItemRequestDto : orderItemRequestDtos) {
-            if(orderItemRequestDto.getCount() <= 0) throw new IllegalArgumentException("최소 1개 이상 주문해야 합니다.");
+    public String setOrderInfo(Model model, @LoginUser SessionUser user, OrderRequest orderRequest) {
+        List<OrderItemRequest> orderItemRequests = orderRequest.getOrderItemRequests();
+        for (OrderItemRequest orderItemRequest : orderItemRequests) {
+            if(orderItemRequest.getCount() <= 0) throw new IllegalArgumentException("최소 1개 이상 주문해야 합니다.");
         }
-        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequestDto, "N");
+        OrderDto orderDto = orderService.setOrderInfo(user.getEmail(), orderRequest, "N");
         model.addAttribute("orderDto", orderDto);
 
         return "order/order";
@@ -69,9 +69,9 @@ public class OrderController extends HeaderInfo {
     // 주문 처리
     @PostMapping("/order/checkout")
     public @ResponseBody ResponseEntity order(@LoginUser SessionUser user, @Valid @RequestBody OrderDto orderDto) {
-        OrderResponseDto orderResponseDto = orderService.order(user.getEmail(), orderDto);
+        OrderResponse orderResponse = orderService.order(user.getEmail(), orderDto);
 
-        return new ResponseEntity<OrderResponseDto>(orderResponseDto, HttpStatus.OK);
+        return new ResponseEntity<OrderResponse>(orderResponse, HttpStatus.OK);
     }
 
     // 결제 처리
@@ -83,12 +83,12 @@ public class OrderController extends HeaderInfo {
         };
 
         try {
-            PaymentSuccessDto paymentSuccessDto = orderService.handlePayment(paymentKey, orderId, amount);
-            if(paymentSuccessDto.getTotalAmount() != amount) {
+            PaymentResponse paymentResponse = orderService.handlePayment(paymentKey, orderId, amount);
+            if(paymentResponse.getTotalAmount() != amount) {
                 orderService.abortPayment(orderId);
                 throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
             }
-            model.addAttribute("payment", paymentSuccessDto);
+            model.addAttribute("payment", paymentResponse);
             model.addAttribute("user", user);
         } catch (Exception e) {
             e.printStackTrace();

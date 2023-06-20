@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 @Builder
 @Getter
-public class OrderResponseDto {
+public class OrderResponse {
 
     public String orderNumber;
     public String orderName;
