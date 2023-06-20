@@ -37,8 +37,7 @@
 6. SpringBoot WAS 실행(Nginx 리버스 프록시를 적용하여 포트 스위칭을 통한 무중단 배포)
 
 ## ERD 설계
-![market-collection - Copy of ER diagram](https://github.com/dschoi30/market-collection/assets/97089961/afd29cf7-5b0f-4743-a834-07db6919f007)
-
+![market-collection - Copy of ER diagram (1)](https://github.com/dschoi30/market-collection/assets/97089961/746a099b-3c0a-4e14-a3e8-97fcf57dda19)
 
 ## 기능 정의
 
