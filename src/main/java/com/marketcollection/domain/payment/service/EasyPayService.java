@@ -2,7 +2,7 @@ package com.marketcollection.domain.payment.service;
 
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.payment.PaymentType;
-import com.marketcollection.domain.order.dto.PGResponseDto;
+import com.marketcollection.domain.order.dto.PGResponse;
 import com.marketcollection.domain.payment.repository.EasyPayRepository;
 import com.marketcollection.domain.payment.EasyPay;
 import com.marketcollection.domain.payment.Payment;
@@ -20,15 +20,15 @@ public class EasyPayService implements PaymentService {
 
     @Override
     @Transactional
-    public Payment savePayment(PGResponseDto pgResponseDto) {
-        Payment payment = Payment.createPayment(pgResponseDto, PaymentType.EASY_PAY);
+    public Payment savePayment(PGResponse pgResponse) {
+        Payment payment = Payment.createPayment(pgResponse, PaymentType.EASY_PAY);
         return paymentRepository.save(payment);
     }
 
     @Override
     @Transactional
-    public void savePaymentMethod(PGResponseDto pgResponseDto, Order order) {
-        EasyPay easyPay = pgResponseDto.getEasyPay();
+    public void savePaymentMethod(PGResponse pgResponse, Order order) {
+        EasyPay easyPay = pgResponse.getEasyPay();
         easyPay.setOrder(order);
         easyPayRepository.save(easyPay);
     }

@@ -3,7 +3,7 @@ package com.marketcollection.domain.payment.service;
 import com.marketcollection.domain.payment.Card;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.payment.PaymentType;
-import com.marketcollection.domain.order.dto.PGResponseDto;
+import com.marketcollection.domain.order.dto.PGResponse;
 import com.marketcollection.domain.payment.repository.CardRepository;
 import com.marketcollection.domain.payment.Payment;
 import com.marketcollection.domain.payment.repository.PaymentRepository;
@@ -20,15 +20,15 @@ public class CardService implements PaymentService {
 
     @Override
     @Transactional
-    public Payment savePayment(PGResponseDto pgResponseDto) {
-        Payment payment = Payment.createPayment(pgResponseDto, PaymentType.CARD);
+    public Payment savePayment(PGResponse pgResponse) {
+        Payment payment = Payment.createPayment(pgResponse, PaymentType.CARD);
         return paymentRepository.save(payment);
     }
 
     @Override
     @Transactional
-    public void savePaymentMethod(PGResponseDto pgResponseDto, Order order) {
-        Card card = pgResponseDto.getCard();
+    public void savePaymentMethod(PGResponse pgResponse, Order order) {
+        Card card = pgResponse.getCard();
         card.setOrder(order);
         cardRepository.save(card);
     }

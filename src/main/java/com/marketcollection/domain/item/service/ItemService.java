@@ -1,6 +1,5 @@
 package com.marketcollection.domain.item.service;
 
-import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.ItemImage;
@@ -73,7 +72,7 @@ public class ItemService {
 
         Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
 
-        boolean cookieExists = cookieExists(itemId, request, response); // 쿠키 존재 여부 확인
+        boolean cookieExists = validateCookie(itemId, request, response);
         if(!cookieExists) {
             item.addHit(); // 쿠키 미존재 시 조회수 증가
         }
@@ -104,7 +103,7 @@ public class ItemService {
         return itemListDtos;
     }
 
-    public boolean cookieExists(Long itemId, HttpServletRequest request, HttpServletResponse response) {
+    public boolean validateCookie(Long itemId, HttpServletRequest request, HttpServletResponse response) {
 
         Cookie cookie = findCookie(request.getCookies(), "hit"); // hit 쿠키 조회
         String hit = cookie.getValue();

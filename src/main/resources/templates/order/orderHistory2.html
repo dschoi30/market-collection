@@ -111,7 +111,7 @@
         </th:block>
       </div>
       <div class="card d-flex mb-3">
-        <div th:each="orderItem : ${order.orderItemDtos}" class="d-flex mb-3">
+        <div th:each="orderItem : ${order.orderItemRespons}" class="d-flex mb-3">
           <div class="repImgDiv ms-3 mt-3">
             <img th:src="${orderItem.imageUrl}" class = "rounded thumbnail" th:alt="${orderItem.itemName}">
           </div>

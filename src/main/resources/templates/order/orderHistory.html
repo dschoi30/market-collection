@@ -106,7 +106,10 @@
         <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).DONE}">
           <button type="button" class="btn btn-outline-secondary btn-no-padding" th:value="${order.orderNumber}" onclick="cancelOrder(this.value)">전체 상품 주문 취소</button>
         </th:block>
-        <th:block th:unless="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).DONE}">
+        <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).PARTIAL_CANCELED}">
+          <span>(부분 취소 완료)</span>
+        </th:block>
+        <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).CANCELED}">
           <span>(취소 완료)</span>
         </th:block>
       </div>
@@ -122,7 +125,7 @@
             <div class="fs18 font-weight-light">
               <span th:text="${#numbers.formatInteger(orderItem.orderPrice, 1, 'COMMA')} +'원'"></span>
               <span th:text="${orderItem.count} +'개'"></span>
-              <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).DONE}">
+              <th:block th:if="${order.orderStatus == T(com.marketcollection.domain.order.OrderStatus).READY}">
                 <a class="btn btn-outline-secondary btn-no-padding" th:href="@{/review/{itemId}/new(itemId=${orderItem.itemId})}">리뷰 작성</a>
               </th:block>
             </div>

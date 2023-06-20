@@ -6,7 +6,7 @@ import com.marketcollection.domain.common.HeaderInfo;
 import com.marketcollection.domain.item.Item;
 import com.marketcollection.domain.item.dto.*;
 import com.marketcollection.domain.item.service.ItemService;
-import com.marketcollection.domain.order.dto.OrderRequestDto;
+import com.marketcollection.domain.order.dto.OrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -74,7 +74,7 @@ public class ItemController extends HeaderInfo {
         try {
             ItemDetailDto itemDetailDto = itemService.getItemDetail(itemId, request, response);
             model.addAttribute("item", itemDetailDto);
-            model.addAttribute("orderRequestDto", new OrderRequestDto());
+            model.addAttribute("orderRequestDto", new OrderRequest());
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "상품이 존재하지 않습니다.");
             return "redirect:/";

@@ -65,8 +65,8 @@ function setOrderInfo() {
         if($(data).find("#checkBox").is(":checked") === true) {
             let itemId = $(data).find("#itemId").val();
             let count = $(data).find("#count").val();
-            orderInfo += "<input type='number' name='orderItemRequestDtos[" + no + "].itemId' value='" + itemId + "'>";
-            orderInfo += "<input type='number' name='orderItemRequestDtos[" + no + "].count' value='"+ count + "'>";
+            orderInfo += "<input type='number' name='orderItemRequests[" + no + "].itemId' value='" + itemId + "'>";
+            orderInfo += "<input type='number' name='orderItemRequests[" + no + "].count' value='"+ count + "'>";
             no += 1;
         }
     })

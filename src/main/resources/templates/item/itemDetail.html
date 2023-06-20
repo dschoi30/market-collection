@@ -130,8 +130,8 @@
                     let orderInfo = "";
                     const itemId = $("#itemId").val();
                     const count = $("#count").val();
-                    orderInfo += "<input type='number' name='orderItemRequestDtos[0].itemId' value='" + itemId + "'>";
-                    orderInfo += "<input type='number' name='orderItemRequestDtos[0].count' value='"+ count + "'>";
+                    orderInfo += "<input type='number' name='orderItemRequests[0].itemId' value='" + itemId + "'>";
+                    orderInfo += "<input type='number' name='orderItemRequests[0].count' value='"+ count + "'>";
                     console.log(orderInfo);
                     return orderInfo;
                 }

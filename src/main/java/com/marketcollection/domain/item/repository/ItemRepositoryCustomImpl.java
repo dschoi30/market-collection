@@ -18,10 +18,10 @@ import org.springframework.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.marketcollection.domain.item.QItem.*;
 
@@ -227,6 +227,15 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .where(item.id.in(ids))
                 .orderBy(((item.originalPrice.subtract(item.salePrice)).multiply(1.0)).divide(item.originalPrice).desc())
                 .limit(LIST_SIZE)
+                .fetch();
+    }
+
+    @Override
+    public List<Item> findAllWithPessimisticLockById(List<Long> itemIds) {
+        return queryFactory
+                .selectFrom(item)
+                .where(item.id.in(itemIds))
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .fetch();
     }
 }

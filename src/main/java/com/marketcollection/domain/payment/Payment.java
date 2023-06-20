@@ -1,7 +1,7 @@
 package com.marketcollection.domain.payment;
 
 import com.marketcollection.domain.order.Order;
-import com.marketcollection.domain.order.dto.PGResponseDto;
+import com.marketcollection.domain.order.dto.PGResponse;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,16 +35,16 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    public static Payment createPayment(PGResponseDto pgResponseDto, PaymentType paymentType) {
+    public static Payment createPayment(PGResponse pgResponse, PaymentType paymentType) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         return Payment.builder()
-                .paymentKey(pgResponseDto.getPaymentKey())
+                .paymentKey(pgResponse.getPaymentKey())
                 .paymentType(paymentType)
-                .totalPaymentAmount(pgResponseDto.getTotalAmount())
-                .suppliedAmount(pgResponseDto.getSuppliedAmount())
-                .vat(pgResponseDto.getVat())
-                .paymentApprovedAt(OffsetDateTime.parse(pgResponseDto.getApprovedAt(), formatter).toLocalDateTime())
-                .paymentStatus(PaymentStatus.valueOf(pgResponseDto.getStatus()))
+                .totalPaymentAmount(pgResponse.getTotalAmount())
+                .suppliedAmount(pgResponse.getSuppliedAmount())
+                .vat(pgResponse.getVat())
+                .paymentApprovedAt(OffsetDateTime.parse(pgResponse.getApprovedAt(), formatter).toLocalDateTime())
+                .paymentStatus(PaymentStatus.valueOf(pgResponse.getStatus()))
                 .build();
     }
 
