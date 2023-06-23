@@ -1,16 +1,14 @@
 package com.marketcollection.domain.order.repository;
 
+import com.marketcollection.domain.delivery.QDelivery;
+import com.marketcollection.domain.member.QMember;
 import com.marketcollection.domain.order.Order;
 import com.marketcollection.domain.order.OrderStatus;
-import com.marketcollection.domain.order.QOrderItem;
-import com.marketcollection.domain.order.dto.OrderHistoryDto2;
-import com.marketcollection.domain.order.dto.OrderSearchDto;
-import com.marketcollection.domain.order.dto.QOrderHistoryDto2;
+import com.marketcollection.domain.order.dto.*;
+import com.marketcollection.domain.payment.QPayment;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
 
@@ -18,7 +16,10 @@ import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.marketcollection.domain.delivery.QDelivery.*;
+import static com.marketcollection.domain.member.QMember.*;
 import static com.marketcollection.domain.order.QOrder.*;
+import static com.marketcollection.domain.payment.QPayment.*;
 
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
@@ -68,42 +69,56 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public Page<OrderHistoryDto2> findOrderHistory(Long memberId, OrderSearchDto orderSearchDto, Pageable pageable) {
-        QOrderItem orderItem = QOrderItem.orderItem;
-        List<OrderHistoryDto2> content =  queryFactory
+    public List<OrderHistoryDto> findOrderHistory(Long memberId, String searchDateType, Pageable pageable) {
+        return queryFactory
                 .select(
-                        new QOrderHistoryDto2(
+                        new QOrderHistoryDto(
+                                order.id,
                                 order.orderNumber,
                                 order.orderName,
                                 order.paymentType,
                                 order.totalPaymentAmount,
                                 order.createdDate,
-                                orderItem.repImageUrl,
+                                order.repImageUrl,
                                 order.orderStatus
                         ))
                 .from(order)
-                .join(orderItem).on(order.id.eq(orderItem.order.id))
                 .where(
                         order.member.id.eq(memberId),
                         order.orderStatus.in(
-                                OrderStatus.DONE, OrderStatus.CANCELED, OrderStatus.PARTIAL_CANCELED),
-                        regDatesAfter(orderSearchDto.getSearchDateType()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                                OrderStatus.READY, OrderStatus.IN_PROGRESS, OrderStatus.DONE,
+                                OrderStatus.CANCELED, OrderStatus.PARTIAL_CANCELED),
+                        regDatesAfter(searchDateType))
                 .orderBy(order.id.desc())
+                .limit(pageable.getPageSize())
                 .fetch();
+    }
 
-        long total = queryFactory
-                .select(Wildcard.count)
+    @Override
+    public List<OrderHistoryDto> findOrderHistoryLessThanId(Long memberId, String searchDateType, Long lastOrderId, Pageable pageable) {
+        return queryFactory
+                .select(
+                        new QOrderHistoryDto(
+                                order.id,
+                                order.orderNumber,
+                                order.orderName,
+                                order.paymentType,
+                                order.totalPaymentAmount,
+                                order.createdDate,
+                                order.repImageUrl,
+                                order.orderStatus
+                        ))
                 .from(order)
                 .where(
+                        order.id.lt(lastOrderId),
                         order.member.id.eq(memberId),
                         order.orderStatus.in(
-                                OrderStatus.DONE, OrderStatus.CANCELED, OrderStatus.PARTIAL_CANCELED),
-                        regDatesAfter(orderSearchDto.getSearchDateType()))
-                .fetchOne();
-
-        return new PageImpl<>(content, pageable, total);
+                                OrderStatus.READY, OrderStatus.IN_PROGRESS, OrderStatus.DONE,
+                                OrderStatus.CANCELED, OrderStatus.PARTIAL_CANCELED),
+                        regDatesAfter(searchDateType))
+                .orderBy(order.id.desc())
+                .limit(pageable.getPageSize())
+                .fetch();
     }
 
     @Override
@@ -125,6 +140,30 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 .from(order)
                 .where(
                         regDatesAfter(orderSearchDto.getSearchDateType()))
+                .fetchOne();
+    }
+
+    @Override
+    public OrderDetailResponse findOrderDetail(Long orderId) {
+        return queryFactory
+                .select(new QOrderDetailResponse(
+                        order.orderNumber,
+                        order.usingPoint,
+                        order.paymentType,
+                        payment.paymentApprovedAt,
+                        member.memberName,
+                        member.memberName,
+                        delivery.phoneNumber,
+                        delivery.address.zipCode,
+                        delivery.address.address,
+                        delivery.address.detailAddress,
+                        delivery.deliveryStatus
+                        ))
+                .from(order)
+                .join(order.payment, payment)
+                .join(order.delivery, delivery)
+                .join(order.member, member)
+                .where(order.id.eq(orderId))
                 .fetchOne();
     }
 }

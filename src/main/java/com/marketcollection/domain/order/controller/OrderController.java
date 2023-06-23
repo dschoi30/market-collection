@@ -6,6 +6,7 @@ import com.marketcollection.common.exception.ErrorCode;
 import com.marketcollection.domain.category.dto.ItemCategoryDto;
 import com.marketcollection.domain.category.service.CategoryService;
 import com.marketcollection.domain.common.HeaderInfo;
+import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.order.dto.*;
 import com.marketcollection.domain.order.exception.InvalidPaymentAmountException;
 import com.marketcollection.domain.order.service.OrderService;
@@ -76,7 +77,8 @@ public class OrderController extends HeaderInfo {
 
     // 결제 처리
     @GetMapping("/order/checkout/success")
-    public String handlePayment(Model model, @LoginUser SessionUser user, String paymentKey, String orderId, Long amount) {
+    public String handlePayment(Model model, @LoginUser SessionUser user, String paymentKey,
+                                String orderId, Long amount) {
         // 결제 금액 검증(결제 요청 시 금액을 변조하여 실 결제 금액이 주문 금액과 달라지는 경우를 막기 위함)
         if(!orderService.validatePaymentAmount(orderId, amount)) {
             throw new InvalidPaymentAmountException(ErrorCode.INVALID_PAYMENT_AMOUNT);
@@ -108,30 +110,25 @@ public class OrderController extends HeaderInfo {
     }
 
     // 내 주문 내역 조회
-    @GetMapping({"/orders", "/orders/{page}"})
-    public String getOrderHistory(Model model, @LoginUser SessionUser user,
-                                  OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
-        Page<OrderHistoryDto> orders = orderService.getOrderHistory(user.getEmail(), orderSearchDto, pageable);
+    @GetMapping({"/orders", "/orders/{lastOrderId}"})
+    public @ResponseBody PageCursor<OrderHistoryDto> getOrderHistory(@LoginUser SessionUser user,
+                                                                     @PathVariable(required = false) Long lastOrderId,
+                                                                     @RequestParam String searchDateType) {
+        Pageable pageable = PageRequest.of(0, PAGE_SIZE);
 
-        model.addAttribute("orders", orders);
-        model.addAttribute("orderSearchDto", orderSearchDto);
-        model.addAttribute("maxPage", MAX_PAGE);
-
-        return "order/orderHistory";
+        return orderService.getOrderHistory(
+                user.getEmail(), searchDateType, lastOrderId, pageable);
     }
 
-    @GetMapping({"/orders2", "/orders2/{page}"})
-    public String getOrderHistory2(Model model, @LoginUser SessionUser user,
-                                  OrderSearchDto orderSearchDto, @PathVariable("page") Optional<Integer> page) {
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, PAGE_SIZE);
-        Page<OrderHistoryDto2> orders = orderService.getOrderHistory2(user.getEmail(), orderSearchDto, pageable);
+    // 내 주문 내역 상세 조회
+    @GetMapping("/orders/{orderId}/detail")
+    public @ResponseBody OrderDetailResponse getOrderDetail(Model model, @LoginUser SessionUser user,
+                                                            @PathVariable Long orderId) {
+        OrderDetailResponse orderDetailResponse = orderService.getOrderHistoryDetail(user.getEmail(), orderId);
 
-        model.addAttribute("orders", orders);
-        model.addAttribute("orderSearchDto", orderSearchDto);
-        model.addAttribute("maxPage", MAX_PAGE);
+//        model.addAttribute("orderDetailDto", orderDetailDto);
 
-        return "order/orderHistory2";
+        return orderDetailResponse;
     }
 
     // 관리자 주문 관리

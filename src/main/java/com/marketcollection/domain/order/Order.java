@@ -2,6 +2,7 @@ package com.marketcollection.domain.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.marketcollection.domain.common.BaseTimeEntity;
+import com.marketcollection.domain.delivery.Delivery;
 import com.marketcollection.domain.member.Member;
 import com.marketcollection.domain.order.dto.OrderDto;
 import com.marketcollection.domain.order.dto.OrderResponse;
@@ -35,9 +36,17 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
+
     private int totalSavingPoint;
     private int usingPoint;
     private int totalPaymentAmount;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;

@@ -53,7 +53,7 @@ class OrderServiceTest {
         List<OrderItem> orderItems = new ArrayList<>();
         OrderItem orderItem = new OrderItem(item, null, item.getRepImageUrl(), item.getSalePrice());
         orderItems.add(orderItem);
-        Order order = new Order(member, orderItems, member.getPhoneNumber(), new Address(), OrderStatus.DONE);
+        Order order = new Order(member, orderItems, OrderStatus.DONE);
         return orderRepository.save(order);
     }
 
@@ -70,7 +70,7 @@ class OrderServiceTest {
         OrderDto orderDto = new OrderDto(member.getMemberName(), "01012341234", 12345, "서울시", "강남", 0, 10000, 100, 0, 10000, orderItemDtos, "Y");
 
         //when
-        OrderResponseDto orderResponseDto = orderService.order(member.getEmail(), orderDto);
+        OrderResponse orderResponseDto = orderService.order(member.getEmail(), orderDto);
 
         //then
         Order order = orderRepository.findByOrderNumber(orderResponseDto.getOrderNumber()).orElseThrow(EntityNotFoundException::new);

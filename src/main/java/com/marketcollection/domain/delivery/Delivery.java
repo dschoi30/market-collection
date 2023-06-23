@@ -20,10 +20,10 @@ public class Delivery {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @OneToOne(mappedBy = "delivery")
     private Order order;
 
+    private String recipient;
     private String phoneNumber;
 
     @Embedded

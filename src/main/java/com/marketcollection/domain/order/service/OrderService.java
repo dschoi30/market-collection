@@ -1,6 +1,7 @@
 package com.marketcollection.domain.order.service;
 
 import com.marketcollection.domain.cart.service.CartService;
+import com.marketcollection.domain.common.PageCursor;
 import com.marketcollection.domain.delivery.Delivery;
 import com.marketcollection.domain.delivery.repository.DeliveryRepository;
 import com.marketcollection.domain.item.Item;
@@ -123,7 +124,7 @@ public class OrderService {
         return order.toDto();
     }
 
-    public Order handleOrder(Member member, OrderDto orderDto) {
+    private Order handleOrder(Member member, OrderDto orderDto) {
         List<OrderItem> orderItems = new ArrayList<>();
         List<OrderItemDto> orderItemDtos = orderDto.getOrderItemDtos();
 
@@ -150,7 +151,7 @@ public class OrderService {
         return order;
     }
 
-    public void handlePoint(Member member, Order order, OrderDto orderDto) {
+    private void handlePoint(Member member, Order order, OrderDto orderDto) {
         member.updateOrderPoint(orderDto.getTotalSavingPoint(), orderDto.getUsingPoint());
         order.getOrderItems().forEach(oi ->
             pointService.createOrderPoint(member, oi));
@@ -179,7 +180,7 @@ public class OrderService {
         return PaymentResponse.of(pgResponse);
     }
 
-    public PGResponse requestPaymentApproval(String paymentKey, String orderId, Long amount) {
+    private PGResponse requestPaymentApproval(String paymentKey, String orderId, Long amount) {
         RestTemplate restTemplate = new RestTemplate();
 
         URI uri = URI.create(tossUrl + "confirm");
@@ -273,7 +274,7 @@ public class OrderService {
         orderCancelRepository.save(orderCancel);
     }
 
-    public int getCancelAmount(OrderCancelDto orderCancelDto) {
+    private int getCancelAmount(OrderCancelDto orderCancelDto) {
         List<Long> orderItemIds = orderCancelDto.getOrderItemIds();
         List<OrderItem> orderItems = orderItemRepository.findByIdIn(orderItemIds);
         return orderItems.stream()
@@ -281,7 +282,7 @@ public class OrderService {
                 .sum();
     }
 
-    public PGResponse requestPaymentCancel(String paymentKey, String cancelReason, int cancelAmount) {
+    private PGResponse requestPaymentCancel(String paymentKey, String cancelReason, int cancelAmount) {
         RestTemplate restTemplate = new RestTemplate();
 
         URI uri = URI.create(tossUrl + paymentKey + "/cancel");
@@ -313,32 +314,77 @@ public class OrderService {
     /**
      * 내 주문 정보 조회
      */
-    @Transactional(readOnly = true)
-    public Page<OrderHistoryDto> getOrderHistory(String memberId, OrderSearchDto orderSearchDto, Pageable pageable) {
-        Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
-        List<Order> orders = orderRepository.findOrders(member.getId(), orderSearchDto, pageable);
-        Long total = orderRepository.countOrders(member.getId(), orderSearchDto);
+//    @Transactional(readOnly = true)
+//    public Page<OrderHistoryDto> getOrderHistory(String memberId, OrderSearchDto orderSearchDto, Pageable pageable) {
+//        Member member = memberRepository.findByEmail(memberId).orElseThrow(EntityNotFoundException::new);
+//        List<Order> orders = orderRepository.findOrders(member.getId(), orderSearchDto, pageable);
+//        Long total = orderRepository.countOrders(member.getId(), orderSearchDto);
+//
+//        List<OrderHistoryDto> orderHistoryDtos = new ArrayList<>();
+//        for (Order order : orders) {
+//            OrderHistoryDto orderHistoryDto = new OrderHistoryDto(order);
+//            List<OrderItemDto> orderItemDtos = new ArrayList<>();
+//            List<OrderItem> orderItems = order.getOrderItems();
+//            for (OrderItem orderItem : orderItems) {
+//                OrderItemDto orderItemDto = new OrderItemDto(orderItem);
+//                orderItemDtos.add(orderItemDto);
+//            }
+//            orderHistoryDto.setOrderItemDtos(orderItemDtos);
+//            orderHistoryDtos.add(orderHistoryDto);
+//        }
+//        return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, total);
+//    }
 
-        List<OrderHistoryDto> orderHistoryDtos = new ArrayList<>();
-        for (Order order : orders) {
-            OrderHistoryDto orderHistoryDto = new OrderHistoryDto(order);
-            List<OrderItemDto> orderItemDtos = new ArrayList<>();
-            List<OrderItem> orderItems = order.getOrderItems();
-            for (OrderItem orderItem : orderItems) {
-                OrderItemDto orderItemDto = new OrderItemDto(orderItem);
-                orderItemDtos.add(orderItemDto);
-            }
-            orderHistoryDto.setOrderItemDtos(orderItemDtos);
-            orderHistoryDtos.add(orderHistoryDto);
-        }
-        return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, total);
-    }
-
+    /**
+     * 내 주문 내역 조회
+     */
     @Transactional(readOnly = true)
-    public Page<OrderHistoryDto2> getOrderHistory2(String email, OrderSearchDto orderSearchDto, Pageable pageable) {
+    public PageCursor<OrderHistoryDto> getOrderHistory(String email, String searchDateType,
+                                                       Long lastOrderId, Pageable pageable) {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
 
-        return orderRepository.findOrderHistory(member.getId(), orderSearchDto, pageable);
+        List<OrderHistoryDto> orderHistoryDtos = findByCursorSize(member.getId(), searchDateType, lastOrderId, pageable);
+        Long lastOrderIdInList = orderHistoryDtos.isEmpty() ? null :
+                orderHistoryDtos.get(orderHistoryDtos.size() - 1).getOrderId();
+
+        return new PageCursor<>(orderHistoryDtos, hasNext(lastOrderIdInList));
+    }
+
+    private boolean hasNext(Long id) {
+        if(id == null) return false;
+        return orderRepository.existsById(id);
+    }
+
+    private List<OrderHistoryDto> findByCursorSize(Long memberId, String searchDateType,
+                                                   Long cursorItemId, Pageable pageable) {
+        return cursorItemId == null ?
+                orderRepository.findOrderHistory(memberId, searchDateType, pageable) :
+                orderRepository.findOrderHistoryLessThanId(memberId, searchDateType, cursorItemId, pageable);
+    }
+
+    /**
+     * 내 주문 내역 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderHistoryDetail(String email, Long orderId) {
+        memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+
+        OrderDetailResponse orderDetailResponse = orderRepository.findOrderDetail(orderId);
+
+        List<OrderDetailItemDto> orderDetailItemDtos = getOrderDetailItems(orderId);
+        orderDetailResponse.setOrderDetailItems(orderDetailItemDtos);
+
+        return orderDetailResponse;
+    }
+
+    public List<OrderDetailItemDto> getOrderDetailItems(Long orderId) {
+        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+        List<OrderDetailItemDto> orderDetailItemDtos = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            OrderDetailItemDto orderDetailItemDto = new OrderDetailItemDto(orderItem);
+            orderDetailItemDtos.add(orderDetailItemDto);
+        }
+        return orderDetailItemDtos;
     }
 
     /**
