@@ -110,7 +110,15 @@ public class OrderController extends HeaderInfo {
     }
 
     // 내 주문 내역 조회
-    @GetMapping({"/orders", "/orders/{lastOrderId}"})
+    @GetMapping("/orders")
+    public String initOrderHistory(Model model, @LoginUser SessionUser user) {
+        model.addAttribute("user", user);
+
+        return "order/orderHistory";
+    }
+
+    // 내 주문 내역 페이징
+    @GetMapping({"/orders/0", "/orders/{lastOrderId}"})
     public @ResponseBody PageCursor<OrderHistoryDto> getOrderHistory(@LoginUser SessionUser user,
                                                                      @PathVariable(required = false) Long lastOrderId,
                                                                      @RequestParam String searchDateType) {
@@ -122,11 +130,11 @@ public class OrderController extends HeaderInfo {
 
     // 내 주문 내역 상세 조회
     @GetMapping("/orders/{orderId}/detail")
-    public @ResponseBody OrderDetailResponse getOrderDetail(Model model, @LoginUser SessionUser user,
+    public OrderDetailResponse getOrderDetail(Model model, @LoginUser SessionUser user,
                                                             @PathVariable Long orderId) {
         OrderDetailResponse orderDetailResponse = orderService.getOrderHistoryDetail(user.getEmail(), orderId);
 
-//        model.addAttribute("orderDetailDto", orderDetailDto);
+        model.addAttribute("orderDetailDto", orderDetailResponse);
 
         return orderDetailResponse;
     }
