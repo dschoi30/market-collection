@@ -6,6 +6,8 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,8 +19,12 @@ public class OrderDetailResponse {
     private List<OrderDetailItemDto> orderDetailItems;
 
     private int totalItemPrice;
+    private int totalOrderPrice;
     private int totalDiscountPrice;
+    private int shippingCost;
     private int usingPoint;
+
+    @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
     private LocalDateTime paymentApprovedAt;
 
@@ -28,6 +34,8 @@ public class OrderDetailResponse {
     private int zipCode;
     private String address;
     private String addressDetail;
+
+    @Enumerated(EnumType.STRING)
     private DeliveryStatus deliveryStatus;
 
     @QueryProjection
@@ -53,7 +61,7 @@ public class OrderDetailResponse {
     }
 
     private void setTotalPrice(List<OrderDetailItemDto> orderDetailItemDtos) {
-        int totalOrderPrice = orderDetailItemDtos.stream()
+        this.totalOrderPrice = orderDetailItemDtos.stream()
                 .mapToInt(o -> o.getOrderPrice() * o.getCount())
                 .sum();
         this.totalItemPrice = orderDetailItemDtos.stream()

@@ -69,7 +69,7 @@
       width: 100%;
       height: 30px;
     }
-    .order-title {
+    .order-detail-title {
       display: flex;
       align-items: center;
       flex-direction: row;
@@ -92,7 +92,7 @@
     .order-history {
       padding: 16px 20px;
     }
-    .order-date {
+    .order-number {
       display: flex;
       padding-bottom: 16px;
       -webkit-box-pack: justify;
@@ -167,14 +167,48 @@
         }
       );
     }
+    function getPaymentTypeText(status) {
+      switch (status) {
+        case 'CARD':
+          return '카드';
+        case 'TRANSFER':
+          return '계좌이체';
+        case 'EASY_PAY':
+          return '간편결제';
+        case 'POINT':
+          return '포인트';
+        default:
+          return '';
+      }
+    }
+    function getOrderStatusText(status) {
+      switch (status) {
+        case 'READY':
+          return '상품 준비 중';
+        case 'IN_PROGRESS':
+          return '배송 중';
+        case 'DONE':
+          return '배송 완료';
+        case 'CANCELED':
+          return '주문 취소';
+        case 'PARTIAL_CANCELED':
+          return '부분 취소';
+        case 'ABORTED':
+          return '주문 실패';
+        default:
+          return '';
+      }
+    }
     function printList(dtoList) {
       let str = '';
       if(dtoList && dtoList.length > 0) {
         for (const dto of dtoList) {
+          const paymentTypeText = getPaymentTypeText(dto.paymentType);
+          const orderStatusText = getOrderStatusText(dto.orderStatus);
           str += `
-            <div class="order-date">
+            <div class="order-number">
               <span>${dto.orderDate}</span>
-              <a th:href="@{'/orders/' + ${dto.orderId} + '/detail'}" class="fs-sm">주문내역 상세보기 &gt</a>
+              <a href="/orders/${dto.orderId}/detail" class="fs-sm">주문내역 상세보기 &gt</a>
             </div>
             <div class="order-info">
               <div class="item-info-wrap">
@@ -191,7 +225,7 @@
                     </dl>
                     <dl>
                       <dt>결제방법</dt>
-                      <dd>${dto.paymentType}</dd>
+                      <dd>${paymentTypeText}</dd>
                     </dl>
                     <dl>
                       <dt>결제금액</dt>
@@ -200,7 +234,7 @@
                 </div>
               </div>
               <div class="order-status">
-                ${dto.orderStatus}
+                ${orderStatusText}
               </div>
             </div>
           `
@@ -249,7 +283,7 @@
     </ul>
   </div>
   <div class="title">
-    <div class="order-title">
+    <div class="order-detail-title">
       <span class="fs-4">주문 내역</span>
       <span class="mgl-10">최대 3년의 주문 내역까지 확인할 수 있어요</span>
     </div>

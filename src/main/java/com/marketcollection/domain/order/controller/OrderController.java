@@ -130,13 +130,13 @@ public class OrderController extends HeaderInfo {
 
     // 내 주문 내역 상세 조회
     @GetMapping("/orders/{orderId}/detail")
-    public OrderDetailResponse getOrderDetail(Model model, @LoginUser SessionUser user,
+    public String getOrderDetail(Model model, @LoginUser SessionUser user,
                                                             @PathVariable Long orderId) {
         OrderDetailResponse orderDetailResponse = orderService.getOrderHistoryDetail(user.getEmail(), orderId);
 
-        model.addAttribute("orderDetailDto", orderDetailResponse);
+        model.addAttribute("orderDto", orderDetailResponse);
 
-        return orderDetailResponse;
+        return "order/orderHistoryDetail";
     }
 
     // 관리자 주문 관리

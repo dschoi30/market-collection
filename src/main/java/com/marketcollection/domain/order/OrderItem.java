@@ -49,6 +49,7 @@ public class OrderItem extends BaseEntity {
                 .orderPrice(item.getSalePrice())
                 .count(count)
                 .savingPoint(Math.round(item.getSalePrice() * count * savingRate))
+                .orderStatus(OrderStatus.READY)
                 .build();
     }
 

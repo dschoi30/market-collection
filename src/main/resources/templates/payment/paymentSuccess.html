@@ -165,8 +165,8 @@
             </tr>
         </table>
         <div class="btn-wrap">
-            <button class="btn btn-primary custom-btn">주문 상세보기</button>
-            <button class="btn btn-primary custom-btn">주문 계속하기</button>
+            <a th:href="@{'/orders/' + ${payment.orderId} + '/detail'}"><button class="btn btn-primary custom-btn" th:onclick="">주문 상세보기</button></a>
+            <a th:href="@{'/'}"><button class="btn btn-primary custom-btn">주문 계속하기</button></a>
         </div>
     </div>
 </div>

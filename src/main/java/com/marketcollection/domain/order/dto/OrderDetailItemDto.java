@@ -4,6 +4,9 @@ import com.marketcollection.domain.order.OrderItem;
 import com.marketcollection.domain.order.OrderStatus;
 import lombok.Getter;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 @Getter
 public class OrderDetailItemDto {
     private Long itemId;
@@ -12,6 +15,8 @@ public class OrderDetailItemDto {
     private int originalPrice;
     private int orderPrice;
     private int count;
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     public OrderDetailItemDto(OrderItem orderItem) {

@@ -5,6 +5,8 @@ import com.marketcollection.domain.payment.PaymentType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -13,10 +15,15 @@ public class OrderHistoryDto {
     private Long orderId;
     private String orderNumber;
     private String orderName;
+
+    @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
+
     private int totalPaymentAmount;
     private String orderDate;
     private String repImageUrl;
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     @QueryProjection

@@ -111,6 +111,7 @@ public class OrderService {
 
         // 주문 등록
         Order order = handleOrder(member, orderDto);
+        order.setDelivery(delivery);
         delivery.setOrder(order);
 
         // 포인트 입출 내역 등록
@@ -173,11 +174,12 @@ public class OrderService {
         Payment payment = paymentService.savePayment(pgResponse);
 
         Order order = orderRepository.findByOrderNumber(orderId).orElseThrow(EntityNotFoundException::new);
+        order.setPayment(payment);
         payment.setOrder(order);
 
         paymentService.savePaymentMethod(pgResponse, order);
 
-        return PaymentResponse.of(pgResponse);
+        return PaymentResponse.of(pgResponse, order.getId());
     }
 
     private PGResponse requestPaymentApproval(String paymentKey, String orderId, Long amount) {

@@ -120,4 +120,12 @@ public class Order extends BaseTimeEntity {
     public void setPaymentType(PaymentType paymentType) {
         this.paymentType = paymentType;
     }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
+    }
 }
